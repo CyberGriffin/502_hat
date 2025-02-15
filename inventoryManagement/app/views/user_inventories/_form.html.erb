@@ -1,0 +1,32 @@
+<%= form_with(model: user_inventory) do |form| %>
+  <% if user_inventory.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(user_inventory.errors.count, "error") %> prohibited this user_inventory from being saved:</h2>
+
+      <ul>
+        <% user_inventory.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :owner_email, style: "display: block" %>
+    <%= form.text_field :owner_email %>
+  </div>
+
+  <div>
+    <%= form.label :user_email, style: "display: block" %>
+    <%= form.text_field :user_email %>
+  </div>
+
+  <div>
+    <%= form.label :inventory_id, style: "display: block" %>
+    <%= form.number_field :inventory_id %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
