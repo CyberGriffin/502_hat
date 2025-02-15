@@ -1,0 +1,26 @@
+<%= form_with(model: @category, local: true) do |form| %>
+    <div>
+      <%= form.label :name %>
+      <%= form.text_field :name %>
+    </div>
+  
+    <div>
+      <%= form.label :parent_category %>
+      <%= form.collection_select :parent_category_id, ParentCategory.all, :id, :parent_category, prompt: 'Select Parent Category' %>
+    </div>
+  
+    <div>
+      <%= form.label :icon %>
+      <%= form.text_field :icon %>
+    </div>
+  
+    <div>
+      <%= form.label :color_code %>
+      <%= form.text_field :color_code %>
+    </div>
+  
+    <div>
+      <%= form.submit %>
+    </div>
+  <% end %>
+  

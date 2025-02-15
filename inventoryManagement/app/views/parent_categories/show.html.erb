@@ -1,0 +1,8 @@
+<h1>Parent Category Details</h1>
+
+<p><strong>Parent Category:</strong> <%= @parent_category.parent_category %></p>
+<p><strong>Icon:</strong> <%= @parent_category.icon %></p>
+<p><strong>Color Code:</strong> <%= @parent_category.color_code %></p>
+
+<%= link_to 'Edit', edit_parent_category_path(@parent_category) %> |
+<%= link_to 'Back to List', parent_categories_path %>

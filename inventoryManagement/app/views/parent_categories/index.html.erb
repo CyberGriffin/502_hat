@@ -1,0 +1,28 @@
+<h1>Parent Categories</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Parent Category</th>
+      <th>Icon</th>
+      <th>Color Code</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @parent_categories.each do |parent_category| %>
+      <tr>
+        <td><%= parent_category.parent_category %></td>
+        <td><%= parent_category.icon %></td>
+        <td><%= parent_category.color_code %></td>
+        <td>
+          <%= link_to 'Show', parent_category_path(parent_category) %> |
+          <%= link_to 'Edit', edit_parent_category_path(parent_category) %> |
+          <%= link_to 'Delete', delete_parent_category_path(parent_category) %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to 'New Parent Category', new_parent_category_path %>

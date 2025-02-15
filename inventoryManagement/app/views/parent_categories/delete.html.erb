@@ -1,0 +1,8 @@
+<h1>Delete Parent Category</h1>
+
+<p>Are you sure you want to delete this parent category?</p>
+
+<p><strong>Parent Category:</strong> <%= @parent_category.parent_category %></p>
+
+<%= link_to 'Yes, Delete', parent_category_path(@parent_category), method: :delete, data: { confirm: 'Are you sure?' } %> |
+<%= link_to 'No, Back to List', parent_categories_path %>
