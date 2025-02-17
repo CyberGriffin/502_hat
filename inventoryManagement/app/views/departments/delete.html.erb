@@ -1,0 +1,17 @@
+<%= link_to 'Back', department_path %>
+
+<div>
+  <h2>Delete Department</h2>
+
+  <%= form_for(@department, :method => 'delete') do |f| %>
+
+    <p>Are you sure you want to permanently delete this department?</p>
+
+    <p class="reference-name"><%= f.object.name %></p>
+
+    <div class="form-buttons">
+      <%= f.submit("Delete Department") %>
+    </div>
+
+  <% end %>
+</div>

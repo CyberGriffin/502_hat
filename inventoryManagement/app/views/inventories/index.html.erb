@@ -1,0 +1,32 @@
+<h1>Inventory List</h1>
+
+<%= form_with url: inventories_path, method: :get, local: true do |form| %>
+  <%= form.label :search, "Search by Item Name:" %>
+  <%= form.text_field :search, value: params[:search], placeholder: "Enter item name..." %>
+  <%= form.submit "Search" %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Inventory ID</th>
+      <th>Item Name</th>
+      <th>Location</th>
+      <th>Condition</th>
+      <th>Owner</th>
+      <th>Current User</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @inventories.each do |inventory| %>
+      <tr>
+        <td><%= inventory.inv_id %></td>
+        <td><%= inventory.item.name %></td>
+        <td><%= inventory.location %></td>
+        <td><%= inventory.condition_of_item %></td>
+        <td><%= inventory.original_owner.name %></td>
+        <td><%= inventory.current_user.name %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

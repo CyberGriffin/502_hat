@@ -1,0 +1,28 @@
+<h1>Categories</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Icon</th>
+      <th>Color Code</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @categories.each do |category| %>
+      <tr>
+        <td><%= category.name %></td>
+        <td><%= category.icon %></td>
+        <td><%= category.color_code %></td>
+        <td>
+          <%= link_to 'Show', category_path(category) %> |
+          <%= link_to 'Edit', edit_category_path(category) %> |
+          <%= link_to 'Delete', delete_category_path(category) %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to 'New Category', new_category_path %>

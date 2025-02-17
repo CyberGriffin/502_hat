@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  owner_email: MyString
+  user_email: MyString
+  inventory_id: 1
+
+two:
+  owner_email: MyString
+  user_email: MyString
+  inventory_id: 1
