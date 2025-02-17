@@ -1,0 +1,15 @@
+<h1>Item Details</h1>
+
+<p><strong>Inventory ID:</strong> <%= @inventory.inv_id %></p>
+<p><strong>Item ID:</strong> <%= @inventory.item_id %></p>
+<p><strong>Year of Purchase:</strong> <%= @inventory.year_of_purchase %></p>
+<p><strong>Location:</strong> <%= @inventory.location %></p>
+<p><strong>Condition:</strong> <%= @inventory.condition_of_item %></p>
+<p><strong>Owner Email:</strong> <%= @inventory.owner_email %></p>
+<p><strong>Current User Email:</strong> <%= @inventory.user_email %></p>
+<p><strong>SKU:</strong> <%= @inventory.sku %></p>
+<p><strong>Created At:</strong> <%= @inventory.created_at %></p>
+<p><strong>Updated At:</strong> <%= @inventory.updated_at %></p>
+
+<%= link_to 'Edit', edit_inventory_path(@inventory) %> |
+<%= link_to 'Back', inventories_path %>

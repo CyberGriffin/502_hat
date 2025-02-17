@@ -1,0 +1,17 @@
+<%= link_to 'Back', inventories_path %>
+
+<div>
+  <h2>Delete Inventory Entry</h2>
+
+  <%= form_for(@inventories, :method => 'delete') do |f| %>
+
+    <p>Are you sure you want to permanently delete this department?</p>
+
+    <p class="reference-name"><%= f.object.item.name %></p>
+
+    <div class="form-buttons">
+      <%= f.submit("Delete Entry") %>
+    </div>
+
+  <% end %>
+</div>

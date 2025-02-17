@@ -1,0 +1,94 @@
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+/* Title */
+.inventoryListTitle {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* Search Form */
+.searchForm {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.searchLabel {
+  font-weight: bold;
+}
+
+.searchInput {
+  padding: 8px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.searchButton {
+  padding: 8px 15px;
+  background-color: #666;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.searchButton:hover {
+  background-color: #444;
+}
+
+/* Sign Out Link */
+.signOutLink {
+  display: block;
+  text-align: right;
+  margin-bottom: 10px;
+  color: #d9534f;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.signOutLink:hover {
+  text-decoration: underline;
+}
+
+/* Table Styling */
+.inventoryTable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.tableHeader {
+  background-color: #666;
+  color: white;
+  font-weight: bold;
+}
+
+.tableCell {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+
+/* Actions */
+.actions {
+  text-align: center;
+}
+
+.deleteButton {
+  color: #d9534f;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.deleteButton:hover {
+  text-decoration: underline;
+}
