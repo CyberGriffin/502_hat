@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root to: 'dashboards#show'
+  root to: 'inventories#index'
 
   devise_for :admins, controllers: { omniauth_callbacks: 'admins/omniauth_callbacks' }
   devise_scope :admin do
@@ -7,8 +7,19 @@ Rails.application.routes.draw do
     get 'admins/sign_out', to: 'admins/sessions#destroy', as: :destroy_admin_session
   end
 
-  resources :inventories
+  resources :departments do
+    member do
+      get :delete
+    end
+  end
 
+  resources :inventories do
+    member do
+      get :delete
+    end
+  end
+  
+  resources :users, param: :email, format: false, constraints: { email: /[^\/]+/ }
   resources :categories, param: :cat_id do
     member do
       get 'delete'
