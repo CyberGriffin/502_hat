@@ -1,0 +1,51 @@
+inherit_from: .rubocop_todo.yml
+
+Metrics/BlockLength:
+  Exclude:
+    - config/**/*
+    - spec/**/*
+
+Style/BlockComments: #Limited Comments
+  Enabled: false
+
+Layout/IndentationWidth: #Indents Width
+  Width: 5
+
+Style/UnlessElse: # Disallow `unless ... else`
+  Enabled: true
+
+Style/For: # Use `each` instead of `for`
+  Enabled: false
+
+Style/WhileUntilDo: #Use until instead of while! (negated condition).
+  Enabled: false
+
+Naming/MethodName: #Snake Case for methods
+  Enabled: true
+  EnforcedStyle: snake_case
+
+Naming/VariableName: #Snake Case for variables
+  Enabled: true
+  EnforcedStyle: snake_case
+
+Naming/ClassAndModuleCamelCase: #Camel Case for Classes and Modules
+  EnforcedStyle: always
+
+Naming/PredicateName: #Question mark at end and forbidden words
+  Enabled: true
+  Prefix:
+  ForbiddenPrefixes:
+    - is
+    - does
+    - can
+    - has
+
+Naming/MemoizedInstanceVariableName: #No underscore
+  Enabled: false
+
+Naming/ConstantName: #Constants have uppercase
+  EnforcedStyle: "UPPER_CASE"
+
+Style/MethodDefParentheses:
+  Enabled: true
+  EnforcedStyle: require_parentheses # Use parentheses only if method has parameters
