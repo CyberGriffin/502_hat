@@ -12,8 +12,9 @@ class InventoriesController < ApplicationController
           .sort_by_column(sort_column, sort_direction)
       end
 
-    def show
-    end
+    # def show
+    #   redirect_to
+    # end
 
     def new
         @inventory = Inventory.new
@@ -30,7 +31,10 @@ class InventoriesController < ApplicationController
             format.js
           end
         else
-          render :new, status: :unprocessable_entity
+          respond_to do |format|
+            format.html { redirect_to inventories_path, alert: 'Error adding item to inventory.' }
+            format.js
+          end
         end
       end
 
