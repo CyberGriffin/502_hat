@@ -53,7 +53,7 @@
           <td><%= inventory.location %></td>
           <td><%= inventory.condition_of_item %></td>
           <td><%= inventory.original_owner.email %></td>
-          <td><%= inventory.current_user.email %></td>
+          <td><%= inventory.current_user&.email %></td>
           <td>
             <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editInventoryModal" data-inventory-id="<%= inventory.inv_id %>">
               Edit
