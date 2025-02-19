@@ -8,18 +8,8 @@ class InventoriesController < ApplicationController
         sort_direction = params[:direction] == "desc" ? "desc" : "asc"
     
         @inventories = Inventory.includes(:item)
-    
-        if params[:search].present?
-          search_query = "%#{params[:search]}%"
-          @inventories = @inventories.joins(:item).where("items.name LIKE ? OR inventories.location LIKE ? OR inventories.condition_of_item LIKE ? OR inventories.sku LIKE ?",
-                                                         search_query, search_query, search_query, search_query)
-        end
-    
-        if sort_column == 'name'
-          @inventories = @inventories.order(Arel.sql("items.name #{sort_direction}"))
-        else
-          @inventories = @inventories.order(Arel.sql("inventories.#{sort_column} #{sort_direction}"))
-        end
+          .search(params[:search])
+          .sort_by_column(sort_column, sort_direction)
       end
 
     def show
