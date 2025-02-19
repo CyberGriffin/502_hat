@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   end
 
   resources :inventories
-  resources :items, only: [:create]
+  resources :items, only: [:new, :create]
   resources :users, param: :email, format: false, constraints: { email: /[^\/]+/ }
   resources :categories, param: :cat_id do
     member do
