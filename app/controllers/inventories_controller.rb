@@ -8,22 +8,13 @@ class InventoriesController < ApplicationController
         sort_direction = params[:direction] == "desc" ? "desc" : "asc"
     
         @inventories = Inventory.includes(:item)
-    
-        if params[:search].present?
-          search_query = "%#{params[:search]}%"
-          @inventories = @inventories.joins(:item).where("items.name LIKE ? OR inventories.location LIKE ? OR inventories.condition_of_item LIKE ? OR inventories.sku LIKE ?",
-                                                         search_query, search_query, search_query, search_query)
-        end
-    
-        if sort_column == 'name'
-          @inventories = @inventories.order(Arel.sql("items.name #{sort_direction}"))
-        else
-          @inventories = @inventories.order(Arel.sql("inventories.#{sort_column} #{sort_direction}"))
-        end
+          .search(params[:search])
+          .sort_by_column(sort_column, sort_direction)
       end
 
-    def show
-    end
+    # def show
+    #   redirect_to
+    # end
 
     def new
         @inventory = Inventory.new
@@ -31,6 +22,8 @@ class InventoriesController < ApplicationController
 
     def create
         @inventory = Inventory.new(inventory_params)
+        
+        @inventory.user_email = nil if @inventory.user_email.blank?
     
         if @inventory.save
           respond_to do |format|
@@ -38,7 +31,10 @@ class InventoriesController < ApplicationController
             format.js
           end
         else
-          render :new, status: :unprocessable_entity
+          respond_to do |format|
+            format.html { redirect_to inventories_path, alert: 'Error adding item to inventory.' }
+            format.js
+          end
         end
       end
 
