@@ -10,13 +10,13 @@ class Inventory < ApplicationRecord
     def self.search(search)
         if search
             joins(:item).where(
-                "items.name LIKE :search OR " +
-                "inventories.location LIKE :search OR " +
-                "inventories.condition_of_item LIKE :search OR " +
-                "inventories.sku LIKE :search OR " +
-                "inventories.owner_email LIKE :search OR " +
-                "inventories.user_email LIKE :search",
-                search: "%#{search}%"
+                "LOWER(items.name) LIKE :search OR " +
+                "LOWER(inventories.location) LIKE :search OR " +
+                "LOWER(inventories.condition_of_item) LIKE :search OR " +
+                "LOWER(inventories.sku) LIKE :search OR " +
+                "LOWER(inventories.owner_email) LIKE :search OR " +
+                "LOWER(inventories.user_email) LIKE :search",
+                search: "%#{search.downcase}%"
             )
         else
             all
