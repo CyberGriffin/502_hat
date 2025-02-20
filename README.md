@@ -1,24 +1,17 @@
-# README
+# Inventory Management
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Docker
+```python
+docker run --rm -it --volume "$(pwd):/csce431" -e DATABASE_USER=test_app -e DATABASE_PASSWORD=test_password -p 3000:3000 paulinewade/csce431:latest
+```
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## How to Run
+```ruby
+bundle install
+```
+```ruby
+rails db:migrate
+```
+```ruby
+rails s -b 0.0.0.0
+```
