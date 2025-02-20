@@ -47,7 +47,7 @@ RSpec.describe "Users", type: :request do
   describe "GET /users" do
     it "returns a success response" do
       User.create!(valid_attributes)
-      get users_path
+      get app_users_path
       expect(response).to be_successful
     end
   end
@@ -55,7 +55,7 @@ RSpec.describe "Users", type: :request do
   describe "GET /users/:email" do
     it "returns a success response" do
       user = User.create!(valid_attributes)
-      get user_path(user.email)
+      get app_users_path(user.email)
       expect(response).to be_successful
     end
   end
@@ -79,12 +79,12 @@ RSpec.describe "Users", type: :request do
     context "with valid parameters" do
       it "creates a new User" do
         expect {
-          post users_path, params: { user: valid_attributes }
+          post app_users_path, params: { user: valid_attributes }
         }.to change(User, :count).by(1)
       end
 
       it "redirects to the created user" do
-        post users_path, params: { user: valid_attributes }
+        post app_users_path, params: { user: valid_attributes }
         expect(response).to redirect_to(user_path(valid_attributes[:email]))
       end
     end
@@ -92,12 +92,12 @@ RSpec.describe "Users", type: :request do
     context "with invalid parameters" do
       it "does not create a new User" do
         expect {
-          post users_path, params: { user: invalid_attributes }
+          post app_users_path, params: { user: invalid_attributes }
         }.not_to change(User, :count)
       end
 
       it "renders the new template with unprocessable_entity status" do
-        post users_path, params: { user: invalid_attributes }
+        post app_users_path, params: { user: invalid_attributes }
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
@@ -143,7 +143,7 @@ RSpec.describe "Users", type: :request do
     it "redirects to the users list" do
       user = User.create!(valid_attributes)
       delete user_path(user.email)
-      expect(response).to redirect_to(users_path)
+      expect(response).to redirect_to(app_users_path)
     end
   end
 end
