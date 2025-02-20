@@ -26,8 +26,7 @@
 
 <%= link_to 'Show Categories', categories_path %>
 <%= link_to 'Show Departments', departments_path %>
-<%= link_to 'Show Users', users_path %>
-
+<%= link_to "Sign Out", destroy_user_session_path %>
 
 <!-- Inventory List (Wrapped in a Div for AJAX Updates) -->
 <div id="inventory-list">
@@ -53,7 +52,7 @@
           <td><%= inventory.location %></td>
           <td><%= inventory.condition_of_item %></td>
           <td><%= inventory.original_owner.email %></td>
-          <td><%= inventory.current_user.email %></td>
+          <td><%= inventory.current_user&.email %></td>
           <td>
             <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editInventoryModal" data-inventory-id="<%= inventory.inv_id %>">
               Edit

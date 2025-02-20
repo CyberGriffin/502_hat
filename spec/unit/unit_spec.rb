@@ -11,9 +11,10 @@ RSpec.describe Category, type: :model do
         expect(category).to be_valid
       end
   
-      it 'is not valid without a cat_id' do
-        category = Category.new(icon: '🍕', color_code: '#FFC300')
-        expect(category).not_to be_valid
+      it 'automatically generates a cat_id if not provided' do
+        category = Category.new(name: "Fast Food", icon: '🍕', color_code: '#FFC300')
+        category.valid?  # Triggers before_validation
+        expect(category.cat_id).not_to be_nil
       end
 
   end

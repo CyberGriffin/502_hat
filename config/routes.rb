@@ -1,10 +1,10 @@
 Rails.application.routes.draw do
   root to: 'inventories#index'
 
-  devise_for :admins, controllers: { omniauth_callbacks: 'admins/omniauth_callbacks' }
-  devise_scope :admin do
-    get 'admins/sign_in', to: 'admins/sessions#new', as: :new_admin_session
-    get 'admins/sign_out', to: 'admins/sessions#destroy', as: :destroy_admin_session
+  devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks' }
+  devise_scope :user do
+    get 'users/sign_in', to: 'users/sessions#new', as: :new_user_session
+    get 'users/sign_out', to: 'users/sessions#destroy', as: :destroy_user_session
   end
 
   resources :departments do
@@ -14,8 +14,9 @@ Rails.application.routes.draw do
   end
 
   resources :inventories
-  resources :items, only: [:create]
-  resources :users, param: :email, format: false, constraints: { email: /[^\/]+/ }
+  resources :items, only: [:new, :create]
+  # resources :users, as: :app_users, path: '/app_users', param: :email, format: false, constraints: { email: /[^\/]+/ }
+
   resources :categories, param: :cat_id do
     member do
       get 'delete'
