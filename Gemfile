@@ -84,6 +84,7 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem "webdrivers"
+  gem "codecov", require: false
 end
 
 gem "dotenv-rails", "~> 3.1"
