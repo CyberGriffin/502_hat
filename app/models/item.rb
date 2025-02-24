@@ -8,6 +8,6 @@ class Item < ApplicationRecord
     private
 
     def generate_item_id
-        self.item_id = SecureRandom.uuid
-    end
+        self.item_id ||= SecureRandom.uuid
+      end      
 end
