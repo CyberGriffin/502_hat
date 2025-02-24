@@ -1,13 +1,13 @@
 <table class="table table-bordered mt-4">
   <thead class="table-dark">
     <tr>
-      <th><%= sortable "inv_id", "ID" %></th>
-      <th><%= sortable "name", "Item Name" %></th>
-      <th><%= sortable "sku", "SKU" %></th>
-      <th><%= sortable "location", "Location" %></th>
-      <th><%= sortable "condition_of_item", "Condition" %></th>
-      <th><%= sortable "owner_email", "Owner" %></th>
-      <th><%= sortable "user_email", "Current User" %></th>
+      <th id="sort-id">ID</th>
+      <th id="sort-name">Item Name</th>
+      <th id="sort-sku">SKU</th>
+      <th id="sort-location">Location</th>
+      <th id="sort-condition">Condition</th>
+      <th id="sort-owner">Owner</th>
+      <th id="sort-user">Current User</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -20,7 +20,7 @@
         <td><%= inventory.location %></td>
         <td><%= inventory.condition_of_item %></td>
         <td><%= inventory.original_owner.email %></td>
-        <td><%= inventory.current_user.email %></td>
+        <td><%= inventory.current_user&.email %></td>
         <td>
           <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
           <%= link_to "Delete", inventory_path(inventory), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
