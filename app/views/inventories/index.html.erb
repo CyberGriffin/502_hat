@@ -1,17 +1,14 @@
 <!-- Flash Messages -->
 <div id="flash-messages"></div>
 
-<!-- Search Form -->
+<!-- Search -->
 <div class="mb-3">
   <input type="text" id="search-input" placeholder="Search..." class="form-control d-inline-block w-auto" value="<%= params[:search] %>">
-  <button type="button" class="btn btn-secondary" onclick="
-    document.getElementById('search-input').value = '';
-    document.getElementById('search-input').dispatchEvent(new Event('input'));
-  ">Clear</button>
+  <button type="button" class="btn btn-secondary" onclick="document.getElementById('search-input').value = ''; document.getElementById('search-input').dispatchEvent(new Event('input'));">Clear</button>
 </div>
 
 <!-- Buttons to Open Modals -->
-
+<!--
 <div class="d-flex gap-3 my-3">
   <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
     Add New Item
@@ -21,6 +18,7 @@
     Add to Inventory
   </button>
 </div>
+-->
 
 
 <!--
@@ -196,6 +194,10 @@
       var rows = document.querySelectorAll('#inventory-list tbody tr');
 
       rows.forEach(function(row) {
+        if (row.classList.contains('admin-add-row')) {
+          return;
+        }
+
         var cells = row.querySelectorAll('td');
         var match = false;
 

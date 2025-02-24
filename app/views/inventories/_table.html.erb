@@ -12,6 +12,23 @@
     </tr>
   </thead>
   <tbody>
+    <% if current_user.admin? %>
+      <tr class="admin-add-row">
+        <%= form_with url: inventories_path, method: :post, local: true do |form| %>
+          <td></td>
+          <td><%= form.text_field :item_name, placeholder: "Item Name", class: "form-control" %></td>
+          <td><%= form.text_field :sku, placeholder: "SKU", class: "form-control" %></td>
+          <td><%= form.text_field :location, placeholder: "Location", class: "form-control" %></td>
+          <td><%= form.text_field :condition_of_item, placeholder: "Condition", class: "form-control" %></td>
+          <td><%= form.text_field :original_owner_email, placeholder: "Owner Email", class: "form-control" %></td>
+          <td><%= form.text_field :current_user_email, placeholder: "Current User Email", class: "form-control" %></td>
+          <td>
+            <%= form.submit "Add", class: "btn btn-sm btn-success" %>
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+
     <% inventories.each_with_index do |inventory, index| %>
       <tr>
         <td><%= index + 1 %></td>

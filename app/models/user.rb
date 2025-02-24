@@ -25,6 +25,10 @@ class User < ApplicationRecord
     def role
       self[:role].to_sym
     end
+
+    def admin?
+      role.downcase == :admin
+    end
   
     def self.from_google(auth)
       user = find_by(email: auth[:email])
