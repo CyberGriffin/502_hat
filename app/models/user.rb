@@ -13,6 +13,18 @@ class User < ApplicationRecord
     validates :dept_id, presence: true
     validates :is_white_listed, inclusion: { in: [true, false] }
     validates :white_list_end_date, presence: true, if: :is_white_listed
+
+    def profile_picture_url
+      self[:profile_picture_url] || "https://via.placeholder.com/40"
+    end
+
+    def full_name
+      name
+    end
+
+    def role
+      self[:role].to_sym
+    end
   
     def self.from_google(auth)
       user = find_by(email: auth[:email])
@@ -25,8 +37,11 @@ class User < ApplicationRecord
           role: "user",
           dept_id: department&.id,
           is_white_listed: false,
-          white_list_end_date: nil
+          white_list_end_date: nil,
+          profile_picture_url: auth[:avatar_url]
         )
+      else
+        user.update(profile_picture_url: auth[:avatar_url])
       end
     
       user

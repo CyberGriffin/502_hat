@@ -26,7 +26,6 @@
 
 <%= link_to 'Show Categories', categories_path %>
 <%= link_to 'Show Departments', departments_path %>
-<%= link_to "Sign Out", destroy_user_session_path %>
 
 <!-- Inventory List (Wrapped in a Div for AJAX Updates) -->
 <div id="inventory-list">
@@ -270,18 +269,15 @@ document.addEventListener('DOMContentLoaded', function() {
     var button = event.relatedTarget;
     var inventoryId = button.getAttribute('data-inventory-id');
     var editUrl = '/inventories/' + inventoryId;
+    console.log("editUrl: " + editUrl);
 
-    // Fetch inventory data using AJAX (ensure your controller renders the associated item name as "item_name")
     fetch(editUrl + '/edit')
       .then(response => response.json())
       .then(data => {
-        // Update the form action to point to the correct inventory update path
         editForm.action = editUrl;
         
-        // Set the item name in the display element
         document.getElementById('edit-item-name').textContent = data.item_name;
 
-        // Prefill the form fields with the current inventory values
         if(editForm.querySelector('[name="inventory[item_id]"]')) {
           editForm.querySelector('[name="inventory[item_id]"]').value = data.item_id;
         }
@@ -321,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(response => response.json())
     .then(data => {
       if (data.status === 'success') {
-        // Handle success response
+        $('#editInventoryModal').modal('hide');
         $.ajax({
           url: "/inventories",
           type: "GET",

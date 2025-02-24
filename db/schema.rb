@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_02_19_040643) do
+ActiveRecord::Schema[7.0].define(version: 2025_02_23_235204) do
   create_table "admins", force: :cascade do |t|
     t.string "email", null: false
     t.string "full_name"
@@ -63,6 +63,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_19_040643) do
     t.date "white_list_end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "profile_picture_url"
   end
 
   add_foreign_key "inventories", "items", primary_key: "item_id"
