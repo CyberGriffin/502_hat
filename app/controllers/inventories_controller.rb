@@ -4,23 +4,7 @@ class InventoriesController < ApplicationController
         @item = Item.new
         @inventory = Inventory.new
         @inventories = Inventory.includes(:item)
-    
-        # sort_column = params[:sort].presence_in(Inventory.column_names + ['name']) || 'inv_id'
-        # sort_direction = params[:direction] == "desc" ? "desc" : "asc"
-    
-        # @inventories = Inventory.includes(:item)
-        #   .search(params[:search])
-        #   .sort_by_column(sort_column, sort_direction)
-
-        # respond_to do |format|
-        #     format.html
-        #     format.js { render partial: 'table', locals: { inventories: @inventories } }
-        # end
-      end
-
-    # def show
-    #   redirect_to
-    # end
+    end
 
     def new
         @inventory = Inventory.new

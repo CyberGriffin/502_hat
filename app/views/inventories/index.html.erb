@@ -4,10 +4,14 @@
 <!-- Search Form -->
 <div class="mb-3">
   <input type="text" id="search-input" placeholder="Search..." class="form-control d-inline-block w-auto" value="<%= params[:search] %>">
+  <button type="button" class="btn btn-secondary" onclick="
+    document.getElementById('search-input').value = '';
+    document.getElementById('search-input').dispatchEvent(new Event('input'));
+  ">Clear</button>
 </div>
 
 <!-- Buttons to Open Modals -->
-<!--
+
 <div class="d-flex gap-3 my-3">
   <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
     Add New Item
@@ -17,7 +21,7 @@
     Add to Inventory
   </button>
 </div>
--->
+
 
 <!--
 <%= link_to 'Show Categories', categories_path %>
@@ -28,30 +32,6 @@
 <div id="inventory-list">
   <%= render partial: 'table', locals: { inventories: @inventories } %>
 </div>
-
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Delete</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        Are you sure you want to delete this item?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <%= form_with url: "#", method: :delete, local: true, id: "delete-form" do %>
-          <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-          <button type="submit" class="btn btn-danger" id="confirm-delete-btn">Delete</button>
-        <% end %>
-      </div>
-    </div>
-  </div>
-</div>
-
-
 
 <!-- Bootstrap Modal for Adding a New Item -->
 <div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
@@ -234,62 +214,82 @@
     });
 
     // Sorting functionality
-    var headers = document.querySelectorAll('th[id^="sort-"]');
+    var headers = document.querySelectorAll('th.sortable');
+    var indicator = document.createElement('div');
+    indicator.style.position = 'absolute';
+    indicator.style.height = '5px';
+    indicator.style.backgroundColor = 'darkred';
+    indicator.style.transition = 'all 0.3s ease';
+    document.body.appendChild(indicator);
+
+    function positionIndicator(header) {
+      var rect = header.getBoundingClientRect();
+      indicator.style.width = rect.width + 'px';
+      indicator.style.top = (rect.top - 5) + 'px';
+      indicator.style.left = rect.left + 'px';
+      indicator.style.border = 'none';
+    }
+
+    function sortTableByHeader(header) {
+      var table = header.closest('table');
+      var tbody = table.querySelector('tbody');
+      var rows = Array.from(tbody.querySelectorAll('tr'));
+      var index = Array.from(header.parentNode.children).indexOf(header);
+      var ascending = header.classList.contains('ascending');
+
+      rows.sort(function(rowA, rowB) {
+        var cellA = rowA.children[index].textContent.trim();
+        var cellB = rowB.children[index].textContent.trim();
+
+        if (!isNaN(cellA) && !isNaN(cellB)) {
+          cellA = parseFloat(cellA);
+          cellB = parseFloat(cellB);
+        }
+
+        if (cellA < cellB) {
+          return ascending ? 1 : -1;
+        }
+        if (cellA > cellB) {
+          return ascending ? -1 : 1;
+        }
+        return 0;
+      });
+      
+      rows.forEach(function(row, rowIndex) {
+        tbody.appendChild(row);
+      });
+
+      headers.forEach(function(h) {
+        h.classList.remove('ascending', 'descending', 'sorted');
+        h.style.backgroundColor = 'maroon';
+        h.style.color = 'white';
+        h.style.border = 'none';
+      });
+
+      header.classList.toggle('ascending', !ascending);
+      header.classList.toggle('descending', ascending);
+      header.classList.add('sorted');
+      header.style.backgroundColor = 'darkred';
+      header.style.color = 'white';
+      header.style.border = 'none';
+
+      // Position the indicator
+      positionIndicator(header);
+    }
+
+    // Set default sorted column to "ID"
+    var defaultHeader = document.getElementById('sort-id');
+    sortTableByHeader(defaultHeader);
+
     headers.forEach(function(header) {
       header.addEventListener('click', function() {
-        var table = header.closest('table');
-        var tbody = table.querySelector('tbody');
-        var rows = Array.from(tbody.querySelectorAll('tr'));
-        var index = Array.from(header.parentNode.children).indexOf(header);
-        var ascending = header.classList.contains('ascending');
-
-        rows.sort(function(rowA, rowB) {
-          var cellA = rowA.children[index].textContent.trim();
-          var cellB = rowB.children[index].textContent.trim();
-
-          if (!isNaN(cellA) && !isNaN(cellB)) {
-            cellA = parseFloat(cellA);
-            cellB = parseFloat(cellB);
-          }
-
-          if (cellA < cellB) {
-            return ascending ? 1 : -1;
-          }
-          if (cellA > cellB) {
-            return ascending ? -1 : 1;
-          }
-          return 0;
-        });
-
-        rows.forEach(function(row) {
-          tbody.appendChild(row);
-        });
-
-        headers.forEach(function(h) {
-          h.classList.remove('ascending', 'descending');
-        });
-
-        header.classList.toggle('ascending', !ascending);
-        header.classList.toggle('descending', ascending);
+        sortTableByHeader(header);
       });
     });
   });
 </script>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var deleteModal = document.getElementById('deleteConfirmationModal');
-    var deleteForm = document.getElementById('delete-form');
 
-    deleteModal.addEventListener('show.bs.modal', function(event) {
-      var button = event.relatedTarget;
-      var inventoryId = button.getAttribute('data-inventory-id');
-      var deleteUrl = '/inventories/' + inventoryId;
-
-      deleteForm.setAttribute('action', deleteUrl);
-    });
-  });
-</script>
 
 
 <script>
