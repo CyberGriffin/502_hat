@@ -213,7 +213,6 @@
       });
     });
 
-    // Sorting functionality
     var headers = document.querySelectorAll('th.sortable');
     var indicator = document.createElement('div');
     indicator.style.position = 'absolute';
@@ -264,6 +263,7 @@
         h.style.backgroundColor = 'maroon';
         h.style.color = 'white';
         h.style.border = 'none';
+        h.querySelector('.sort-arrow').textContent = '';
       });
 
       header.classList.toggle('ascending', !ascending);
@@ -273,11 +273,12 @@
       header.style.color = 'white';
       header.style.border = 'none';
 
-      // Position the indicator
+      var arrow = header.querySelector('.sort-arrow');
+      arrow.textContent = ascending ? '▼' : '▲';
+      header.title = ascending ? 'Descending' : 'Ascending';
       positionIndicator(header);
     }
 
-    // Set default sorted column to "ID"
     var defaultHeader = document.getElementById('sort-id');
     sortTableByHeader(defaultHeader);
 

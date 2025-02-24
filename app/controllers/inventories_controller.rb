@@ -12,7 +12,6 @@ class InventoriesController < ApplicationController
 
     def create
         @inventory = Inventory.new(inventory_params)
-        
         @inventory.user_email = nil if @inventory.user_email.blank?
     
         if @inventory.save
