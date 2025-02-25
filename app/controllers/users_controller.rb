@@ -1,6 +1,21 @@
 class UsersController < ApplicationController
   before_action :set_user, only: %i[ show edit update destroy ]
 
+  def edit_department
+    @departments = Department.all.order(:name)
+  end
+
+  def update_department
+    if current_user.update(user_params)
+      flash[:success] = "Department was successfully updated."
+      redirect_to root_path
+    else
+      flash[:alert] = "There was an error updating the department."
+      render :edit_department
+    end
+  end
+
+
   def index
     @users = User.all
     render :index  # Ensure a view file exists (see Step 3)

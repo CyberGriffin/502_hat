@@ -15,14 +15,17 @@
         <td><%= department.name %></td>
         <td class="actions">
           <%= link_to("Show", department_path(department), :class => 'action show') %>
+          <!--
           <%= link_to("Edit", edit_department_path(department), :class => 'action edit') %>
           <%= link_to("Delete", delete_department_path(department), :class => 'action delete') %>
+          -->
         </td>
       </tr>
     <% end %>
   </tbody>
 </table>
 
-<%= link_to 'New Department', new_department_path %>
-<%= link_to 'Back to Inventory', inventories_path %>
+<!-- <%= link_to 'New Department', new_department_path %> -->
+<%= link_to 'Change my Department', edit_department_path(@department), class: "btn btn-primary"%>
+<%= link_to 'Back to Inventory', inventories_path, class: "btn btn-primary"%>
 

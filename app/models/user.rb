@@ -19,12 +19,12 @@ class User < ApplicationRecord
       user = find_by(email: auth[:email])
     
       unless user
-        department = Department.find_by(name: "-") || Department.first 
+        department = Department.find_or_create_by!(dept_id: "-", name: "Not Selected") 
         user = create!(
           email: auth[:email],
           name: auth[:full_name],
           role: "user",
-          dept_id: department&.id,
+          dept_id: department.dept_id,
           is_white_listed: false,
           white_list_end_date: nil
         )

@@ -19,9 +19,21 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     new_user_session_path
   end
 
-  def after_sign_in_path_for(resource_or_scope)
-    stored_location_for(resource_or_scope) || root_path
+  def after_sign_in_path_for(resource)
+    user = resource
+    department = Department.find_by(dept_id: user.dept_id)
+  
+    Rails.logger.debug "After sign-in - User: #{user.email}, Dept ID: #{user.dept_id}, Department Name: #{department&.name}"
+  
+    if department&.dept_id == "-"
+      Rails.logger.debug "After sign-in - Redirecting to department selection page"
+      return edit_department_path
+    else
+      Rails.logger.debug "After sign-in - Redirecting to inventory page"
+      return stored_location_for(user) || root_path
+    end
   end
+  
 
   private
 
