@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   before_action :set_user, only: %i[ show edit update destroy ]
 
   def edit_department
-    @departments = Department.all.order(:name)
+    @departments = Department.where.not(dept_id: "-").order(:name)
   end
 
   def update_department
