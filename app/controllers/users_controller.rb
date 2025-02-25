@@ -3,7 +3,7 @@ class UsersController < ApplicationController
 
   def index
     @users = User.all
-    render :index  # Ensure a view file exists (see Step 3)
+    render :index
   end
 
   def show

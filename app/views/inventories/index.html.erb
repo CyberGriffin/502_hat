@@ -69,6 +69,7 @@
 
 
 <!-- Edit Inventory Modal -->
+<!--
 <div class="modal fade" id="editInventoryModal" tabindex="-1" aria-labelledby="editInventoryModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -127,10 +128,11 @@
     </div>
   </div>
 </div>
-
+-->
 
 
 <!-- Bootstrap Modal for Adding to Inventory -->
+<!--
 <div class="modal fade" id="addToInventoryModal" tabindex="-1" aria-labelledby="addToInventoryModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -184,6 +186,7 @@
     </div>
   </div>
 </div>
+-->
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -191,7 +194,7 @@
 
     searchInput.addEventListener('input', function(event) {
       var query = searchInput.value.toLowerCase();
-      var rows = document.querySelectorAll('#inventory-list tbody tr');
+      var rows = document.querySelectorAll('#inventory-list tbody tr:not(.no-search)');
 
       rows.forEach(function(row) {
         if (row.classList.contains('admin-add-row')) {
@@ -234,7 +237,7 @@
     function sortTableByHeader(header) {
       var table = header.closest('table');
       var tbody = table.querySelector('tbody');
-      var rows = Array.from(tbody.querySelectorAll('tr'));
+      var rows = Array.from(tbody.querySelectorAll('tr:not(.no-sort)'));
       var index = Array.from(header.parentNode.children).indexOf(header);
       var ascending = header.classList.contains('ascending');
 

@@ -13,27 +13,67 @@
   </thead>
   <tbody>
     <% if current_user.admin? %>
-      <tr class="admin-add-row">
-        <%= form_with url: inventories_path, method: :post, local: true do |form| %>
-          <td></td>
-          <td><%= form.text_field :item_name, placeholder: "Item Name", class: "form-control" %></td>
-          <td><%= form.text_field :sku, placeholder: "SKU", class: "form-control" %></td>
-          <td><%= form.text_field :location, placeholder: "Location", class: "form-control" %></td>
-          <td><%= form.text_field :condition_of_item, placeholder: "Condition", class: "form-control" %></td>
-          <td><%= form.text_field :original_owner_email, placeholder: "Owner Email", class: "form-control" %></td>
-          <td><%= form.text_field :current_user_email, placeholder: "Current User Email", class: "form-control" %></td>
-          <td>
-            <%= form.submit "Add", class: "btn btn-sm btn-success" %>
-          </td>
-        <% end %>
+      <tr class="admin-add-row no-sort"  style="text-align: center; cursor: pointer;" tabindex="0">
+        <td colspan="8" class="expandable-cell">Add New Record</td>
+      </tr>
+      <tr class="additional-fields no-sort" style="display: none;">
+        <td colspan="8">
+        <div class="row">
+          <!-- Left -->
+          <div class="col-md-6" style="border-right: 1px solid black;">
+            <h5>Additional Details</h5>
+            <p>Here you can add any additional details or controls for the selected field.</p>
+            <div id="items-list-container"></div>
+          </div>
+          <div class="col-md-6">
+            <!-- Right side for form fields -->
+            <%= form_with url: inventories_path, method: :post, local: true do |form| %>
+              <div class="row">
+                <div class="col">
+                  <%= form.label :item_name, "Item Name" %>
+                  <%= form.text_field :item_name, class: "form-control", id: "item-name-field" %>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <%= form.label :location, "Location" %>
+                  <%= form.text_field :location, class: "form-control" %>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <%= form.label :condition_of_item, "Condition" %>
+                  <%= form.text_field :condition_of_item, class: "form-control" %>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <%= form.label :original_owner_id, "Original Owner" %>
+                  <%= form.collection_select :original_owner_id, User.all, :id, :email, { prompt: "Select an owner" }, class: "form-control" %>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <%= form.label :current_user_id, "Current User" %>
+                  <%= form.collection_select :current_user_id, User.all, :id, :email, { prompt: "Select a user" }, class: "form-control" %>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <%= form.submit "Add Record", class: "btn btn-primary" %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </td>
       </tr>
     <% end %>
 
     <% inventories.each_with_index do |inventory, index| %>
-      <tr>
+      <tr class="inventory-row">
         <td><%= index + 1 %></td>
         <td><%= inventory.item.name %></td>
-        <td><%= inventory.sku %></td>
+        <td><%= inventory.item.sku %></td>
         <td><%= inventory.location %></td>
         <td><%= inventory.condition_of_item %></td>
         <td><%= inventory.original_owner.email %></td>
@@ -82,4 +122,83 @@
       deleteForm.setAttribute('action', deleteUrl);
     });
   });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var additionalFieldsRow = document.querySelector('.additional-fields');
+    var expandableCells = document.querySelectorAll('.expandable-cell');
+
+    function toggleAdditionalFields() {
+      if (additionalFieldsRow.style.display === 'none') {
+        additionalFieldsRow.style.display = 'table-row';
+      } else {
+        additionalFieldsRow.style.display = 'none';
+      }
+    }
+
+    expandableCells.forEach(function(cell) {
+      cell.addEventListener('click', toggleAdditionalFields);
+    });
+  });
+</script>
+
+<style>
+    .expandable-cell:hover {
+      background-color: #f0f0f0;
+    }
+    .expandable-cell {
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .admin-add-row{
+      border-bottom: 1px solid black;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var itemNameField = document.getElementById('item-name-field');
+  var itemsListContainer = document.getElementById('items-list-container');
+
+  itemNameField.addEventListener('click', function() {
+    fetchItemsList();
+  });
+
+  function fetchItemsList(page = 1) {
+    fetch(`/items?page=${page}`)
+      .then(response => response.json())
+      .then(data => {
+        displayItemsList(data.items, data.total_pages, page);
+      });
+  }
+
+  function displayItemsList(items, totalPages, currentPage) {
+    var html = '<table class="table table-bordered table-striped">';
+    html += '<thead><tr class="no-sort no-search"><th>Name</th><th>SKU</th></tr></thead><tbody>';
+    items.forEach(item => {
+      html += `<tr class="no-sort no-search"><td>${item.name}</td><td>${item.sku}</td></tr>`;
+    });
+    html += '</tbody></table>';
+
+    // Pagination controls
+    html += '<nav><ul class="pagination">';
+    for (var i = 1; i <= totalPages; i++) {
+      html += `<li class="page-item ${i === currentPage ? 'active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+    }
+    html += '</ul></nav>';
+
+    itemsListContainer.innerHTML = html;
+
+    // Add event listeners for pagination links
+    var pageLinks = itemsListContainer.querySelectorAll('.page-link');
+    pageLinks.forEach(link => {
+      link.addEventListener('click', function(event) {
+        event.preventDefault();
+        var page = parseInt(event.target.getAttribute('data-page'));
+        fetchItemsList(page);
+      });
+    });
+  }
+});
 </script>

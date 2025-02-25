@@ -1,4 +1,9 @@
 class ItemsController < ApplicationController
+  def index
+    @items = Item.page(params[:page]).per(5)
+    render json: { items: @items, total_pages: @items.total_pages }
+  end
+  
   def new
     @item = Item.new
   end
@@ -21,7 +26,7 @@ class ItemsController < ApplicationController
   private
 
   def item_params
-    params.require(:item).permit(:name, :description, :category_id)
+    params.require(:item).permit(:name, :description, :category_id, :sku)
   end
 end
 
