@@ -8,6 +8,8 @@ Rails.application.routes.draw do
     get 'users/edit', to: 'devise/registrations#edit', as: :edit_user_registration
   end
 
+  patch 'toggle_role', to: 'users#toggle_role', as: :toggle_role
+
   resources :departments do
     member do
       get :delete

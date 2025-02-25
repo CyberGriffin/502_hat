@@ -14,6 +14,10 @@ class User < ApplicationRecord
     validates :is_white_listed, inclusion: { in: [true, false] }
     validates :white_list_end_date, presence: true, if: :is_white_listed
 
+    # def original_owner_email_exists
+    #   errors.add(:owner_email, "does not exist") unless User.exists?(email: owner_email)
+    # end
+
     def profile_picture_url
       self[:profile_picture_url] || "https://via.placeholder.com/40"
     end

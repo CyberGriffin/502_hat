@@ -7,29 +7,19 @@
   <button type="button" class="btn btn-secondary" onclick="document.getElementById('search-input').value = ''; document.getElementById('search-input').dispatchEvent(new Event('input'));">Clear</button>
 </div>
 
-<!-- Buttons to Open Modals -->
-<!--
-<div class="d-flex gap-3 my-3">
-  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
-    Add New Item
-  </button>
-
-  <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addToInventoryModal">
-    Add to Inventory
-  </button>
-</div>
--->
-
-
-<!--
-<%= link_to 'Show Categories', categories_path %>
-<%= link_to 'Show Departments', departments_path %>
--->
-
-<!-- Inventory List (Wrapped in a Div for AJAX Updates) -->
+<!-- Inventory Table -->
 <div id="inventory-list">
   <%= render partial: 'table', locals: { inventories: @inventories } %>
 </div>
+
+<!-- Add Record Button -->
+<% if current_user.admin? %>
+  <div class="d-flex justify-content-center">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
+      Add Record
+    </button>
+  </div>
+<% end %>
 
 <!-- Bootstrap Modal for Adding a New Item -->
 <div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
@@ -192,6 +182,10 @@
   document.addEventListener('DOMContentLoaded', function() {
     var searchInput = document.getElementById('search-input');
 
+    if (!searchInput) {
+      return;
+    }
+
     searchInput.addEventListener('input', function(event) {
       var query = searchInput.value.toLowerCase();
       var rows = document.querySelectorAll('#inventory-list tbody tr:not(.no-search)');
@@ -302,6 +296,10 @@
 document.addEventListener('DOMContentLoaded', function() {
   var editModal = document.getElementById('editInventoryModal');
   var editForm = document.getElementById('edit-inventory-form');
+
+  if (!editModal || !editForm) {
+    return;
+  }
 
   editModal.addEventListener('show.bs.modal', function(event) {
     var button = event.relatedTarget;
