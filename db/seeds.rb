@@ -15,6 +15,7 @@ ActiveRecord::Base.connection.execute("DELETE FROM sqlite_sequence WHERE name='u
 # Create Departments
 Department.create!([
   { dept_id: "AERO", name: "Aerospace Engineering" },
+  { dept_id: "CPSC", name: "Computer Science" },
   { dept_id: "BAEN", name: "Biological and Agricultural Engineering" },
   { dept_id: "BMEN", name: "Biomedical Engineering" },
   { dept_id: "CHEN", name: "Chemical Engineering" },
