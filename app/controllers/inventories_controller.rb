@@ -67,6 +67,17 @@ class InventoriesController < ApplicationController
         redirect_to inventories_path, notice: 'Inventory item was deleted.'
     end
 
+    def multi_delete
+      inventory_ids = params[:inventory_ids]
+      
+      if inventory_ids.present?
+        Inventory.where(inv_id: inventory_ids).destroy_all
+        render json: { status: 'success' }
+      else
+        render json: { status: 'error', errors: ['No items selected'] }, status: :unprocessable_entity
+      end
+    end
+
     private
 
     def set_inventory
