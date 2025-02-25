@@ -36,6 +36,7 @@
         <th><%= sortable "inv_id", "ID" %></th>
         <th><%= sortable "name", "Item Name" %></th>
         <th><%= sortable "sku", "SKU" %></th>
+        <th><%= sortable "dept_id", "Department" %></th>
         <th><%= sortable "location", "Location" %></th>
         <th><%= sortable "condition_of_item", "Condition" %></th>
         <th><%= sortable "owner_email", "Owner" %></th>
@@ -49,6 +50,7 @@
           <td><%= inventory.inv_id %></td>
           <td><%= inventory.item.name %></td>
           <td><%= inventory.sku %></td>
+          <td><%= inventory.department.name %></td>
           <td><%= inventory.location %></td>
           <td><%= inventory.condition_of_item %></td>
           <td><%= inventory.original_owner.email %></td>

@@ -7,7 +7,8 @@ class Category < ApplicationRecord
     validates :name, presence: true
 
     def generate_cat_id
-        self.cat_id = SecureRandom.uuid
-    end
+        self.cat_id ||= SecureRandom.uuid
+      end
+      
 end
   

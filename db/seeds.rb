@@ -50,7 +50,7 @@ Item.create!([
 
 # Create Inventories
 Inventory.create!([
-  { item_id: "IT001", year_of_purchase: Date.new(2023, 5, 10), location: "Tool Shed", condition_of_item: "New", owner_email: "alice@example.com", user_email: "bob@example.com", sku: "TOOL001" },
-  { item_id: "IT002", year_of_purchase: Date.new(2023, 6, 15), location: "Equipment Yard", condition_of_item: "Used", owner_email: "bob@example.com", user_email: "charlie@example.com", sku: "EQP001" },
-  { item_id: "IT003", year_of_purchase: Date.new(2022, 11, 1), location: "Warehouse A", condition_of_item: "New", owner_email: "alice@example.com", user_email: "charlie@example.com", sku: "MAT001" }
+  { item_id: "IT001", year_of_purchase: Date.new(2023, 5, 10), location: "Tool Shed", condition_of_item: "New", owner_email: "alice@example.com", user_email: "bob@example.com", sku: "TOOL001", dept_id: "CHE" },
+  { item_id: "IT002", year_of_purchase: Date.new(2023, 6, 15), location: "Equipment Yard", condition_of_item: "Used", owner_email: "bob@example.com", user_email: "charlie@example.com", sku: "EQP001", dept_id: "MECH" },
+  { item_id: "IT003", year_of_purchase: Date.new(2022, 11, 1), location: "Warehouse A", condition_of_item: "New", owner_email: "alice@example.com", user_email: "charlie@example.com", sku: "MAT001", dept_id: "EE" }
 ])
