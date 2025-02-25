@@ -13,7 +13,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :inventories
+  resources :inventories do
+    collection do
+      delete :multi_delete
+    end
+  end
   resources :items, only: [:new, :create]
   # resources :users, as: :app_users, path: '/app_users', param: :email, format: false, constraints: { email: /[^\/]+/ }
 

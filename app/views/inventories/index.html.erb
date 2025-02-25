@@ -22,6 +22,11 @@
   <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addToInventoryModal">
     Add to Inventory
   </button>
+
+  <button type="button" class="btn btn-danger" id="multi-delete-btn">
+    Delete Selected Items
+  </button>
+
 </div>
 
 <%= link_to 'Show Categories', categories_path %>
@@ -33,6 +38,7 @@
   <table class="table table-bordered mt-4">
     <thead class="table-dark">
       <tr>
+        <th>Select</th>
         <th><%= sortable "inv_id", "ID" %></th>
         <th><%= sortable "name", "Item Name" %></th>
         <th><%= sortable "sku", "SKU" %></th>
@@ -41,16 +47,15 @@
         <th><%= sortable "condition_of_item", "Condition" %></th>
         <th><%= sortable "owner_email", "Owner" %></th>
         <th><%= sortable "user_email", "Current User" %></th>
-        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
       <% @inventories.each do |inventory| %>
         <tr>
+          <td><input type="checkbox" class="inventory-checkbox" value="<%= inventory.inv_id %>"></td>
           <td><%= inventory.inv_id %></td>
           <td><%= inventory.item.name %></td>
           <td><%= inventory.sku %></td>
-          <td><%= inventory.department.name %></td>
           <td><%= inventory.location %></td>
           <td><%= inventory.condition_of_item %></td>
           <td><%= inventory.original_owner.email %></td>
@@ -91,7 +96,25 @@
   </div>
 </div>
 
-
+<!-- Multi-Delete Confirmation Modal -->
+<div class="modal fade" id="multiDeleteConfirmationModal" tabindex="-1" aria-labelledby="multiDeleteConfirmationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="multiDeleteConfirmationModalLabel">Confirm Bulk Delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete the selected items?</p>
+        <ul id="selected-items-list"></ul> <!-- Dynamic list of selected items -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirm-multi-delete-btn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Bootstrap Modal for Adding a New Item -->
 <div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
@@ -127,8 +150,6 @@
     </div>
   </div>
 </div>
-
-
 
 <!-- Edit Inventory Modal -->
 <div class="modal fade" id="editInventoryModal" tabindex="-1" aria-labelledby="editInventoryModalLabel" aria-hidden="true">
@@ -246,6 +267,55 @@
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var multiDeleteBtn = document.getElementById('multi-delete-btn');
+  var multiDeleteModal = new bootstrap.Modal(document.getElementById('multiDeleteConfirmationModal'));
+  var confirmMultiDeleteBtn = document.getElementById('confirm-multi-delete-btn');
+  var selectedItemsList = document.getElementById('selected-items-list');
+
+  multiDeleteBtn.addEventListener('click', function () {
+    var selectedIds = [];
+
+    document.querySelectorAll('.inventory-checkbox:checked').forEach(function (checkbox) {
+      selectedIds.push(checkbox.value);
+    });
+
+    if (selectedIds.length === 0) {
+      alert('Please select at least one item to delete.');
+      return;
+    }
+
+    selectedItemsList.innerHTML = "";
+    selectedIds.forEach(id => {
+      let li = document.createElement('li');
+      li.textContent = `ID: ${id}`;
+      selectedItemsList.appendChild(li);
+    });
+
+    multiDeleteModal.show();
+
+    confirmMultiDeleteBtn.onclick = function () {
+      fetch('/inventories/multi_delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ inventory_ids: selectedIds })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          location.reload();
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    };
+  });
+});
+</script>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
