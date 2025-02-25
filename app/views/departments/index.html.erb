@@ -9,7 +9,7 @@
     </tr>
   </thead>
   <tbody>
-    <% @departments.each do |department| %>
+    <% @departments.reject { |d| d.dept_id == "-" }.each do |department| %>
       <tr>
         <td><%= department.id %></td>
         <td><%= department.name %></td>

@@ -7,5 +7,7 @@
   </div>
 
   <%= f.submit "Save", class: "btn btn-primary" %>
-  <%= link_to "Cancel", inventories_path, class: "btn btn-primary" %>
+  <% if current_user.dept_id != '-'%>
+    <%= link_to "Cancel", inventories_path, class: "btn btn-primary" %>
+  <% end %>
 <% end %>
