@@ -15,6 +15,7 @@ class User < ApplicationRecord
     validates :white_list_end_date, presence: true, if: :is_white_listed
   
     def self.from_google(auth)
+      return nil unless auth[:email].ends_with?("@tamu.edu")
       user = find_by(email: auth[:email])
     
       unless user
