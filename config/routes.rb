@@ -7,6 +7,9 @@ Rails.application.routes.draw do
     get 'users/sign_out', to: 'users/sessions#destroy', as: :destroy_user_session
   end
 
+  get 'department/edit', to: 'users#edit_department', as: :edit_department
+  patch 'department/update', to: 'users#update_department', as: :update_department
+
   resources :departments do
     member do
       get :delete
