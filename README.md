@@ -2,6 +2,9 @@
 
 ## Docker
 ```python
+docker pull paulinewade/csce431:latest
+```
+```python
 docker run --rm -it --volume "$(pwd):/csce431" -e DATABASE_USER=test_app -e DATABASE_PASSWORD=test_password -p 3000:3000 paulinewade/csce431:latest
 ```
 
