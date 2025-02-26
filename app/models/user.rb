@@ -13,6 +13,26 @@ class User < ApplicationRecord
     validates :dept_id, presence: true
     validates :is_white_listed, inclusion: { in: [true, false] }
     validates :white_list_end_date, presence: true, if: :is_white_listed
+
+    # def original_owner_email_exists
+    #   errors.add(:owner_email, "does not exist") unless User.exists?(email: owner_email)
+    # end
+
+    def profile_picture_url
+      self[:profile_picture_url] || "https://via.placeholder.com/40"
+    end
+
+    def full_name
+      name
+    end
+
+    def role
+      self[:role].to_sym
+    end
+
+    def admin?
+      role.downcase == :admin
+    end
   
     def self.from_google(auth)
       return nil unless auth[:email].ends_with?("@tamu.edu")
@@ -26,8 +46,11 @@ class User < ApplicationRecord
           role: "user",
           dept_id: department.dept_id,
           is_white_listed: false,
-          white_list_end_date: nil
+          white_list_end_date: nil,
+          profile_picture_url: auth[:avatar_url]
         )
+      else
+        user.update(profile_picture_url: auth[:avatar_url])
       end
     
       user

@@ -1,102 +1,127 @@
-<!-- filepath: /c:/Users/griff/Desktop/School/CSCE-431/502_hat/inventoryManagement/app/views/inventories/index.html.erb -->
-<h1>Inventory List</h1>
-
 <!-- Flash Messages -->
-<div id="flash-messages"></div>
+<div id="flash-messages" class="d-flex"></div>
 
-<!-- Search Form -->
-<%= form_with url: inventories_path, method: :get, local: true do |form| %>
-  <%= form.label :search, "Search by Item Name:" %>
-  <%= form.text_field :search, value: params[:search], placeholder: "Enter item name...", class: "form-control d-inline-block w-auto" %>
-  <%= hidden_field_tag :sort, params[:sort] %>
-  <%= hidden_field_tag :direction, params[:direction] %>
-  <%= form.submit "Search", class: "btn btn-primary" %>
-<% end %>
-
-<!-- Buttons to Open Modals -->
-<div class="d-flex gap-3 my-3">
-  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
-    Add New Item
-  </button>
-
-  <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addToInventoryModal">
-    Add to Inventory
-  </button>
-
-  <button type="button" class="btn btn-danger" id="multi-delete-btn">
-    Delete Selected Items
-  </button>
-
+<!-- Controls Header -->
+<div class="d-flex justify-content-between align-items-center mb-3" style="padding-top: 1rem; padding-left: 1rem; padding-right: 1rem;">
+    <!-- Search and Filter-->
+    <div class="d-flex align-items-center">
+        <input style="margin-bottom: -0.5rem; width: 20rem;" type="text" id="search-input" placeholder="Search..." class="form-control d-inline-block" value="<%= params[:search] %>">
+          <button style="margin-bottom: -0.5rem;" type="button" class="btn btn-secondary ms-2" data-bs-toggle="modal" data-bs-target="#filterModal">
+              Filters
+          </button>
+        <button style="margin-bottom: -0.5rem;" type="button" class="btn btn-secondary ms-2" onclick="document.getElementById('search-input').value = ''; document.getElementById('search-input').dispatchEvent(new Event('input'));">Clear</button>
+    </div>
+  
+    <% if current_user.admin? %>
+        <div class="d-flex justify-content-end align-items-center" style="margin-bottom: -0.5rem;">
+            <!-- Create Item Buttom -->
+            <button type="button" class="btn btn-primary ms-2" onclick="window.location.href='/items/'">
+                New Item
+            </button>
+            <!-- Add Record Button -->
+            <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#addRecordModal">
+                Add Record
+            </button>
+            <!-- MultiSelect Modal -->
+            <div class="d-flex gap-3 my-2">
+              <button type="button" class="btn btn-danger ms-2" id="multi-delete-btn">
+                  Delete Selected Items
+              </button>
+            </div>
+        </div>
+    <% end %>
 </div>
 
-<%= link_to 'Show Categories', categories_path %>
-<%= link_to 'Show Departments', departments_path %>
-<%= link_to "Sign Out", destroy_user_session_path %>
 
-<!-- Inventory List (Wrapped in a Div for AJAX Updates) -->
+<!-- Inventory Table -->
 <div id="inventory-list">
-  <table class="table table-bordered mt-4">
-    <thead class="table-dark">
-      <tr>
-        <th>Select</th>
-        <th><%= sortable "inv_id", "ID" %></th>
-        <th><%= sortable "name", "Item Name" %></th>
-        <th><%= sortable "sku", "SKU" %></th>
-        <th><%= sortable "dept_id", "Department" %></th>
-        <th><%= sortable "location", "Location" %></th>
-        <th><%= sortable "condition_of_item", "Condition" %></th>
-        <th><%= sortable "owner_email", "Owner" %></th>
-        <th><%= sortable "user_email", "Current User" %></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @inventories.each do |inventory| %>
-        <tr>
-          <td><input type="checkbox" class="inventory-checkbox" value="<%= inventory.inv_id %>"></td>
-          <td><%= inventory.inv_id %></td>
-          <td><%= inventory.item.name %></td>
-          <td><%= inventory.sku %></td>
-          <td><%= inventory.location %></td>
-          <td><%= inventory.condition_of_item %></td>
-          <td><%= inventory.original_owner.email %></td>
-          <td><%= inventory.current_user&.email %></td>
-          <td>
-            <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editInventoryModal" data-inventory-id="<%= inventory.inv_id %>">
-              Edit
-            </button>
-            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal" data-inventory-id="<%= inventory.inv_id %>">
-              Delete
-            </button>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+    <%= render partial: 'table', locals: { inventories: @inventories } %>
+</div>
+
+<!-- Add Record Modal -->
+<div class="modal fade" id="addRecordModal" tabindex="-1" aria-labelledby="addRecordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="addRecordModalLabel">Add New Record</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+
+                    <!-- Left Side -->
+                    <div class="col-md-6" style="border-right: 1px solid black;">
+                        <div id="items-table-container"></div>
+                    </div>
+
+                    <!-- Right Side -->
+                    <div class="col-md-6">
+                        <%= form_with model: @inventory, url: inventories_path, remote: true, id: "inventory-form" do |form| %>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="mb-3">
+                                      <label for="item-field" class="form-label">Search Item</label>
+                                      <input type="text" id="item-field" class="form-control" placeholder="Search by name or SKU...">
+                                    </div>
+                                    <%= form.hidden_field :item_id, id: "item-id-field" %>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="mb-3">
+                                      <label for="dept-field" class="form-label">Department</label>
+                                      <input type="text" id="dept-field" class="form-control" placeholder="Search by name">
+                                    </div>
+                                    <%= form.hidden_field :dept_id, id: "dept-id-field" %>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <%= form.label :year_of_purchase, "Year of Purchase" %>
+                                    <%= form.date_select :year_of_purchase, class: "form-control" %>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <%= form.label :location, "Location" %>
+                                    <%= form.text_field :location, class: "form-control" %>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <%= form.label :condition_of_item, "Condition" %>
+                                    <%= form.text_field :condition_of_item, class: "form-control" %>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <%= form.label :owner_email, "Original Owner" %>
+                                    <%= form.collection_select :owner_email, User.all, :id, :email, { prompt: "Select an owner" }, class: "form-control" %>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <%= form.label :user_email, "Current User" %>
+                                    <%= form.collection_select :user_email, User.all, :id, :email, { prompt: "Select a user" }, class: "form-control" %>
+                                </div>
+                            </div> 
+                            <div class="row">
+                                <div class="col">
+                                    <%= form.submit "Add Record", class: "btn btn-primary", id: "add-record-button" %>
+                                </div>
+                            </div>
+                        <% end %>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Delete</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        Are you sure you want to delete this item?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <%= form_with url: "#", method: :delete, local: true, id: "delete-form" do %>
-          <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-          <button type="submit" class="btn btn-danger" id="confirm-delete-btn">Delete</button>
-        <% end %>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Multi-Delete Confirmation Modal -->
 <div class="modal fade" id="multiDeleteConfirmationModal" tabindex="-1" aria-labelledby="multiDeleteConfirmationModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -106,7 +131,7 @@
       </div>
       <div class="modal-body">
         <p>Are you sure you want to delete the selected items?</p>
-        <ul id="selected-items-list"></ul> <!-- Dynamic list of selected items -->
+        <ul id="selected-items-list"></ul>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -116,42 +141,105 @@
   </div>
 </div>
 
-<!-- Bootstrap Modal for Adding a New Item -->
-<div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="addItemModalLabel">Create New Item</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <%= form_with model: @item, url: items_path, remote: true, id: "item-form" do |form| %>
-          <div class="mb-3">
-            <%= form.label :name, "Item Name", class: "form-label" %>
-            <%= form.text_field :name, required: true, class: "form-control" %>
-          </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var itemField = document.getElementById('item-field');
+  var deptField = document.getElementById('dept-field');
+  var tableContainer = document.getElementById('items-table-container');
+  var addRecordButton = document.getElementById('add-record-button');
+  var form = document.getElementById('inventory-form');
 
-          <div class="mb-3">
-            <%= form.label :description, "Description", class: "form-label" %>
-            <%= form.text_area :description, rows: 3, class: "form-control" %>
-          </div>
+  itemField.addEventListener('focus', function() {
+    fetch('/items.json?page=$(page)')
+      .then(response => response.json())
+      .then(items => {
+        var tableHTML = '<table class="table table-striped">';
+        tableHTML += '<thead><tr><th>SKU</th><th>Name</th><th>Category</th></tr></thead>';
+        tableHTML += '<tbody>';
+        items.forEach(function(item) {
+          tableHTML += '<tr data-item-id="' + item.item_id + '" data-item-name="' + item.name + '">';
+          tableHTML += '<td>' + item.sku + '</td>';
+          tableHTML += '<td>' + item.name + '</td>';
+          tableHTML += '<td>' + item.category.name + '</td>';
+          tableHTML += '</tr>';
+        });
+        tableHTML += '</tbody></table>';
+        
+        tableContainer.innerHTML = tableHTML;
+        tableContainer.style.display = 'block';
+        var rows = tableContainer.querySelectorAll('tr[data-item-id]');
+        rows.forEach(function(row) {
+          row.addEventListener('click', function() {
+            var itemId = row.getAttribute('data-item-id');
+            var itemName = row.getAttribute('data-item-name');
+            itemField.value = itemName;
+            document.getElementById('item-id-field').value = itemId;
+            tableContainer.style.display = 'none';
+          });
+        });
+      })
+      .catch(error => console.error('Error fetching items:', error));
+  });
 
-          <div class="mb-3">
-            <%= form.label :category_id, "Category", class: "form-label" %>
-            <%= form.collection_select :category_id, Category.all, :cat_id, :name, prompt: "Select a Category", class: "form-control" %>
-          </div>
+  deptField.addEventListener('focus', function() {
+    fetch('/departments.json')
+      .then(response => response.json())
+      .then(departments => {
+        var tableHTML = '<table class="table table-striped">';
+        tableHTML += '<thead><tr><th>ID</th><th>Name</th></tr></thead>';
+        tableHTML += '<tbody>';
+        departments.forEach(function(department) {
+          tableHTML += '<tr data-dept-id="' + department.id + '" data-dept-name="' + department.name + '">';
+          tableHTML += '<td>' + department.id + '</td>';
+          tableHTML += '<td>' + department.name + '</td>';
+          tableHTML += '</tr>';
+        });
+        tableHTML += '</tbody></table>';
+        
+        tableContainer.innerHTML = tableHTML;
+        tableContainer.style.display = 'block';
+        var rows = tableContainer.querySelectorAll('tr[data-dept-id]');
+        rows.forEach(function(row) {
+          row.addEventListener('click', function() {
+            var deptId = row.getAttribute('data-dept-id');
+            var deptName = row.getAttribute('data-dept-name');
+            deptField.value = deptName;
+            document.getElementById('dept-id-field').value = deptId;
+            tableContainer.style.display = 'none';
+          });
+        });
+      })
+      .catch(error => console.error('Error fetching departments:', error));
+  });
 
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <%= form.submit "Create Item", class: "btn btn-primary" %>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  </div>
-</div>
+  addRecordButton.addEventListener('click', function(event) {
+    event.preventDefault();
+    var formData = new FormData(form);
+    fetch(form.action, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        'Accept': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        console.log('Record added successfully');
+        location.reload();
+
+      } else {
+        alert('Failed to add record: ' + data.errors.join(', '));
+      }
+    })
+    .catch(error => console.error('Error adding record:', error));
+  });
+});
+</script>
 
 <!-- Edit Inventory Modal -->
+<!--
 <div class="modal fade" id="editInventoryModal" tabindex="-1" aria-labelledby="editInventoryModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -210,63 +298,7 @@
     </div>
   </div>
 </div>
-
-
-
-<!-- Bootstrap Modal for Adding to Inventory -->
-<div class="modal fade" id="addToInventoryModal" tabindex="-1" aria-labelledby="addToInventoryModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="addToInventoryModalLabel">Add Item to Inventory</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <%= form_with model: @inventory, url: inventories_path, remote: true, id: "inventory-form" do |form| %>
-          <div class="mb-3">
-            <%= form.label :item_id, "Select Item", class: "form-label" %>
-            <%= form.collection_select :item_id, Item.all, :item_id, :name, prompt: "Choose an item", class: "form-control" %>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :year_of_purchase, "Year of Purchase", class: "form-label" %>
-            <%= form.date_select :year_of_purchase, class: "form-control" %>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :location, "Location", class: "form-label" %>
-            <%= form.text_field :location, class: "form-control" %>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :condition_of_item, "Condition", class: "form-label" %>
-            <%= form.text_field :condition_of_item, class: "form-control" %>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :owner_email, "Owner Email", class: "form-label" %>
-            <%= form.collection_select :owner_email, User.all, :email, :name, prompt: "Select Owner", class: "form-control" %>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :user_email, "Current User Email", class: "form-label" %>
-            <%= form.collection_select :user_email, User.all, :email, :name, prompt: "Select Current User", class: "form-control" %>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :sku, "SKU", class: "form-label" %>
-            <%= form.text_field :sku, class: "form-control" %>
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <%= form.submit "Add to Inventory", class: "btn btn-success" %>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  </div>
-</div>
+-->
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -319,18 +351,116 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    var deleteModal = document.getElementById('deleteConfirmationModal');
-    var deleteForm = document.getElementById('delete-form');
+    var searchInput = document.getElementById('search-input');
 
-    deleteModal.addEventListener('show.bs.modal', function(event) {
-      var button = event.relatedTarget;
-      var inventoryId = button.getAttribute('data-inventory-id');
-      var deleteUrl = '/inventories/' + inventoryId;
+    if (!searchInput) {
+      return;
+    }
 
-      deleteForm.setAttribute('action', deleteUrl);
+    searchInput.addEventListener('input', function(event) {
+      var query = searchInput.value.toLowerCase();
+      var rows = document.querySelectorAll('#inventory-list tbody tr:not(.no-search)');
+
+      rows.forEach(function(row) {
+        if (row.classList.contains('admin-add-row')) {
+          return;
+        }
+
+        var cells = row.querySelectorAll('td');
+        var match = false;
+
+        cells.forEach(function(cell) {
+          if (cell.textContent.toLowerCase().includes(query)) {
+            match = true;
+          }
+        });
+
+        if (match) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
+
+    var headers = document.querySelectorAll('th.sortable');
+    var indicator = document.createElement('div');
+    indicator.style.position = 'absolute';
+    indicator.style.height = '5px';
+    indicator.style.backgroundColor = 'darkred';
+    indicator.style.transition = 'all 0.3s ease';
+    document.body.appendChild(indicator);
+
+    function positionIndicator(header) {
+      var rect = header.getBoundingClientRect();
+      indicator.style.width = rect.width + 'px';
+      indicator.style.top = (rect.top - 5) + 'px';
+      indicator.style.left = rect.left + 'px';
+      indicator.style.border = 'none';
+    }
+
+    function sortTableByHeader(header) {
+      var table = header.closest('table');
+      var tbody = table.querySelector('tbody');
+      var rows = Array.from(tbody.querySelectorAll('tr:not(.no-sort)'));
+      var index = Array.from(header.parentNode.children).indexOf(header);
+      var ascending = header.classList.contains('ascending');
+
+      rows.sort(function(rowA, rowB) {
+        var cellA = rowA.children[index].textContent.trim();
+        var cellB = rowB.children[index].textContent.trim();
+
+        if (!isNaN(cellA) && !isNaN(cellB)) {
+          cellA = parseFloat(cellA);
+          cellB = parseFloat(cellB);
+        }
+
+        if (cellA < cellB) {
+          return ascending ? 1 : -1;
+        }
+        if (cellA > cellB) {
+          return ascending ? -1 : 1;
+        }
+        return 0;
+      });
+      
+      rows.forEach(function(row, rowIndex) {
+        tbody.appendChild(row);
+      });
+
+      headers.forEach(function(h) {
+        h.classList.remove('ascending', 'descending', 'sorted');
+        h.style.backgroundColor = 'maroon';
+        h.style.color = 'white';
+        h.style.border = 'none';
+        h.querySelector('.sort-arrow').textContent = '';
+      });
+
+      header.classList.toggle('ascending', !ascending);
+      header.classList.toggle('descending', ascending);
+      header.classList.add('sorted');
+      header.style.backgroundColor = 'darkred';
+      header.style.color = 'white';
+      header.style.border = 'none';
+
+      var arrow = header.querySelector('.sort-arrow');
+      arrow.textContent = ascending ? '▼' : '▲';
+      header.title = ascending ? 'Descending' : 'Ascending';
+      positionIndicator(header);
+    }
+
+    var defaultHeader = document.getElementById('sort-id');
+    sortTableByHeader(defaultHeader);
+
+    headers.forEach(function(header) {
+      header.addEventListener('click', function() {
+        sortTableByHeader(header);
+      });
     });
   });
 </script>
+
+
 
 
 <script>
@@ -338,22 +468,23 @@ document.addEventListener('DOMContentLoaded', function() {
   var editModal = document.getElementById('editInventoryModal');
   var editForm = document.getElementById('edit-inventory-form');
 
+  if (!editModal || !editForm) {
+    return;
+  }
+
   editModal.addEventListener('show.bs.modal', function(event) {
     var button = event.relatedTarget;
     var inventoryId = button.getAttribute('data-inventory-id');
     var editUrl = '/inventories/' + inventoryId;
+    console.log("editUrl: " + editUrl);
 
-    // Fetch inventory data using AJAX (ensure your controller renders the associated item name as "item_name")
     fetch(editUrl + '/edit')
       .then(response => response.json())
       .then(data => {
-        // Update the form action to point to the correct inventory update path
         editForm.action = editUrl;
         
-        // Set the item name in the display element
         document.getElementById('edit-item-name').textContent = data.item_name;
 
-        // Prefill the form fields with the current inventory values
         if(editForm.querySelector('[name="inventory[item_id]"]')) {
           editForm.querySelector('[name="inventory[item_id]"]').value = data.item_id;
         }
@@ -393,7 +524,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(response => response.json())
     .then(data => {
       if (data.status === 'success') {
-        // Handle success response
+        $('#editInventoryModal').modal('hide');
         $.ajax({
           url: "/inventories",
           type: "GET",
@@ -406,3 +537,9 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
+
+<style>
+  body {
+    background-color:rgb(151, 151, 151);
+  }
+</style>

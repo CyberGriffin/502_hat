@@ -1,6 +1,15 @@
 class UsersController < ApplicationController
   before_action :set_user, only: %i[ show edit update destroy ]
 
+  def toggle_role
+    if current_user.admin?
+      current_user.update(role: 'user')
+    else
+      current_user.update(role: 'admin')
+    end
+    redirect_back(fallback_location: root_path)
+  end
+
   def edit_department
     @departments = Department.where.not(dept_id: "-").order(:name)
   end
@@ -18,7 +27,7 @@ class UsersController < ApplicationController
 
   def index
     @users = User.all
-    render :index  # Ensure a view file exists (see Step 3)
+    render :index
   end
 
   def show

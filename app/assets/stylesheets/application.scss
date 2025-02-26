@@ -14,3 +14,11 @@
  *= require_self
  */
 @import "bootstrap";
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f2f2f2;
+}
+
+.admin-add-row {
+    background-color: #f2f2f2;
+}

@@ -1,33 +1,79 @@
-<table class="table table-bordered mt-4">
-  <thead class="table-dark">
-    <tr>
-      <th><%= sortable "inv_id", "ID" %></th>
-      <th><%= sortable "name", "Item Name" %></th>
-      <th><%= sortable "sku", "SKU" %></th>
-      <th><%= sortable "dept_id", "Department" %></th>
-      <th><%= sortable "location", "Location" %></th>
-      <th><%= sortable "condition_of_item", "Condition" %></th>
-      <th><%= sortable "owner_email", "Owner" %></th>
-      <th><%= sortable "user_email", "Current User" %></th>
-      <th>Actions</th>
-    </tr>
+<table class="table table-bordered mt-4 table-striped" style="border: 1px solid maroon;">
+  <thead>
+    <tr id="table-header">
+      <th style="background-color: maroon; color: white; border: none;"><input type="checkbox" id="select-all-checkbox"></th>
+      <th class="sortable" id="sort-id">ID <span class="sort-arrow"></span><div class="column-header"></div></th>
+      <th class="sortable" id="sort-name">Item Name <span class="sort-arrow"></span></th>
+      <th class="sortable" id="sort-sku">SKU <span class="sort-arrow"></span></th>
+      <th class="sortable" id="sort-dept">Department <span class="sort-arrow"></span></th>
+      <th class="sortable" id="sort-location">Location <span class="sort-arrow"></span></th>
+      <th class="sortable" id="sort-condition">Condition <span class="sort-arrow"></span></th>
+      <th class="sortable" id="sort-owner">Owner <span class="sort-arrow"></span></th>
+      <th class="sortable" id="sort-user">Current User <span class="sort-arrow"></span></th>
+      <th style="background-color: maroon; color: white; border: none;">Actions</th>
   </thead>
   <tbody>
-    <% inventories.each do |inventory| %>
+    <% if inventories.empty? %>
       <tr>
-        <td><%= inventory.inv_id %></td>
+        <td colspan="10" style="text-align: center;">No records found.</td>
+      </tr>
+    <% else %>
+    <% inventories.each_with_index do |inventory, index| %>
+      <tr class="inventory-row">
+        <td><input type="checkbox" class="inventory-checkbox" value="<%= inventory.inv_id %>"></td>
+        <td><%= index + 1 %></td>
         <td><%= inventory.item.name %></td>
-        <td><%= inventory.sku %></td>
-        <td><%= inventory.department.name %></td>
+        <td><%= inventory.item.sku %></td>
+        <td><%= inventory.department&.name %></td>
         <td><%= inventory.location %></td>
         <td><%= inventory.condition_of_item %></td>
         <td><%= inventory.original_owner.email %></td>
-        <td><%= inventory.current_user.email %></td>
+        <td><%= inventory.current_user&.email %></td>
         <td>
-          <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
-          <%= link_to "Delete", inventory_path(inventory), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+          <% if current_user.admin? || current_user == inventory.original_owner %>
+            <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
+            <%= link_to "Delete", "#", class: "btn btn-sm btn-danger", data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>
+          <% end %>
         </td>
       </tr>
     <% end %>
+    <% end %>
   </tbody>
 </table>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this item?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <%= form_with url: "#", method: :delete, local: true, id: "delete-form" do %>
+          <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+          <button type="submit" class="btn btn-danger" id="confirm-delete-btn">Delete</button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var deleteModal = document.getElementById('deleteConfirmationModal');
+    var deleteForm = document.getElementById('delete-form');
+
+    deleteModal.addEventListener('show.bs.modal', function(event) {
+      var button = event.relatedTarget;
+      var inventoryId = button.getAttribute('data-inventory-id');
+      var deleteUrl = '/inventories/' + inventoryId;
+
+      deleteForm.setAttribute('action', deleteUrl);
+    });
+  });
+</script>

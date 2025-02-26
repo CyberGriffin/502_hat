@@ -1,75 +1,70 @@
-<!-- filepath: /c:/Users/griff/Desktop/School/CSCE-431/502_hat/inventoryManagement/app/views/inventories/index.html.erb -->
-<h1>Inventory List</h1>
+<div class="d-flex justify-content-between align-items-center mb-3" style="padding-top: 1rem; padding-left: 1rem; padding-right: 1rem;">
+  <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#addItemModal">
+    New Item
+  </button>
+</div>
 
-<%= form_with url: inventories_path, method: :get, local: true do |form| %>
-  <%= form.label :search, "Search by Item Name:" %>
-  <%= form.text_field :search, value: params[:search], placeholder: "Enter item name..." %>
-  <%= form.submit "Search" %>
-<% end %>
-
-<table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Item Name</th>
-      <th>SKU</th>
-      <th>Location</th>
-      <th>Condition</th>
-      <th>Owner</th>
-      <th>Current User</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @inventories.each do |inventory| %>
+<!-- Items Table -->
+<div id="items-list">
+  <table class="table table-striped">
+    <thead>
       <tr>
-        <td><%= inventory.inv_id %></td>
-        <td><%= inventory.item.name %></td>
-        <td><%= inventory.sku %></td>
-        <td><%= inventory.location %></td>
-        <td><%= inventory.condition_of_item %></td>
-        <td><%= inventory.original_owner.email %></td>
-        <td><%= inventory.current_user.email %></td>
-        <td>
-          <%= link_to "Edit", edit_inventory_path(inventory) %> |
-          <%= link_to "Delete", inventory_path(inventory), method: :delete, data: { confirm: "Are you sure?" } %>
-        </td>
+        <th>SKU</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Category</th>
+        <th>Actions</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @items.each do |item| %>
+        <tr>
+          <td><%= item.sku %></td>
+          <td><%= item.name %></td>
+          <td><%= item.description %></td>
+          <td><%= item.category.name %></td>
+          <td>
+            <%= link_to 'Edit', edit_item_path(item), class: 'btn btn-secondary btn-sm' %>
+            <%= link_to 'Delete', item, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
 
-<%= link_to "Add New Inventory", new_inventory_path %>
-
-<!-- Button to trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newItemModal">
-  New Item
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="newItemModal" tabindex="-1" aria-labelledby="newItemModalLabel" aria-hidden="true">
+<!-- Add Item Modal -->
+<div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="newItemModalLabel">New Item</h5>
+        <h5 class="modal-title" id="addItemModalLabel">Create New Item</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <%= form_with model: @item, url: items_path, local: true do |form| %>
+        <%= form_with model: @item, url: items_path, remote: true, id: "item-form" do |form| %>
           <div class="mb-3">
-            <%= form.label :name %>
-            <%= form.text_field :name, class: "form-control" %>
+            <%= form.label :name, "Item Name", class: "form-label" %>
+            <%= form.text_field :name, required: true, class: "form-control" %>
           </div>
+
           <div class="mb-3">
-            <%= form.label :description %>
-            <%= form.text_area :description, class: "form-control" %>
+            <%= form.label :description, "Description", class: "form-label" %>
+            <%= form.text_area :description, rows: 3, class: "form-control" %>
           </div>
+
           <div class="mb-3">
-            <%= form.label :category_id %>
-            <%= form.collection_select :category_id, Category.all, :id, :name, { prompt: "Select Category" }, { class: "form-control" } %>
+            <%= form.label :sku, "SKU", class: "form-label" %>
+            <%= form.text_field :sku, required: true, class: "form-control" %>
           </div>
+
+          <div class="mb-3">
+            <%= form.label :category_id, "Category", class: "form-label" %>
+            <%= form.collection_select :category_id, Category.all, :id, :name, prompt: "Select a Category", class: "form-control" %>
+          </div>
+
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             <%= form.submit "Create Item", class: "btn btn-primary" %>
           </div>
         <% end %>

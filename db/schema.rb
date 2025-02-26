@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_02_24_170435) do
+ActiveRecord::Schema[7.0].define(version: 2025_02_25_050146) do
   create_table "admins", force: :cascade do |t|
     t.string "email", null: false
     t.string "full_name"
@@ -42,7 +42,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_24_170435) do
     t.string "condition_of_item"
     t.string "owner_email", null: false
     t.string "user_email"
-    t.string "sku"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "dept_id"
@@ -54,6 +53,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_24_170435) do
     t.string "category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "sku"
   end
 
   create_table "users", primary_key: "email", id: :string, force: :cascade do |t|
@@ -64,6 +64,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_24_170435) do
     t.date "white_list_end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "profile_picture_url"
   end
 
   add_foreign_key "inventories", "items", primary_key: "item_id"

@@ -5,7 +5,7 @@ class Inventory < ApplicationRecord
     belongs_to :current_user, class_name: "User", foreign_key: "user_email", optional: true
     belongs_to :department, foreign_key: "dept_id"
 
-    validates :item_id, :year_of_purchase, :location, :condition_of_item, :owner_email, :sku, :dept_id,presence: true
+    validates :item_id, :year_of_purchase, :location, :condition_of_item, :owner_email, :dept_id, presence: true
     validates :user_email, presence: false
 
     def self.search(search)
@@ -14,7 +14,7 @@ class Inventory < ApplicationRecord
                 "LOWER(items.name) LIKE :search OR " +
                 "LOWER(inventories.location) LIKE :search OR " +
                 "LOWER(inventories.condition_of_item) LIKE :search OR " +
-                "LOWER(inventories.sku) LIKE :search OR " +
+                # "LOWER(inventories.sku) LIKE :search OR " +
                 "LOWER(inventories.owner_email) LIKE :search OR " +
                 "LOWER(inventories.user_email) LIKE :search",
                 "LOWER(inventories.dept_id) LIKE :search",
