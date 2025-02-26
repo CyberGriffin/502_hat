@@ -22,9 +22,16 @@
             <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#addRecordModal">
                 Add Record
             </button>
+            <!-- MultiSelect Modal -->
+            <div class="d-flex gap-3 my-2">
+              <button type="button" class="btn btn-danger ms-2" id="multi-delete-btn">
+                  Delete Selected Items
+              </button>
+            </div>
         </div>
     <% end %>
 </div>
+
 
 <!-- Inventory Table -->
 <div id="inventory-list">
@@ -59,6 +66,15 @@
                                       <input type="text" id="item-field" class="form-control" placeholder="Search by name or SKU...">
                                     </div>
                                     <%= form.hidden_field :item_id, id: "item-id-field" %>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="mb-3">
+                                      <label for="dept-field" class="form-label">Department</label>
+                                      <input type="text" id="dept-field" class="form-control" placeholder="Search by name">
+                                    </div>
+                                    <%= form.hidden_field :dept_id, id: "dept-id-field" %>
                                 </div>
                             </div>
                             <div class="row">
@@ -105,74 +121,30 @@
     </div>
 </div>
 
-<!-- Add Record Modal>
-<div class="modal fade" id="addRecordModal" tabindex="-1" aria-labelledby="addRecordModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="multiDeleteConfirmationModal" tabindex="-1" aria-labelledby="multiDeleteConfirmationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="addRecordModalLabel">Add New Record</h5>
+        <h5 class="modal-title" id="multiDeleteConfirmationModalLabel">Confirm Bulk Delete</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div class="row">
-          <div class="col-md-6" style="border-right: 1px solid black;">
-            <div id="items-table-container"></div>
-          </div>
-          <div class="col-md-6">
-            <%= form_with model: @inventory, url: inventories_path, remote: true, id: "inventory-form" do |form| %>
-              <div class="row">
-                <div class="col">
-                  <%= form.label :item, "Item" %>
-                  <%= form.text_field :item, class: "form-control", id: "item-field", placeholder: "Search by name or SKU..." %>
-                  <%= hidden_field_tag :item_id, nil, id: "item-id-field" %>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <%= form.label :year_of_purchase, "Year of Purchase" %>
-                  <%= form.date_select :year_of_purchase, class: "form-control" %>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <%= form.label :location, "Location" %>
-                  <%= form.text_field :location, class: "form-control" %>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <%= form.label :condition_of_item, "Condition" %>
-                  <%= form.text_field :condition_of_item, class: "form-control" %>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <%= form.label :owner_email, "Original Owner" %>
-                  <%= form.collection_select :owner_email, User.all, :id, :email, { prompt: "Select an owner" }, class: "form-control" %>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <%= form.label :user_email, "Current User" %>
-                  <%= form.collection_select :user_email, User.all, :id, :email, { prompt: "Select a user" }, class: "form-control" %>
-                </div>
-              </div> 
-              <div class="row">
-                <div class="col">
-                  <%= form.submit "Add Record", class: "btn btn-primary", id: "add-record-button" %>
-                </div>
-              </div>
-            <% end %>
-          </div>
-        </div>
+        <p>Are you sure you want to delete the selected items?</p>
+        <ul id="selected-items-list"></ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirm-multi-delete-btn">Delete</button>
       </div>
     </div>
   </div>
-</div-->
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var itemField = document.getElementById('item-field');
+  var deptField = document.getElementById('dept-field');
   var tableContainer = document.getElementById('items-table-container');
   var addRecordButton = document.getElementById('add-record-button');
   var form = document.getElementById('inventory-form');
@@ -185,7 +157,6 @@ document.addEventListener('DOMContentLoaded', function() {
         tableHTML += '<thead><tr><th>SKU</th><th>Name</th><th>Category</th></tr></thead>';
         tableHTML += '<tbody>';
         items.forEach(function(item) {
-          // Use item.item_id per your schema instead of item.id
           tableHTML += '<tr data-item-id="' + item.item_id + '" data-item-name="' + item.name + '">';
           tableHTML += '<td>' + item.sku + '</td>';
           tableHTML += '<td>' + item.name + '</td>';
@@ -196,8 +167,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         tableContainer.innerHTML = tableHTML;
         tableContainer.style.display = 'block';
-
-        // Add click listener to each row to set the item ID and update the search field display
         var rows = tableContainer.querySelectorAll('tr[data-item-id]');
         rows.forEach(function(row) {
           row.addEventListener('click', function() {
@@ -210,6 +179,37 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       })
       .catch(error => console.error('Error fetching items:', error));
+  });
+
+  deptField.addEventListener('focus', function() {
+    fetch('/departments.json')
+      .then(response => response.json())
+      .then(departments => {
+        var tableHTML = '<table class="table table-striped">';
+        tableHTML += '<thead><tr><th>ID</th><th>Name</th></tr></thead>';
+        tableHTML += '<tbody>';
+        departments.forEach(function(department) {
+          tableHTML += '<tr data-dept-id="' + department.id + '" data-dept-name="' + department.name + '">';
+          tableHTML += '<td>' + department.id + '</td>';
+          tableHTML += '<td>' + department.name + '</td>';
+          tableHTML += '</tr>';
+        });
+        tableHTML += '</tbody></table>';
+        
+        tableContainer.innerHTML = tableHTML;
+        tableContainer.style.display = 'block';
+        var rows = tableContainer.querySelectorAll('tr[data-dept-id]');
+        rows.forEach(function(row) {
+          row.addEventListener('click', function() {
+            var deptId = row.getAttribute('data-dept-id');
+            var deptName = row.getAttribute('data-dept-name');
+            deptField.value = deptName;
+            document.getElementById('dept-id-field').value = deptId;
+            tableContainer.style.display = 'none';
+          });
+        });
+      })
+      .catch(error => console.error('Error fetching departments:', error));
   });
 
   addRecordButton.addEventListener('click', function(event) {
@@ -299,6 +299,55 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </div>
 -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var multiDeleteBtn = document.getElementById('multi-delete-btn');
+  var multiDeleteModal = new bootstrap.Modal(document.getElementById('multiDeleteConfirmationModal'));
+  var confirmMultiDeleteBtn = document.getElementById('confirm-multi-delete-btn');
+  var selectedItemsList = document.getElementById('selected-items-list');
+
+  multiDeleteBtn.addEventListener('click', function () {
+    var selectedIds = [];
+
+    document.querySelectorAll('.inventory-checkbox:checked').forEach(function (checkbox) {
+      selectedIds.push(checkbox.value);
+    });
+
+    if (selectedIds.length === 0) {
+      alert('Please select at least one item to delete.');
+      return;
+    }
+
+    selectedItemsList.innerHTML = "";
+    selectedIds.forEach(id => {
+      let li = document.createElement('li');
+      li.textContent = `ID: ${id}`;
+      selectedItemsList.appendChild(li);
+    });
+
+    multiDeleteModal.show();
+
+    confirmMultiDeleteBtn.onclick = function () {
+      fetch('/inventories/multi_delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ inventory_ids: selectedIds })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          location.reload();
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    };
+  });
+});
+</script>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {

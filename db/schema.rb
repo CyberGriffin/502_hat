@@ -44,6 +44,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_25_050146) do
     t.string "user_email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "dept_id"
   end
 
   create_table "items", primary_key: "item_id", id: :string, force: :cascade do |t|

@@ -1,27 +1,30 @@
 <table class="table table-bordered mt-4 table-striped" style="border: 1px solid maroon;">
   <thead>
     <tr id="table-header">
+      <th style="background-color: maroon; color: white; border: none;"><input type="checkbox" id="select-all-checkbox"></th>
       <th class="sortable" id="sort-id">ID <span class="sort-arrow"></span><div class="column-header"></div></th>
       <th class="sortable" id="sort-name">Item Name <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-sku">SKU <span class="sort-arrow"></span></th>
+      <th class="sortable" id="sort-dept">Department <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-location">Location <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-condition">Condition <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-owner">Owner <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-user">Current User <span class="sort-arrow"></span></th>
       <th style="background-color: maroon; color: white; border: none;">Actions</th>
-    </tr>
   </thead>
   <tbody>
     <% if inventories.empty? %>
       <tr>
-        <td colspan="8" style="text-align: center;">No records found.</td>
+        <td colspan="10" style="text-align: center;">No records found.</td>
       </tr>
     <% else %>
     <% inventories.each_with_index do |inventory, index| %>
       <tr class="inventory-row">
+        <td><input type="checkbox" class="inventory-checkbox" value="<%= inventory.inv_id %>"></td>
         <td><%= index + 1 %></td>
         <td><%= inventory.item.name %></td>
         <td><%= inventory.item.sku %></td>
+        <td><%= inventory.department&.name %></td>
         <td><%= inventory.location %></td>
         <td><%= inventory.condition_of_item %></td>
         <td><%= inventory.original_owner.email %></td>

@@ -10,6 +10,21 @@ class UsersController < ApplicationController
     redirect_back(fallback_location: root_path)
   end
 
+  def edit_department
+    @departments = Department.where.not(dept_id: "-").order(:name)
+  end
+
+  def update_department
+    if current_user.update(user_params)
+      flash[:success] = "Department was successfully updated."
+      redirect_to root_path
+    else
+      flash[:alert] = "There was an error updating the department."
+      render :edit_department
+    end
+  end
+
+
   def index
     @users = User.all
     render :index

@@ -1,0 +1,13 @@
+<h2>Select Your Department</h2>
+
+<%= form_for current_user, url: update_department_path, method: :patch do |f| %>
+  <div>
+    <%= f.label :dept_id, "Choose your department:" %>
+    <%= f.select :dept_id, options_from_collection_for_select(@departments, "dept_id", "name", current_user.dept_id) %>
+  </div>
+
+  <%= f.submit "Save", class: "btn btn-primary" %>
+  <% if current_user.dept_id != '-'%>
+    <%= link_to "Cancel", inventories_path, class: "btn btn-primary" %>
+  <% end %>
+<% end %>

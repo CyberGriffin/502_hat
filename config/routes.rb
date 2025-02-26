@@ -9,6 +9,8 @@ Rails.application.routes.draw do
   end
 
   patch 'toggle_role', to: 'users#toggle_role', as: :toggle_role
+  get 'department/edit', to: 'users#edit_department', as: :edit_department
+  patch 'department/update', to: 'users#update_department', as: :update_department
 
   resources :departments do
     member do
@@ -16,7 +18,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :inventories
+  resources :inventories do
+    collection do
+      delete :multi_delete
+    end
+  end
   resources :items
   # resources :users, as: :app_users, path: '/app_users', param: :email, format: false, constraints: { email: /[^\/]+/ }
 
