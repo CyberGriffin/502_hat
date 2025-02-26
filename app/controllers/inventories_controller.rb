@@ -17,12 +17,14 @@ class InventoriesController < ApplicationController
         if @inventory.save
           respond_to do |format|
             format.html { redirect_to inventories_path, notice: 'Item successfully added to inventory.' }
+            format.json { render json: { status: 'success' } }
             format.js
           end
         else
           respond_to do |format|
             format.html { redirect_to inventories_path, alert: 'Error adding item to inventory.' }
-            format.js
+            format.json { render json: { status: 'error', errors: @inventory.errors.full_messages } }
+            format.js { render json: { status: 'error', errors: @inventory.errors.full_messages }, status: :unprocessable_entity }
           end
         end
       end
@@ -45,7 +47,7 @@ class InventoriesController < ApplicationController
           respond_to do |format|
             format.html { redirect_to inventories_path, alert: 'Error updating inventory item.' }
             format.json { render json: { status: 'error', errors: @inventory.errors.full_messages } }
-            format.js
+            format.js { render json: { status: 'error', errors: @inventory.errors.full_messages }, status: :unprocessable_entity }
           end
         end
       end

@@ -1,7 +1,7 @@
 <table class="table table-bordered mt-4 table-striped" style="border: 1px solid maroon;">
   <thead>
     <tr id="table-header">
-      <th class="sortable" id="sort-id">ID <span class="sort-arrow"></span></th>
+      <th class="sortable" id="sort-id">ID <span class="sort-arrow"></span><div class="column-header"></div></th>
       <th class="sortable" id="sort-name">Item Name <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-sku">SKU <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-location">Location <span class="sort-arrow"></span></th>
@@ -27,8 +27,10 @@
         <td><%= inventory.original_owner.email %></td>
         <td><%= inventory.current_user&.email %></td>
         <td>
-          <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
-          <%= link_to "Delete", "#", class: "btn btn-sm btn-danger", data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>
+          <% if current_user.admin? || current_user == inventory.original_owner %>
+            <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
+            <%= link_to "Delete", "#", class: "btn btn-sm btn-danger", data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>
+          <% end %>
         </td>
       </tr>
     <% end %>

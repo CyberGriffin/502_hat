@@ -1,38 +1,111 @@
 <!-- Flash Messages -->
-<div id="flash-messages"></div>
+<div id="flash-messages" class="d-flex"></div>
 
 <!-- Controls Header -->
 <div class="d-flex justify-content-between align-items-center mb-3" style="padding-top: 1rem; padding-left: 1rem; padding-right: 1rem;">
-  <!-- Search and Filter-->
-  <div class="d-flex align-items-center">
-    <input style="margin-bottom: -0.5rem; width: 20rem;" type="text" id="search-input" placeholder="Search..." class="form-control d-inline-block" value="<%= params[:search] %>">
-    <button style="margin-bottom: -0.5rem;" type="button" class="btn btn-secondary ms-2" data-bs-toggle="modal" data-bs-target="#filterModal">
-      Filters
-    </button>
-    <button style="margin-bottom: -0.5rem;" type="button" class="btn btn-secondary ms-2" onclick="document.getElementById('search-input').value = ''; document.getElementById('search-input').dispatchEvent(new Event('input'));">Clear</button>
-  </div>
-  
-  <% if current_user.admin? %>
-    <div class="d-flex justify-content-end align-items-center" style="margin-bottom: -0.5rem;">
-      <!-- Create Item Buttom -->
-      <button type="button" class="btn btn-primary ms-2" onclick="window.location.href='/items/'">
-        New Item
-      </button>
-      <!-- Add Record Button -->
-      <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#addRecordModal">
-        Add Record
-      </button>
+    <!-- Search and Filter-->
+    <div class="d-flex align-items-center">
+        <input style="margin-bottom: -0.5rem; width: 20rem;" type="text" id="search-input" placeholder="Search..." class="form-control d-inline-block" value="<%= params[:search] %>">
+          <button style="margin-bottom: -0.5rem;" type="button" class="btn btn-secondary ms-2" data-bs-toggle="modal" data-bs-target="#filterModal">
+              Filters
+          </button>
+        <button style="margin-bottom: -0.5rem;" type="button" class="btn btn-secondary ms-2" onclick="document.getElementById('search-input').value = ''; document.getElementById('search-input').dispatchEvent(new Event('input'));">Clear</button>
     </div>
-  <% end %>
-
+  
+    <% if current_user.admin? %>
+        <div class="d-flex justify-content-end align-items-center" style="margin-bottom: -0.5rem;">
+            <!-- Create Item Buttom -->
+            <button type="button" class="btn btn-primary ms-2" onclick="window.location.href='/items/'">
+                New Item
+            </button>
+            <!-- Add Record Button -->
+            <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#addRecordModal">
+                Add Record
+            </button>
+        </div>
+    <% end %>
 </div>
 
 <!-- Inventory Table -->
 <div id="inventory-list">
-  <%= render partial: 'table', locals: { inventories: @inventories } %>
+    <%= render partial: 'table', locals: { inventories: @inventories } %>
 </div>
 
 <!-- Add Record Modal -->
+<div class="modal fade" id="addRecordModal" tabindex="-1" aria-labelledby="addRecordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="addRecordModalLabel">Add New Record</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+
+                    <!-- Left Side -->
+                    <div class="col-md-6" style="border-right: 1px solid black;">
+                        <div id="items-table-container"></div>
+                    </div>
+
+                    <!-- Right Side -->
+                    <div class="col-md-6">
+                        <%= form_with model: @inventory, url: inventories_path, remote: true, id: "inventory-form" do |form| %>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="mb-3">
+                                      <label for="item-field" class="form-label">Search Item</label>
+                                      <input type="text" id="item-field" class="form-control" placeholder="Search by name or SKU...">
+                                    </div>
+                                    <%= form.hidden_field :item_id, id: "item-id-field" %>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <%= form.label :year_of_purchase, "Year of Purchase" %>
+                                    <%= form.date_select :year_of_purchase, class: "form-control" %>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <%= form.label :location, "Location" %>
+                                    <%= form.text_field :location, class: "form-control" %>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <%= form.label :condition_of_item, "Condition" %>
+                                    <%= form.text_field :condition_of_item, class: "form-control" %>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <%= form.label :owner_email, "Original Owner" %>
+                                    <%= form.collection_select :owner_email, User.all, :id, :email, { prompt: "Select an owner" }, class: "form-control" %>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <%= form.label :user_email, "Current User" %>
+                                    <%= form.collection_select :user_email, User.all, :id, :email, { prompt: "Select a user" }, class: "form-control" %>
+                                </div>
+                            </div> 
+                            <div class="row">
+                                <div class="col">
+                                    <%= form.submit "Add Record", class: "btn btn-primary", id: "add-record-button" %>
+                                </div>
+                            </div>
+                        <% end %>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Add Record Modal>
 <div class="modal fade" id="addRecordModal" tabindex="-1" aria-labelledby="addRecordModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -42,13 +115,11 @@
       </div>
       <div class="modal-body">
         <div class="row">
-          <!-- Left -->
           <div class="col-md-6" style="border-right: 1px solid black;">
             <div id="items-table-container"></div>
           </div>
           <div class="col-md-6">
-            <!-- Right -->
-            <%= form_with url: inventories_path, method: :post, local: true do |form| %>
+            <%= form_with model: @inventory, url: inventories_path, remote: true, id: "inventory-form" do |form| %>
               <div class="row">
                 <div class="col">
                   <%= form.label :item, "Item" %>
@@ -77,21 +148,15 @@
               <div class="row">
                 <div class="col">
                   <%= form.label :owner_email, "Original Owner" %>
-                  <%= form.collection_select :owner_email, User.all, :email, :name, { prompt: "Select an owner" }, class: "form-control" %>
+                  <%= form.collection_select :owner_email, User.all, :id, :email, { prompt: "Select an owner" }, class: "form-control" %>
                 </div>
               </div>
               <div class="row">
                 <div class="col">
                   <%= form.label :user_email, "Current User" %>
-                  <%= form.collection_select :user_email, User.all, :email, :name, { prompt: "Select a user" }, class: "form-control" %>
+                  <%= form.collection_select :user_email, User.all, :id, :email, { prompt: "Select a user" }, class: "form-control" %>
                 </div>
               </div> 
-              <div class="row">
-                <div class="col">
-                  <%= form.label :quantity, "Quantity" %>
-                  <%= form.number_field :quantity, class: "form-control" %>
-                </div>
-              </div>
               <div class="row">
                 <div class="col">
                   <%= form.submit "Add Record", class: "btn btn-primary", id: "add-record-button" %>
@@ -103,14 +168,14 @@
       </div>
     </div>
   </div>
-</div>
+</div-->
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var itemField = document.getElementById('item-field');
   var tableContainer = document.getElementById('items-table-container');
   var addRecordButton = document.getElementById('add-record-button');
-  var form = document.querySelector('form');
+  var form = document.getElementById('inventory-form');
 
   itemField.addEventListener('focus', function() {
     fetch('/items.json?page=$(page)')
@@ -120,7 +185,8 @@ document.addEventListener('DOMContentLoaded', function() {
         tableHTML += '<thead><tr><th>SKU</th><th>Name</th><th>Category</th></tr></thead>';
         tableHTML += '<tbody>';
         items.forEach(function(item) {
-          tableHTML += '<tr data-item-id="' + item.id + '" data-item-name="' + item.name + '">';
+          // Use item.item_id per your schema instead of item.id
+          tableHTML += '<tr data-item-id="' + item.item_id + '" data-item-name="' + item.name + '">';
           tableHTML += '<td>' + item.sku + '</td>';
           tableHTML += '<td>' + item.name + '</td>';
           tableHTML += '<td>' + item.category.name + '</td>';
@@ -131,13 +197,13 @@ document.addEventListener('DOMContentLoaded', function() {
         tableContainer.innerHTML = tableHTML;
         tableContainer.style.display = 'block';
 
-        // Add event listener to table rows
+        // Add click listener to each row to set the item ID and update the search field display
         var rows = tableContainer.querySelectorAll('tr[data-item-id]');
         rows.forEach(function(row) {
           row.addEventListener('click', function() {
             var itemId = row.getAttribute('data-item-id');
             var itemName = row.getAttribute('data-item-name');
-            document.getElementById('item-field').value = itemName;
+            itemField.value = itemName;
             document.getElementById('item-id-field').value = itemId;
             tableContainer.style.display = 'none';
           });
@@ -148,28 +214,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
   addRecordButton.addEventListener('click', function(event) {
     event.preventDefault();
-    var quantity = parseInt(document.querySelector('input[name="inventory[quantity]"]').value, 10);
     var formData = new FormData(form);
-    formData.delete('inventory[quantity]');
+    fetch(form.action, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        'Accept': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        console.log('Record added successfully');
+        location.reload();
 
-    for (var i = 0; i < quantity; i++) {
-      fetch(form.action, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.status === 'success') {
-          console.log('Record added successfully');
-        } else {
-          alert('Failed to add record: ' + data.errors.join(', '));
-        }
-      })
-      .catch(error => console.error('Error adding record:', error));
-    }
+      } else {
+        alert('Failed to add record: ' + data.errors.join(', '));
+      }
+    })
+    .catch(error => console.error('Error adding record:', error));
   });
 });
 </script>
