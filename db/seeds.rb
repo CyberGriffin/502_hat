@@ -46,9 +46,6 @@ Category.create!([
   { cat_id: "MAT", name: "Material", icon: "🏠", color_code: "#C70039" }
 ])
 
-
-
-
 # Create Users
 User.create!([
   { email: "alice@example.com", name: "Alice Johnson", role: "Admin", dept_id: "CHEN" },
@@ -58,14 +55,14 @@ User.create!([
 
 # Create Items
 Item.create!([
-  { item_id: "IT001", name: "Hammer", description: "16 oz claw hammer", category_id: "TOOL" },
-  { item_id: "IT002", name: "Excavator", description: "Medium-sized hydraulic excavator", category_id: "EQUIP" },
-  { item_id: "IT003", name: "Cement", description: "50 kg bag of cement", category_id: "MAT" }
+  { item_id: "IT001", name: "Hammer", description: "16 oz claw hammer", category_id: "TOOL", sku: "HAMMER-16" },
+  { item_id: "IT002", name: "Excavator", description: "Medium-sized hydraulic excavator", category_id: "EQUIP", sku: "EXCAV-123" },
+  { item_id: "IT003", name: "Cement", description: "50 kg bag of cement", category_id: "MAT", sku: "CEMENT-50" }
 ])
 
 # Create Inventories
 Inventory.create!([
-  { item_id: "IT001", year_of_purchase: Date.new(2023, 5, 10), location: "Tool Shed", condition_of_item: "New", owner_email: "alice@example.com", user_email: "bob@example.com", sku: "TOOL001", dept_id: "CHEN" },
-  { item_id: "IT002", year_of_purchase: Date.new(2023, 6, 15), location: "Equipment Yard", condition_of_item: "Used", owner_email: "bob@example.com", user_email: "charlie@example.com", sku: "EQP001", dept_id: "MEEN" },
-  { item_id: "IT003", year_of_purchase: Date.new(2022, 11, 1), location: "Warehouse A", condition_of_item: "New", owner_email: "alice@example.com", user_email: "charlie@example.com", sku: "MAT001", dept_id: "ECEN" }
+  { item_id: "IT001", year_of_purchase: Date.new(2023, 5, 10), location: "Tool Shed", condition_of_item: "New", owner_email: "alice@example.com", dept_id: "CHEN" },
+  { item_id: "IT002", year_of_purchase: Date.new(2023, 6, 15), location: "Equipment Yard", condition_of_item: "Used", owner_email: "bob@example.com", dept_id: "MEEN" },
+  { item_id: "IT003", year_of_purchase: Date.new(2022, 11, 1), location: "Warehouse A", condition_of_item: "New", owner_email: "alice@example.com", user_email: "charlie@example.com", dept_id: "ECEN" }
 ])

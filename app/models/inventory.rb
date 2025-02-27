@@ -8,6 +8,10 @@ class Inventory < ApplicationRecord
     validates :item_id, :year_of_purchase, :location, :condition_of_item, :owner_email, :dept_id, presence: true
     validates :user_email, presence: false
 
+    def available?
+        user_email.nil?
+    end
+
     def self.search(search)
         if search
             joins(:item).where(

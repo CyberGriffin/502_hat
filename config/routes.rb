@@ -22,7 +22,13 @@ Rails.application.routes.draw do
     collection do
       delete :multi_delete
     end
+
+    member do
+      post :checkout
+      post :return
+    end
   end
+  
   resources :items
   # resources :users, as: :app_users, path: '/app_users', param: :email, format: false, constraints: { email: /[^\/]+/ }
 

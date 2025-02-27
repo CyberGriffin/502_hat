@@ -2,7 +2,7 @@
   <thead>
     <tr id="table-header">
       <th style="background-color: maroon; color: white; border: none;"><input type="checkbox" id="select-all-checkbox"></th>
-      <th class="sortable" id="sort-id">ID <span class="sort-arrow"></span><div class="column-header"></div></th>
+      <th class="sortable" id="sort-id">ID <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-name">Item Name <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-sku">SKU <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-dept">Department <span class="sort-arrow"></span></th>
@@ -11,6 +11,7 @@
       <th class="sortable" id="sort-owner">Owner <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-user">Current User <span class="sort-arrow"></span></th>
       <th style="background-color: maroon; color: white; border: none;">Actions</th>
+    </tr>
   </thead>
   <tbody>
     <% if inventories.empty? %>
@@ -18,25 +19,40 @@
         <td colspan="10" style="text-align: center;">No records found.</td>
       </tr>
     <% else %>
-    <% inventories.each_with_index do |inventory, index| %>
-      <tr class="inventory-row">
-        <td><input type="checkbox" class="inventory-checkbox" value="<%= inventory.inv_id %>"></td>
-        <td><%= index + 1 %></td>
-        <td><%= inventory.item.name %></td>
-        <td><%= inventory.item.sku %></td>
-        <td><%= inventory.department&.name %></td>
-        <td><%= inventory.location %></td>
-        <td><%= inventory.condition_of_item %></td>
-        <td><%= inventory.original_owner.email %></td>
-        <td><%= inventory.current_user&.email %></td>
-        <td>
+      <% inventories.each_with_index do |inventory, index| %>
+        <tr class="inventory-row">
+          <td><input type="checkbox" class="inventory-checkbox" value="<%= inventory.inv_id %>"></td>
+          <td><%= index + 1 %></td>
+          <td><%= inventory.item.name %></td>
+          <td><%= inventory.item.sku %></td>
+          <td><%= inventory.department&.name %></td>
+          <td><%= inventory.location %></td>
+          <td><%= inventory.condition_of_item %></td>
+          <td><%= inventory.original_owner.email %></td>
+          <td><%= inventory.current_user&.email || "Available" %></td>
+          <td>
+          <%= link_to "View", inventory_path(inventory), class: "btn btn-sm btn-primary" %>
+        
           <% if current_user.admin? || current_user == inventory.original_owner %>
             <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
-            <%= link_to "Delete", "#", class: "btn btn-sm btn-danger", data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>
+            <%= link_to "Delete", "#", class: "btn btn-sm btn-danger delete-btn", 
+                  data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>
+          <% elsif current_user.role.to_s == "user" %>
+            <% if inventory.current_user.nil? %>
+              <span class="button-inline">
+                <%= button_to "Check Out", checkout_inventory_path(inventory), method: :post, class: "btn btn-sm btn-success" %>
+              </span>
+            <% elsif inventory.current_user == current_user %>
+              <span class="button-inline">
+                <%= button_to "Return", return_inventory_path(inventory), method: :post, class: "btn btn-sm btn-secondary" %>
+              </span>
+            <% else %>
+              <span class="text-danger">Checked out by another user</span>
+            <% end %>
           <% end %>
-        </td>
-      </tr>
-    <% end %>
+        </td>        
+        </tr>
+      <% end %>
     <% end %>
   </tbody>
 </table>
@@ -55,7 +71,6 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         <%= form_with url: "#", method: :delete, local: true, id: "delete-form" do %>
-          <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
           <button type="submit" class="btn btn-danger" id="confirm-delete-btn">Delete</button>
         <% end %>
       </div>
@@ -68,12 +83,12 @@
     var deleteModal = document.getElementById('deleteConfirmationModal');
     var deleteForm = document.getElementById('delete-form');
 
-    deleteModal.addEventListener('show.bs.modal', function(event) {
-      var button = event.relatedTarget;
-      var inventoryId = button.getAttribute('data-inventory-id');
-      var deleteUrl = '/inventories/' + inventoryId;
-
-      deleteForm.setAttribute('action', deleteUrl);
+    document.querySelectorAll('.delete-btn').forEach(button => {
+      button.addEventListener('click', function(event) {
+        var inventoryId = button.getAttribute('data-inventory-id');
+        var deleteUrl = '/inventories/' + inventoryId;
+        deleteForm.setAttribute('action', deleteUrl);
+      });
     });
   });
 </script>

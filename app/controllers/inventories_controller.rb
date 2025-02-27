@@ -1,9 +1,13 @@
 class InventoriesController < ApplicationController
-    before_action :set_inventory, only: [:show, :edit, :update, :destroy]
+    before_action :set_inventory, only: [:show, :edit, :update, :destroy, :checkout, :return]
     def index
         @item = Item.new
         @inventory = Inventory.new
         @inventories = Inventory.includes(:item)
+    end
+
+    def show
+      render :show
     end
 
     def new
@@ -11,46 +15,52 @@ class InventoriesController < ApplicationController
     end
 
     def create
-        @inventory = Inventory.new(inventory_params)
-        @inventory.user_email = nil if @inventory.user_email.blank?
-    
-        if @inventory.save
-          respond_to do |format|
-            format.html { redirect_to inventories_path, notice: 'Item successfully added to inventory.' }
-            format.json { render json: { status: 'success' } }
-            format.js
-          end
-        else
-          respond_to do |format|
-            format.html { redirect_to inventories_path, alert: 'Error adding item to inventory.' }
-            format.json { render json: { status: 'error', errors: @inventory.errors.full_messages } }
-            format.js { render json: { status: 'error', errors: @inventory.errors.full_messages }, status: :unprocessable_entity }
-          end
+      @inventory = Inventory.new(inventory_params)
+      @inventory.user_email = nil if @inventory.user_email.blank?
+  
+      if @inventory.save
+        respond_to do |format|
+          format.html { redirect_to inventories_path, notice: 'Item successfully added to inventory.' }
+          format.json { render json: { status: 'success' } }
+          format.js
+        end
+      else
+        respond_to do |format|
+          format.html { redirect_to inventories_path, alert: 'Error adding item to inventory.' }
+          format.json { render json: { status: 'error', errors: @inventory.errors.full_messages } }
+          format.js { render json: { status: 'error', errors: @inventory.errors.full_messages }, status: :unprocessable_entity }
         end
       end
+    end
 
     def edit
-        @inventory = Inventory.find(params[:id])
-        render json: @inventory.as_json(methods: :item_name)
+      @inventory = Inventory.find(params[:id])
+    
+      respond_to do |format|
+        format.html
+        format.js
+        format.json { render json: @inventory.as_json(methods: :item_name) }
+      end
     end
+    
       
 
     def update
-        @inventory = Inventory.find(params[:id])
-        if @inventory.update(inventory_params)
-          respond_to do |format|
-            format.html { redirect_to inventories_path, notice: 'Inventory item was successfully updated.' }
-            format.json { render json: { status: 'success' } }
-            format.js
-          end
-        else
-          respond_to do |format|
-            format.html { redirect_to inventories_path, alert: 'Error updating inventory item.' }
-            format.json { render json: { status: 'error', errors: @inventory.errors.full_messages } }
-            format.js { render json: { status: 'error', errors: @inventory.errors.full_messages }, status: :unprocessable_entity }
-          end
+      @inventory = Inventory.find(params[:id])
+      if @inventory.update(inventory_params)
+        respond_to do |format|
+          format.html { redirect_to inventories_path, notice: 'Inventory item was successfully updated.' }
+          format.json { render json: { status: 'success' } }
+          format.js
+        end
+      else
+        respond_to do |format|
+          format.html { redirect_to inventories_path, alert: 'Error updating inventory item.' }
+          format.json { render json: { status: 'error', errors: @inventory.errors.full_messages } }
+          format.js { render json: { status: 'error', errors: @inventory.errors.full_messages }, status: :unprocessable_entity }
         end
       end
+    end
       
 
     def destroy
@@ -67,6 +77,28 @@ class InventoriesController < ApplicationController
       else
         render json: { status: 'error', errors: ['No items selected'] }, status: :unprocessable_entity
       end
+    end
+
+    def checkout
+      if @inventory.user_email == nil
+        @inventory.update(user_email: current_user.email)
+        flash[:success] = "You have successfully checked out this item."
+      else
+        flash[:alert] = "This item is already checked out."
+      end
+
+      redirect_to inventories_path
+    end
+
+
+    def return
+      if @inventory.current_user == current_user 
+        @inventory.update(user_email: nil)
+        flash[:success] = "Item returned successfully."
+      else
+        flash[:alert] = "You cannot return an item you didn't check out."
+      end
+      redirect_to inventories_path
     end
 
     private
