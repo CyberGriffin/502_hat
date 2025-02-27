@@ -1,0 +1,54 @@
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title"><%= @inventory.item.name %></h4>
+      <p class="card-text"><strong>Description:</strong> <%= @inventory.item.description %></p>
+      <p class="card-text"><strong>SKU:</strong> <%= @inventory.item.sku %></p>
+      <p class="card-text"><strong>Category:</strong> <%= @inventory.item.category.name %></p>
+      <p class="card-text"><strong>Year of Purchase:</strong> <%= @inventory.year_of_purchase %></p>
+      <p class="card-text"><strong>Location:</strong> <%= @inventory.location %></p>
+      <p class="card-text"><strong>Condition:</strong> <%= @inventory.condition_of_item %></p>
+      <p class="card-text"><strong>Owner:</strong> <%= @inventory.original_owner.email %></p>
+      <p class="card-text"><strong>Current User:</strong> <%= @inventory.current_user&.email || "Available" %></p>
+
+      <div class="mt-3">
+        <% if current_user.admin? || current_user == @inventory.original_owner %>
+          <%= link_to "Edit", edit_inventory_path(@inventory), class: "btn btn-warning" %>
+          <%= link_to "Delete", "#", class: "btn btn-danger", data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal" } %>
+          <% elsif current_user.role.to_s == "user" %>
+            <span class="button-inline">
+            <% if @inventory.current_user.nil? %>
+                <%= button_to "Check Out", checkout_inventory_path(@inventory), method: :post, class: "btn btn-success" %>
+            <% elsif @inventory.current_user == current_user %>
+                <%= button_to "Return", return_inventory_path(@inventory), method: :post, class: "btn btn-secondary" %>
+            <% else %>
+                <span class="text-danger">Checked out by another user</span>
+            <% end %>
+            </span>
+        <% end %>
+        <%= link_to "Back to Inventory List", inventories_path, class: "btn btn-secondary" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this item?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <%= form_with url: inventory_path(@inventory), method: :delete, local: true do %>
+          <button type="submit" class="btn btn-danger">Delete</button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

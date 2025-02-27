@@ -2,35 +2,32 @@
 <div id="flash-messages" class="d-flex"></div>
 
 <!-- Controls Header -->
-<div class="d-flex justify-content-between align-items-center mb-3" style="padding-top: 1rem; padding-left: 1rem; padding-right: 1rem;">
-    <!-- Search and Filter-->
+<div class="d-flex justify-content-between align-items-center mb-3" style="padding: 1rem;">
+    <!-- Search and Filter -->
     <div class="d-flex align-items-center">
-        <input style="margin-bottom: -0.5rem; width: 20rem;" type="text" id="search-input" placeholder="Search..." class="form-control d-inline-block" value="<%= params[:search] %>">
-          <button style="margin-bottom: -0.5rem;" type="button" class="btn btn-secondary ms-2" data-bs-toggle="modal" data-bs-target="#filterModal">
-              Filters
-          </button>
-        <button style="margin-bottom: -0.5rem;" type="button" class="btn btn-secondary ms-2" onclick="document.getElementById('search-input').value = ''; document.getElementById('search-input').dispatchEvent(new Event('input'));">Clear</button>
+        <input style="width: 20rem;" type="text" id="search-input" placeholder="Search..." class="form-control d-inline-block" value="<%= params[:search] %>">
+        <button type="button" class="btn btn-secondary ms-2" data-bs-toggle="modal" data-bs-target="#filterModal">
+            Filters
+        </button>
+        <button type="button" class="btn btn-secondary ms-2" onclick="document.getElementById('search-input').value = ''; document.getElementById('search-input').dispatchEvent(new Event('input'));">Clear</button>
     </div>
-  
-    <% if current_user.admin? %>
-        <div class="d-flex justify-content-end align-items-center" style="margin-bottom: -0.5rem;">
-            <!-- Create Item Buttom -->
-            <button type="button" class="btn btn-primary ms-2" onclick="window.location.href='/items/'">
-                New Item
+
+    <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-primary" onclick="window.location.href='/items/'">
+            New Item
+        </button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRecordModal">
+            Add Record
+        </button>
+
+        <% if current_user.admin? %>
+            <button type="button" class="btn btn-danger" id="multi-delete-btn">
+                Delete Selected Items
             </button>
-            <!-- Add Record Button -->
-            <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#addRecordModal">
-                Add Record
-            </button>
-            <!-- MultiSelect Modal -->
-            <div class="d-flex gap-3 my-2">
-              <button type="button" class="btn btn-danger ms-2" id="multi-delete-btn">
-                  Delete Selected Items
-              </button>
-            </div>
-        </div>
-    <% end %>
+        <% end %>
+    </div>
 </div>
+
 
 
 <!-- Inventory Table -->

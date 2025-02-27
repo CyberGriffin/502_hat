@@ -1,0 +1,32 @@
+<div class="container mt-4">
+
+  <%= form_with model: @inventory, url: inventory_path(@inventory), method: :patch, local: true do |f| %>
+    <div class="mb-3">
+      <%= f.label :item_id, "Item ID" %>
+      <%= f.text_field :item_id, class: "form-control", required: true %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :location, "Location" %>
+      <%= f.text_field :location, class: "form-control", required: true %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :condition_of_item, "Condition" %>
+      <%= f.select :condition_of_item, ["New", "Good", "Used", "Needs Repair"], {}, class: "form-control" %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :owner_email, "Owner Email" %>
+      <%= f.text_field :owner_email, class: "form-control", required: true %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :dept_id, "Department" %>
+      <%= f.select :dept_id, Department.pluck(:name, :dept_id), {}, class: "form-control" %>
+    </div>
+
+    <%= f.submit "Update Inventory", class: "btn btn-primary" %>
+    <%= link_to "Cancel", inventories_path, class: "btn btn-secondary" %>
+  <% end %>
+</div>
