@@ -1,5 +1,19 @@
 # Inventory Management
 
+## Requirements
+- Docker
+- Ruby (version 3.1.2)
+- Rails (version 7.0)
+- Bundler
+
+## External Dependencies
+- PostgreSQL
+- Node.js
+
+## Docker
+```python
+docker pull paulinewade/csce431:latest
+
 ## Docker
 ```python
 docker pull paulinewade/csce431:latest
