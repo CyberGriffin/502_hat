@@ -8,7 +8,5 @@ class Category < ApplicationRecord
 
     def generate_cat_id
         self.cat_id ||= SecureRandom.uuid
-      end
-      
+    end
 end
-  

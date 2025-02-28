@@ -1,49 +1,49 @@
 class ItemsController < ApplicationController
-  def index
-    @items = Item.all
-    @item = Item.new
+     def index
+          @items = Item.all
+          @item = Item.new
 
-    respond_to do |format|
-      format.html
-      format.json { render json: @items.as_json(include: { category: {only: :name}}) }
-    end
-  end
-  
-  def new
-    @item = Item.new
-  end
+          respond_to do |format|
+               format.html
+               format.json { render json: @items.as_json(include: { category: { only: :name } }) }
+          end
+     end
 
-  def create
-    @item = Item.new(item_params)
-    if @item.save
-      flash[:success] = "Item created successfully."
-      redirect_to items_path
-    else
-      flash[:error] = "There was an error creating the item."
-      render :index
-    end
-  end
-  
-  # def create
-  #   @item = Item.new(item_params)
-  #   if @item.save
-  #     respond_to do |format|
-  #       format.html { redirect_to inventories_path, notice: 'Item successfully created.' }
-  #       format.js
-  #     end
-  #   else
-  #     respond_to do |format|
-  #       format.html { render 'inventories/index', status: :unprocessable_entity }
-  #       format.js
-  #     end
-  #   end
-  # end
+     def new
+          @item = Item.new
+     end
 
-  private
+     def create
+          @item = Item.new(item_params)
+          if @item.save
+               flash[:success] = "Item created successfully."
+               redirect_to items_path
+          else
+               flash[:error] = "There was an error creating the item."
+               render :index
+          end
+     end
 
-  def item_params
-    params.require(:item).permit(:name, :description, :category_id, :sku)
-  end
+     # def create
+     #   @item = Item.new(item_params)
+     #   if @item.save
+     #     respond_to do |format|
+     #       format.html { redirect_to inventories_path, notice: 'Item successfully created.' }
+     #       format.js
+     #     end
+     #   else
+     #     respond_to do |format|
+     #       format.html { render 'inventories/index', status: :unprocessable_entity }
+     #       format.js
+     #     end
+     #   end
+     # end
+
+     private
+
+     def item_params
+          params.require(:item).permit(:name, :description, :category_id, :sku)
+     end
 end
 
 # class ItemsController < ApplicationController
