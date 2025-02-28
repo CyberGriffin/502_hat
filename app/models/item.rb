@@ -5,11 +5,11 @@ class Item < ApplicationRecord
 
     before_validation :generate_item_id, on: :create
 
-    # validate :original_owner_email_exists
+     # validate :original_owner_email_exists
 
-    private
+     private
 
     def generate_item_id
         self.item_id ||= SecureRandom.uuid
-      end      
+    end
 end
