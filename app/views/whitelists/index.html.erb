@@ -1,0 +1,27 @@
+<h1>Whitelist Management</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Email</th>
+      <th>Expiration Date</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @whitelists.each do |entry| %>
+      <tr>
+        <td><%= entry.email %></td>
+        <td><%= entry.expires_at || "Never" %></td>
+        <td>
+          <%= link_to "Show", whitelist_path(entry) %> |
+          <%= link_to "Edit", edit_whitelist_path(entry) %> |
+          <%= link_to "Remove", whitelist_path(entry), method: :delete, data: { confirm: "Are you sure?" } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "Add Whitelist Entry", new_whitelist_path %>
+<%= link_to "Back", root_path %>

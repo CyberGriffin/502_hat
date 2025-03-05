@@ -14,10 +14,6 @@ class User < ApplicationRecord
     validates :is_white_listed, inclusion: { in: [true, false] }
     validates :white_list_end_date, presence: true, if: :is_white_listed
 
-    # def original_owner_email_exists
-    #   errors.add(:owner_email, "does not exist") unless User.exists?(email: owner_email)
-    # end
-
     def profile_picture_url
       self[:profile_picture_url] || "https://via.placeholder.com/40"
     end
@@ -36,6 +32,9 @@ class User < ApplicationRecord
 
     def self.from_google(auth)
       return nil unless auth[:email].ends_with?("@tamu.edu")
+
+      whitelisted_user = Whitelist.find_by(email: auth[:email])
+      return nil unless whitelisted_user && (whitelisted_user.expires_at.nil? || whitelisted_user.expires_at >= Date.today)
 
       user = find_by(email: auth[:email])
 

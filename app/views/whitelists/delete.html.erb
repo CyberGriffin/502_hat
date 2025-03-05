@@ -1,0 +1,9 @@
+<h1>Remove Whitelist Entry</h1>
+
+<p>Are you sure you want to remove <strong><%= @whitelist.email %></strong> from the whitelist?</p>
+
+<%= form_with model: @whitelist, url: whitelist_path(@whitelist), method: :delete, local: true do %>
+  <%= submit_tag "Yes, Remove", class: "btn btn-danger" %>
+<% end %>
+
+<%= link_to "Cancel", whitelists_path, class: "btn btn-secondary" %>
