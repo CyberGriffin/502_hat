@@ -4,6 +4,7 @@ Item.delete_all
 User.delete_all
 Department.delete_all
 Category.delete_all
+Whitelist.delete_all
 Admin.delete_all
 
 # Reset primary key auto-increment values
@@ -32,17 +33,17 @@ Department.create!([
      { dept_id: "-", name: "Not Selected" }
 ])
 
-# Create Admins
-Admin.create!([
-     { email: "admin1@example.com", full_name: "Admin One", uid: "admin1", avatar_url: "https://example.com/avatar1.png" },
-     { email: "admin2@example.com", full_name: "Admin Two", uid: "admin2", avatar_url: "https://example.com/avatar2.png" }
-])
-
 # Create Categories
 Category.create!([
      { cat_id: "TOOL", name: "Tool", icon: "🔧", color_code: "#DAF7A6" },
      { cat_id: "EQUIP", name: "Equipment", icon: "🚜", color_code: "#900C3F" },
      { cat_id: "MAT", name: "Material", icon: "🏠", color_code: "#C70039" }
+])
+
+# Create Whitelists
+Whitelist.create!([
+  { email: "kwohjinyuan@tamu.edu", expires_at: Date.today + 1.year },
+  { email: "admin1@example.com", expires_at: nil }
 ])
 
 # Create Users

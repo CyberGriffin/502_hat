@@ -21,6 +21,9 @@
         </button>
 
         <% if current_user.admin? %>
+            <button type="button" class="btn btn-primary" onclick="window.location.href='/whitelists/'">
+                Add Whitelist
+            </button>
             <button type="button" class="btn btn-danger" id="multi-delete-btn">
                 Delete Selected Items
             </button>

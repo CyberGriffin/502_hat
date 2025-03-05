@@ -12,6 +12,8 @@ Rails.application.routes.draw do
      get 'department/edit', to: 'users#edit_department', as: :edit_department
      patch 'department/update', to: 'users#update_department', as: :update_department
 
+     resources :whitelists, only: [:index, :show, :new, :create, :edit, :update, :destroy]
+
      resources :departments do
           member do
                get :delete
@@ -30,7 +32,6 @@ Rails.application.routes.draw do
      end
 
      resources :items
-     # resources :users, as: :app_users, path: '/app_users', param: :email, format: false, constraints: { email: /[^\/]+/ }
 
      resources :categories, param: :cat_id do
           member do
