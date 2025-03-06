@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class CategoriesController < ApplicationController
+    before_action :authenticate_admin!
      def index
           @categories = Category.order(:cat_id)
      end
@@ -51,5 +52,9 @@ class CategoriesController < ApplicationController
 
      def category_params
           params.require(:category).permit(:name, :icon, :color_code)
+     end
+
+     def authenticate_admin!
+          redirect_to root_path, alert: "Not authorized" unless current_user&.admin?
      end
 end
