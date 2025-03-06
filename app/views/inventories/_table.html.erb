@@ -1,7 +1,10 @@
 <table class="table table-bordered mt-4 table-striped" style="border: 1px solid maroon;">
+<p class="selectCounter alert bg-white border rounded shadow-sm text-center mt-2 w-50 mx-auto">
+  <strong>Selected Items: <span id="selected-count">0</span></strong>
+</p>
   <thead>
     <tr id="table-header">
-      <th style="background-color: maroon; color: white; border: none;"><input type="checkbox" id="select-all-checkbox"></th>
+      <th style="background-color: maroon; color: white; border: none;">Select</th>
       <th class="sortable" id="sort-id">ID <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-name">Item Name <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-sku">SKU <span class="sort-arrow"></span></th>
@@ -82,6 +85,8 @@
   document.addEventListener('DOMContentLoaded', function() {
     var deleteModal = document.getElementById('deleteConfirmationModal');
     var deleteForm = document.getElementById('delete-form');
+    var checkboxes = document.querySelectorAll('.inventory-checkbox');
+    var selectedCount = document.getElementById('selected-count');
 
     document.querySelectorAll('.delete-btn').forEach(button => {
       button.addEventListener('click', function(event) {
@@ -89,6 +94,15 @@
         var deleteUrl = '/inventories/' + inventoryId;
         deleteForm.setAttribute('action', deleteUrl);
       });
+    });
+
+    function updateSelectedCount() {
+      var count = document.querySelectorAll('.inventory-checkbox:checked').length;
+      selectedCount.textContent = count;
+    }
+
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', updateSelectedCount);
     });
   });
 </script>
