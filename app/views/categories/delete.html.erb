@@ -1,8 +1,17 @@
 <h1>Delete Category</h1>
 
-<p>Are you sure you want to delete this category?</p>
+<div>
+  <%= form_with model: @category, url: category_path(@category), method: :delete, local: true do |f| %>
+    
+    <p>Are you sure you want to permanently delete this category?</p>
 
-<p><strong>Category:</strong> <%= @category.name %></p>
+    <p class="reference-name"><%= @category.name %></p>
 
-<%= link_to 'Yes, Delete', category_path(@category), method: :delete, data: { confirm: 'Are you sure?' } %> |
-<%= link_to 'No, Back to List', categories_path %>
+    <div class="form-buttons">
+      <%= f.submit("Delete Category", class: "btn btn-danger") %>
+    </div>
+
+  <% end %>
+
+  <%= link_to "No, Back to List", categories_path, class: "btn btn-secondary" %>
+</div>
