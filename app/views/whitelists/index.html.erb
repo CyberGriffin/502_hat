@@ -9,14 +9,14 @@
     </tr>
   </thead>
   <tbody>
-    <% @whitelists.each do |entry| %>
+    <% @whitelists.each do |whitelist| %>
       <tr>
-        <td><%= entry.email %></td>
-        <td><%= entry.expires_at || "Never" %></td>
+        <td><%= whitelist.email %></td>
+        <td><%= whitelist.expires_at || "Never" %></td>
         <td>
-          <%= link_to "Show", whitelist_path(entry) %> |
-          <%= link_to "Edit", edit_whitelist_path(entry) %> |
-          <%= link_to "Remove", whitelist_path(entry), method: :delete, data: { confirm: "Are you sure?" } %>
+          <%= link_to "Show", whitelist_path(whitelist) %> |
+          <%= link_to "Edit", edit_whitelist_path(whitelist) %> |
+          <%= link_to "Remove", delete_whitelist_path(whitelist) %>
         </td>
       </tr>
     <% end %>

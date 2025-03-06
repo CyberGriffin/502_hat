@@ -15,10 +15,15 @@ class WhitelistsController < ApplicationController
   
     def create
       @whitelist = Whitelist.new(whitelist_params)
-      if @whitelist.save
-        redirect_to whitelists_path, notice: "Email added to whitelist."
-      else
-        render :new
+  
+      respond_to do |format|
+        if @whitelist.save
+          format.html { redirect_to whitelists_path, notice: "Email added to whitelist." }
+          format.json { render :show, status: :created, location: @whitelist }
+        else
+          format.html { render :new, status: :unprocessable_entity }
+          format.json { render json: @whitelist.errors, status: :unprocessable_entity }
+        end
       end
     end
   
@@ -26,16 +31,27 @@ class WhitelistsController < ApplicationController
     end
   
     def update
-      if @whitelist.update(whitelist_params)
-        redirect_to whitelists_path, notice: "Whitelist entry updated."
-      else
-        render :edit
+      respond_to do |format|
+        if @whitelist.update(whitelist_params)
+          format.html { redirect_to whitelists_path, notice: "Whitelist entry updated." }
+          format.json { render :show, status: :ok, location: @whitelist }
+        else
+          format.html { render :edit, status: :unprocessable_entity }
+          format.json { render json: @whitelist.errors, status: :unprocessable_entity }
+        end
       end
     end
   
+    def delete
+      @whitelist = Whitelist.find(params[:id])
+    end
+
     def destroy
       @whitelist.destroy
-      redirect_to whitelists_path, notice: "Email removed from whitelist."
+      respond_to do |format|
+        format.html { redirect_to whitelists_path, notice: "Email removed from whitelist." }
+        format.json { head :no_content }
+      end
     end
   
     private
