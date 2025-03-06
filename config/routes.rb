@@ -36,7 +36,11 @@ Rails.application.routes.draw do
           end
      end
 
-     resources :items
+     resources :items do
+          member do
+               get :delete
+          end
+     end
 
      resources :categories, param: :cat_id do
           member do
