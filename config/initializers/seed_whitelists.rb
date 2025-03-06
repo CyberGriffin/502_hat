@@ -9,11 +9,12 @@ Rails.application.config.after_initialize do
       ]
   
       whitelists.each do |email|
-        Whitelist.find_or_create_by!(email: email[:email]) do |w|
-          w.expires_at = email[:expires_at]
+            Whitelist.find_or_create_by!(email: email[:email]) do |w|
+                w.expires_at = email[:expires_at]
+            end
       end
   
       puts "Whitelisted emails seeded successfully"
     end
-  end
+end
   
