@@ -42,9 +42,9 @@ Category.create!([
 
 # Create Whitelists
 Whitelist.create!([
-  { email: "kwohjinyuan@tamu.edu", expires_at: Date.today + 1.year },
-  { email: "suresh06192004@tamu.edu", expires_at: Date.today + 1.year },
-  { email: "admin1@example.com", expires_at: nil }
+     { email: "kwohjinyuan@tamu.edu", expires_at: Date.today + 1.year },
+     { email: "suresh06192004@tamu.edu", expires_at: Date.today + 1.year },
+     { email: "admin1@example.com", expires_at: nil }
 ])
 
 # Create Users

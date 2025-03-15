@@ -5,7 +5,7 @@ class Item < ApplicationRecord
 
     before_validation :generate_item_id, on: :create
 
-    private
+     private
 
     def generate_item_id
         self.item_id ||= SecureRandom.uuid
