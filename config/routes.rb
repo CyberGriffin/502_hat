@@ -27,6 +27,7 @@ Rails.application.routes.draw do
      resources :inventories do
           collection do
                delete :multi_delete
+               post :bulk_checkout
           end
 
           member do

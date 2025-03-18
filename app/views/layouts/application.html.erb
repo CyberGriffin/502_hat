@@ -24,44 +24,69 @@
 
 <body>
   <header>
+    <!-- Navbar 1 -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">InventoryManagement</a>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
+  <div class="container-fluid d-flex align-items-center">
+    <!-- Brand (Left) -->
+    <div>
+      <a class="navbar-brand" href="/">InventoryManagement</a>
+    </div>
+    
+    <!-- Search (Center) -->
+    <div class="flex-grow-1 d-flex justify-content-center">
+      <form class="d-flex" style="width: 40rem;">
+        <input type="text" id="search-input" placeholder="Search..." class="form-control" value="<%= params[:search] %>">
+      </form>
+    </div>
+    
+    <!-- User Profile (Right) -->
+    <div class="ms-auto">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <% if user_signed_in? %>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span style="font-size: 1.20rem;"><%= current_user.full_name %> (<%= current_user.role %> view)</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><%= link_to "Profile", edit_user_registration_path, class: "dropdown-item" %></li>
+                <li><%= link_to "Settings", "#", class: "dropdown-item" %></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <%= button_to "Toggle Role", toggle_role_path, method: :patch, class: "dropdown-item", form: { data: { turbo: false } } %>
+                </li>
+                <li><%= link_to "Sign Out", destroy_user_session_path, method: :delete, class: "dropdown-item" %></li>
+              </ul>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+    <!-- Navbar 2 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <ul class="navbar-nav">
             <li class="nav-item">
               <%= link_to "Inventory", inventories_path, class: "nav-link" %>
             </li>
             <li class="nav-item">
               <%= link_to "Items", items_path, class: "nav-link" %>
             </li>
+            <li class="nav-item">
+              <%= link_to "Whitelists", whitelists_path, class: "nav-link" %>
+            </li>
+            <li class="nav-item">
+              <%= link_to "Categories", categories_path, class: "nav-link" %>
+            </li>
           </ul>
-          <ul class="navbar-nav ms-auto">
-            <% if user_signed_in? %>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <span style="font-size: 1.20rem;"><%= current_user.full_name %> (<%= current_user.role %> view)</span>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                  <li><%= link_to "Profile", edit_user_registration_path, class: "dropdown-item" %></li>
-                  <li><%= link_to "Settings", "#", class: "dropdown-item" %></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li>
-                    <%= button_to "Toggle Role", toggle_role_path, method: :patch, class: "dropdown-item", form: { data: { turbo: false } } %>
-                  </li>
-                  <li><%= link_to "Sign Out", destroy_user_session_path, method: :delete, class: "dropdown-item" %></li>
-                </ul>
-              </li>
-            <% end %>
-          </ul>
-        </div>
-      </div>
     </nav>
   </header>
 
   <!-- Flash Messages (Styled with Bootstrap) -->
   <% if flash.any? %>
-    <div class="container mt-3">
+    <div class="container mt-3" visible="false">
       <% flash.each do |key, value| %>
         <div class="alert alert-<%= bootstrap_flash_class(key) %> alert-dismissible fade show" role="alert">
           <%= value.html_safe %>
