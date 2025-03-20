@@ -5,7 +5,9 @@ Rails.application.config.after_initialize do
                { email: "griffinbeaudreau@tamu.edu", expires_at: nil },
                { email: "nicholasmatias@tamu.edu", expires_at: nil },
                { email: "suresh06192004@tamu.edu", expires_at: nil },
-               { email: "james.reyes@tamu.edu", expires_at: nil }
+               { email: "james.reyes@tamu.edu", expires_at: nil },
+               { email: "sudhanvarajesh@tamu.edu", expires_at: nil },
+               { email: "samraatg@tamu.edu", expires_at: nil }
           ]
 
           whitelists.each do |email|
