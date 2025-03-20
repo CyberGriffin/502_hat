@@ -24,8 +24,9 @@
           <td><%= item.description %></td>
           <td><%= item.category.name %></td>
           <td>
+            <%= link_to 'Show', item_path(item), class: 'btn btn-primary btn-sm' %>
             <%= link_to 'Edit', edit_item_path(item), class: 'btn btn-secondary btn-sm' %>
-            <%= link_to 'Delete', item, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %>
+            <%= link_to 'Delete', delete_item_path(item), class: 'btn btn-danger btn-sm' %>
           </td>
         </tr>
       <% end %>

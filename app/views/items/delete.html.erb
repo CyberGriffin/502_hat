@@ -1,0 +1,14 @@
+<h1>Delete Item Entry</h1>
+
+<div>
+  <%= form_with model: @item, url: item_path(@item), method: :delete, local: true do |f| %>
+    <p>Are you sure you want to permanently remove this item?</p>
+    <p class="reference-name"><strong><%= @item.name %></strong></p>
+
+    <div class="form-buttons">
+      <%= f.submit("Yes, Remove", class: "btn btn-danger") %>
+    </div>
+  <% end %>
+
+  <%= link_to "Cancel", items_path, class: "btn btn-secondary" %>
+</div>

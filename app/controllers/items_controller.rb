@@ -1,97 +1,96 @@
 class ItemsController < ApplicationController
-  def index
-    @items = Item.all
-    @item = Item.new
+     before_action :set_item, only: [:show, :edit, :update, :destroy]
 
-    respond_to do |format|
-      format.html
-      format.json { render json: @items.as_json(include: { category: {only: :name}}) }
-    end
-  end
-  
-  def new
-    @item = Item.new
-  end
+     def index
+          @items = Item.includes(:category)
+          @item = Item.new
 
-  def create
-    @item = Item.new(item_params)
-    if @item.save
-      flash[:success] = "Item created successfully."
-      redirect_to items_path
-    else
-      flash[:error] = "There was an error creating the item."
-      render :index
-    end
-  end
-  
-  # def create
-  #   @item = Item.new(item_params)
-  #   if @item.save
-  #     respond_to do |format|
-  #       format.html { redirect_to inventories_path, notice: 'Item successfully created.' }
-  #       format.js
-  #     end
-  #   else
-  #     respond_to do |format|
-  #       format.html { render 'inventories/index', status: :unprocessable_entity }
-  #       format.js
-  #     end
-  #   end
-  # end
+          respond_to do |format|
+               format.html
+               format.json { render json: @items.as_json(include: { category: { only: :name } }) }
+          end
+     end
 
-  private
+     def show
+          respond_to do |format|
+               format.html
+               format.json { render json: @item }
+          end
+     end
 
-  def item_params
-    params.require(:item).permit(:name, :description, :category_id, :sku)
-  end
+     def new
+          @item = Item.new
+     end
+
+     def create
+          @item = Item.new(item_params)
+
+          if @item.save
+               respond_to do |format|
+                    format.html { redirect_to items_path, notice: 'Item successfully created.' }
+                    format.json { render json: { status: 'success', item: @item } }
+                    format.js
+               end
+          else
+               respond_to do |format|
+                    format.html { redirect_to items_path, alert: 'Error creating item.' }
+                    format.json { render json: { status: 'error', errors: @item.errors.full_messages }, status: :unprocessable_entity }
+                    format.js { render json: { status: 'error', errors: @item.errors.full_messages }, status: :unprocessable_entity }
+               end
+          end
+     end
+
+     def edit
+          respond_to do |format|
+               format.html
+               format.js
+               format.json { render json: @item }
+          end
+     end
+
+     def update
+          if @item.update(item_params)
+               respond_to do |format|
+                    format.html { redirect_to items_path, notice: 'Item successfully updated.' }
+                    format.json { render json: { status: 'success', item: @item } }
+                    format.js
+               end
+          else
+               respond_to do |format|
+                    format.html { redirect_to items_path, alert: 'Error updating item.' }
+                    format.json { render json: { status: 'error', errors: @item.errors.full_messages }, status: :unprocessable_entity }
+                    format.js { render json: { status: 'error', errors: @item.errors.full_messages }, status: :unprocessable_entity }
+               end
+          end
+     end
+
+     def delete
+          @item = Item.find(params[:id])
+     end
+
+     def destroy
+          if @item.destroy
+               respond_to do |format|
+                    format.html { redirect_to items_path, notice: 'Item successfully deleted.' }
+                    format.json { render json: { status: 'success' } }
+                    format.js
+               end
+          else
+               respond_to do |format|
+                    format.html { redirect_to items_path, alert: 'Error deleting item.' }
+                    format.json { render json: { status: 'error', errors: @item.errors.full_messages }, status: :unprocessable_entity }
+                    format.js { render json: { status: 'error', errors: @item.errors.full_messages }, status: :unprocessable_entity }
+               end
+          end
+     end
+
+     private
+
+     def set_item
+          @item = Item.find(params[:id])
+     end
+
+     def item_params
+          params.require(:item).permit(:name, :description, :category_id, :sku)
+     end
 end
-
-# class ItemsController < ApplicationController
-#   before_action :set_item, only: [:show, :edit, :update, :destroy]
-
-#   def index
-#     @items = Item.all
-#   end
-
-#   def new
-#     @item = Item.new
-#   end
-
-#   def create
-#     @item = Item.new(item_params)
-#     if @item.save
-#       redirect_to @item, notice: 'Item was successfully created.'
-#     else
-#       render :new
-#     end
-#   end
-
-#   def show
-#   end
-
-#   def edit
-#   end
-
-#   def update
-#     if @item.update(item_params)
-#       redirect_to @item, notice: 'Item was successfully updated.'
-#     else
-#       render :edit
-#     end
-#   end
-
-#   def destroy
-#     @item.destroy
-#     redirect_to items_path, notice: 'Item was successfully deleted.'
-#   end
-
-#   private
-
-#   def set_item
-#     @item = Item.find(params[:id])
-#   end
-
-#   def item_params
-#     params.require(:item).permit(:name, :description, :category_id)
-#   end
-# end

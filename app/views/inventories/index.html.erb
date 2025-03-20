@@ -1,32 +1,16 @@
 <!-- Flash Messages -->
-<div id="flash-messages" class="d-flex"></div>
+<!--div id="flash-messages" class="d-flex"></div-->
 
 <!-- Controls Header -->
-<div class="d-flex justify-content-between align-items-center mb-3" style="padding: 1rem;">
-    <!-- Search and Filter -->
-    <div class="d-flex align-items-center">
-        <input style="width: 20rem;" type="text" id="search-input" placeholder="Search..." class="form-control d-inline-block" value="<%= params[:search] %>">
-        <button type="button" class="btn btn-secondary ms-2" data-bs-toggle="modal" data-bs-target="#filterModal">
-            Filters
-        </button>
-        <button type="button" class="btn btn-secondary ms-2" onclick="document.getElementById('search-input').value = ''; document.getElementById('search-input').dispatchEvent(new Event('input'));">Clear</button>
-    </div>
 
+<!--div class="d-flex justify-content-between align-items-center mb-3" style="padding: 1rem;">
     <div class="d-flex align-items-center gap-2">
-        <button type="button" class="btn btn-primary" onclick="window.location.href='/items/'">
-            New Item
-        </button>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRecordModal">
             Add Record
         </button>
-
-        <% if current_user.admin? %>
-            <button type="button" class="btn btn-danger" id="multi-delete-btn">
-                Delete Selected Items
-            </button>
-        <% end %>
     </div>
-</div>
+</div-->
+
 
 
 
@@ -34,6 +18,23 @@
 <div id="inventory-list">
     <%= render partial: 'table', locals: { inventories: @inventories } %>
 </div>
+
+<footer class="footer fixed-bottom bg-light py-2">
+  <div class="container-fluid d-flex justify-content-between">
+    <span id="selected-items-count" class="text-muted">0 items selected</span>
+    <div>
+      <button type="button" class="btn btn-success" id="footer-checkout-btn" disabled style="background-color: gray; border-color: gray;">
+        Check Out Selected
+      </button>
+      <button type="button" class="btn btn-primary" id="footer-return-btn" disabled style="background-color: gray; border-color: gray;">
+        Return Selected
+      </button>
+      <button type="button" class="btn btn-danger" id="footer-delete-btn" disabled style="background-color: gray; border-color: gray;">
+        Delete Selected
+      </button>
+    </div>
+  </div>
+</footer>
 
 <!-- Add Record Modal -->
 <div class="modal fade" id="addRecordModal" tabindex="-1" aria-labelledby="addRecordModalLabel" aria-hidden="true">
@@ -128,7 +129,7 @@
       </div>
       <div class="modal-body">
         <p>Are you sure you want to delete the selected items?</p>
-        <ul id="selected-items-list"></ul>
+        <ul id="selected-items-list" style="display:none;"></ul>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -137,6 +138,24 @@
     </div>
   </div>
 </div>
+
+<!-- Return Confirmation Modal -->
+<div class="modal fade" id="returnConfirmationModal" tabindex="-1" aria-labelledby="returnConfirmationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="returnConfirmationModalLabel">Confirm Return</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to return the selected items?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirm-return-btn">Return</button>
+      </div>
+    </div>
+  </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -299,7 +318,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  var multiDeleteBtn = document.getElementById('multi-delete-btn');
+  var returnBtn = document.getElementById('footer-return-btn');
+  var confirmationReturnModal = new bootstrap.Modal(document.getElementById('returnConfirmationModal'));
+
+  returnBtn.addEventListener('click', function () {
+    var selectedIds = [];
+
+    document.querySelectorAll('.inventory-checkbox:checked').forEach(function (checkbox) {
+      selectedIds.push(checkbox.value);
+    });
+
+    confirmationReturnModal.show();
+
+    
+    document.getElementById('confirm-return-btn').addEventListener('click', function () {
+      fetch('/inventories/bulk_return', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ inventory_ids: selectedIds })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          location.reload();
+        } else {
+          alert('Failed to return items: ' + data.errors.join(', '));
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    });
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var multiDeleteBtn = document.getElementById('footer-delete-btn');
   var multiDeleteModal = new bootstrap.Modal(document.getElementById('multiDeleteConfirmationModal'));
   var confirmMultiDeleteBtn = document.getElementById('confirm-multi-delete-btn');
   var selectedItemsList = document.getElementById('selected-items-list');
@@ -377,6 +434,15 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
           row.style.display = 'none';
         }
+
+        // If none, display default row
+        var visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+        var noSearchRow = document.querySelector('.no-search');
+        if (visibleRows.length === 0) {
+            noSearchRow.style.display = '';
+        } else {
+            noSearchRow.style.display = 'none';
+        }
       });
     });
 
@@ -384,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var indicator = document.createElement('div');
     indicator.style.position = 'absolute';
     indicator.style.height = '5px';
-    indicator.style.backgroundColor = 'darkred';
+    indicator.style.backgroundColor = '#732F2f';
     indicator.style.transition = 'all 0.3s ease';
     document.body.appendChild(indicator);
 
@@ -427,7 +493,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       headers.forEach(function(h) {
         h.classList.remove('ascending', 'descending', 'sorted');
-        h.style.backgroundColor = 'maroon';
+        h.style.backgroundColor = '#732F2f';
         h.style.color = 'white';
         h.style.border = 'none';
         h.querySelector('.sort-arrow').textContent = '';
@@ -436,7 +502,7 @@ document.addEventListener('DOMContentLoaded', function () {
       header.classList.toggle('ascending', !ascending);
       header.classList.toggle('descending', ascending);
       header.classList.add('sorted');
-      header.style.backgroundColor = 'darkred';
+      header.style.backgroundColor = '#732F2f';
       header.style.color = 'white';
       header.style.border = 'none';
 
@@ -446,7 +512,7 @@ document.addEventListener('DOMContentLoaded', function () {
       positionIndicator(header);
     }
 
-    var defaultHeader = document.getElementById('sort-id');
+    var defaultHeader = document.getElementById('sort-name');
     sortTableByHeader(defaultHeader);
 
     headers.forEach(function(header) {
@@ -534,9 +600,3 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
-
-<style>
-  body {
-    background-color:rgb(151, 151, 151);
-  }
-</style>

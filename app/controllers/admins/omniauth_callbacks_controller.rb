@@ -12,14 +12,14 @@ class Admins::OmniauthCallbacksController <
   redirect_to new_admin_session_path
   end
   end
-  protected
+     protected
   def after_omniauth_failure_path_for(_scope)
   new_admin_session_path
   end
   def after_sign_in_path_for(resource_or_scope)
   stored_location_for(resource_or_scope) || root_path
   end
-  private
+     private
   def from_google_params
   @from_google_params ||= {
   uid: auth.uid,

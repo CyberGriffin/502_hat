@@ -1,0 +1,7 @@
+<h1>Whitelist Entry Details</h1>
+
+<p><strong>Email:</strong> <%= @whitelist.email %></p>
+<p><strong>Expiration Date:</strong> <%= @whitelist.expires_at || "Never" %></p>
+
+<%= link_to "Edit", edit_whitelist_path(@whitelist), class: "btn btn-primary" %>
+<%= link_to "Back to Whitelist", whitelists_path, class: "btn btn-secondary" %>
