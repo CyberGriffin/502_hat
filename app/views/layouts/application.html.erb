@@ -23,13 +23,13 @@
 </head>
 
 <body>
-  <header>
+  <header class="header-container">
     <!-- Navbar 1 -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-1">
   <div class="container-fluid d-flex align-items-center">
     <!-- Brand (Left) -->
     <div>
-      <a class="navbar-brand" href="/">InventoryManagement</a>
+      <a class="navbar-brand" href="/" style="color:white">InventoryManagement</a>
     </div>
     
     <!-- Search (Center) -->
@@ -46,7 +46,7 @@
           <% if user_signed_in? %>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <span style="font-size: 1.20rem;"><%= current_user.full_name %> (<%= current_user.role %> view)</span>
+                <span style="font-size: 1.20rem; color:white;"><%= current_user.full_name %> (<%= current_user.role %> view)</span>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                 <li><%= link_to "Profile", edit_user_registration_path, class: "dropdown-item" %></li>
@@ -66,10 +66,10 @@
 </nav>
 
     <!-- Navbar 2 -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <ul class="navbar-nav">
+    <nav class="navbar navbar-expand-lg">
+    <ul class="navbar-nav navbar-2">
             <li class="nav-item">
-              <%= link_to "Inventory", inventories_path, class: "nav-link" %>
+              <%= link_to "Inventory", inventories_path, class: "nav-link active" %>
             </li>
             <li class="nav-item">
               <%= link_to "Items", items_path, class: "nav-link" %>
@@ -83,6 +83,51 @@
           </ul>
     </nav>
   </header>
+  <style>
+    .header-container {
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+      background-color:#500000 !important;
+    }
+    .navbar .dropdown-toggle::after {
+      color: white;
+    }
+    body {
+      background-color: #EAE8DF;
+    }
+    .navbar-2 .nav-link {
+      color: white !important;
+    }
+    .navbar-1 {
+      border-bottom: 1px solid #707070;
+    }
+    .navbar-2 .nav-link.active {
+      font-weight: bold;
+      color: #D6D3C4 !important;
+      cursor: default;
+      text-decoration: underline;
+      text-decoration-color: #D6D3C4;
+      text-underline-offset: 0.1em;
+    }
+  </style>
+  <script>
+    // Handles active state for the navigation links
+    document.addEventListener("DOMContentLoaded", function() {
+      const currentPath = window.location.pathname;
+      const navLinks = document.querySelectorAll('.navbar-2 .nav-link');
+
+      navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+          link.classList.add('active');
+          link.addEventListener('click', (event) => {
+            event.preventDefault();
+          });
+        }
+        else {
+          link.classList.remove('active');
+        }
+      });
+    });
+  </script>
 
   <!-- Flash Messages (Styled with Bootstrap) -->
   <% if flash.any? %>

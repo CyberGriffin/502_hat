@@ -1,8 +1,7 @@
 <table class="table table-bordered mt-4 table-striped inventory-table" style="border: none;">
   <thead>
     <tr id="table-header">
-      <th style="background-color: maroon; color: white; border: none;"></th>
-      <th class="sortable" id="sort-id">ID <span class="sort-arrow"></span></th>
+      <th style="background-color: #732F2f; color: white; border: none;"></th>
       <th class="sortable" id="sort-name">Item Name <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-sku">SKU <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-dept">Department <span class="sort-arrow"></span></th>
@@ -10,19 +9,13 @@
       <th class="sortable" id="sort-condition">Condition <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-owner">Owner <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-user">Current User <span class="sort-arrow"></span></th>
-      <th style="background-color: maroon; color: white; border: none;">Actions</th>
+      <th style="background-color: #732F2f; color: white; border: none;">Actions</th>
     </tr>
   </thead>
   <tbody>
-    <% if inventories.empty? %>
-      <tr>
-        <td colspan="10" style="text-align: center;">No records found.</td>
-      </tr>
-    <% else %>
       <% inventories.each_with_index do |inventory, index| %>
         <tr class="inventory-row">
           <td style="text-align: center;"><input type="checkbox" class="inventory-checkbox " value="<%= inventory.inv_id %>" disabled></td>
-          <td><%= index + 1 %></td>
           <td><%= inventory.item.name %></td>
           <td><%= inventory.item.sku %></td>
           <td><%= inventory.department&.name %></td>
@@ -52,7 +45,9 @@
         </td>        
         </tr>
       <% end %>
-    <% end %>
+      <tr class="no-search no-sort" style="<%= 'display: none;' unless inventories.empty? %>">
+        <td colspan="9" style="text-align: center;">No records found.</td>
+      </tr>
   </tbody>
 </table>
 
@@ -86,6 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var selectedCount = document.getElementById('selected-items-count');
   var footerDeleteBtn = document.getElementById('footer-delete-btn');
   var footerCheckoutBtn = document.getElementById('footer-checkout-btn');
+  var footerReturnBtn = document.getElementById('footer-return-btn');
 
 
   document.querySelectorAll('.delete-btn').forEach(button => {
@@ -104,10 +100,14 @@ document.addEventListener('DOMContentLoaded', function() {
     footerDeleteBtn.style.color = count > 0 ? 'white' : '';
     footerCheckoutBtn.style.backgroundColor = count > 0 ? '' : 'gray';
     footerCheckoutBtn.style.color = count > 0 ? 'white' : '';
+    footerReturnBtn.style.backgroundColor = count > 0 ? '' : 'gray';
+    footerReturnBtn.style.color = count > 0 ? 'white' : '';
+
 
     // Enable
     footerDeleteBtn.disabled = count === 0;
     footerCheckoutBtn.disabled = count === 0;
+    footerReturnBtn.disabled = count === 0;
   }
 
   document.querySelectorAll('.inventory-row').forEach(row => {
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
       multiDeleteModal.show();
 
-      document.getElementById('confirm-multi-delete-btn').onclick = function() {
+      document.getElementById('footer-delete-btn').onclick = function() {
         fetch('/inventories/multi_delete', {
           method: 'DELETE',
           headers: {
@@ -204,7 +204,10 @@ document.addEventListener('DOMContentLoaded', function() {
   transform: scale(1.2);
 }
 .inventory-table {
-  width: 95%;
+  width: 98%;
   margin: auto;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  overflow: hidden;
 }
 </style>
