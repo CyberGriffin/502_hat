@@ -87,6 +87,20 @@ class InventoriesController < ApplicationController
           redirect_to inventories_path
      end
 
+     def bulk_checkout
+          inventory_ids = params[:inventory_ids]
+          inventories = Inventory.where(inv_id: inventory_ids)
+          
+          num_updated = 0
+          inventories.each do |inventory|
+            if inventory.current_user.nil?
+               inventory.update(current_user: current_user)
+               num_updated += 1
+            end
+          end
+          render json: { status: 'success', num_updated: num_updated }
+     end
+
      def return
           if @inventory.current_user == current_user
                @inventory.update(user_email: nil)
@@ -95,6 +109,20 @@ class InventoriesController < ApplicationController
                flash[:alert] = "You cannot return an item you didn't check out."
           end
           redirect_to inventories_path
+     end
+
+     def bulk_return
+          inventory_ids = params[:inventory_ids]
+          inventories = Inventory.where(inv_id: inventory_ids)
+          
+          num_updated = 0
+          inventories.each do |inventory|
+            if inventory.current_user == current_user
+               inventory.update(current_user: nil)
+               num_updated += 1
+            end
+          end
+          render json: { status: 'success', num_updated: num_updated }
      end
 
      private
