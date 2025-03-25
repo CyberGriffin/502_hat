@@ -34,13 +34,10 @@
           <td><%= inventory.original_owner.email %></td>
           <td><%= inventory.current_user&.email || "Available" %></td>
           <td>
-          <%= link_to "View", inventory_path(inventory), class: "btn btn-sm btn-primary" %>
-        
-          <% if current_user.admin? || current_user == inventory.original_owner %>
+            <%= link_to "View", inventory_path(inventory), class: "btn btn-sm btn-primary" %>
             <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
             <%= link_to "Delete", "#", class: "btn btn-sm btn-danger delete-btn", 
                   data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>
-          <% elsif current_user.role.to_s == "user" %>
             <% if inventory.current_user.nil? %>
               <span class="button-inline">
                 <%= button_to "Check Out", checkout_inventory_path(inventory), method: :post, class: "btn btn-sm btn-success" %>
@@ -52,7 +49,6 @@
             <% else %>
               <span class="text-danger">Checked out by another user</span>
             <% end %>
-          <% end %>
         </td>        
         </tr>
       <% end %>
