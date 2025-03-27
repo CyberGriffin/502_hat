@@ -1,11 +1,8 @@
-<table class="table table-bordered mt-4 table-striped" style="border: 1px solid maroon;">
-<p class="selectCounter alert bg-white border rounded shadow-sm text-center mt-2 w-50 mx-auto">
-  <strong>Selected Items: <span id="selected-count">0</span></strong>
-</p>
+
+<table class="table table-bordered mt-4 table-striped inventory-table" style="border: none;">
   <thead>
     <tr id="table-header">
-      <th style="background-color: maroon; color: white; border: none;">Select</th>
-      <th class="sortable" id="sort-id">ID <span class="sort-arrow"></span></th>
+      <th style="background-color: #732F2f; color: white; border: none;"></th>
       <th class="sortable" id="sort-name">Item Name <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-sku">SKU <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-dept">Department <span class="sort-arrow"></span></th>
@@ -13,19 +10,13 @@
       <th class="sortable" id="sort-condition">Condition <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-owner">Owner <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-user">Current User <span class="sort-arrow"></span></th>
-      <th style="background-color: maroon; color: white; border: none;">Actions</th>
+      <th style="background-color: #732F2f; color: white; border: none;">Actions</th>
     </tr>
   </thead>
   <tbody>
-    <% if inventories.empty? %>
-      <tr>
-        <td colspan="10" style="text-align: center;">No records found.</td>
-      </tr>
-    <% else %>
       <% inventories.each_with_index do |inventory, index| %>
         <tr class="inventory-row">
-          <td><input type="checkbox" class="inventory-checkbox" value="<%= inventory.inv_id %>"></td>
-          <td><%= index + 1 %></td>
+          <td style="text-align: center;"><input type="checkbox" class="inventory-checkbox " value="<%= inventory.inv_id %>" disabled></td>
           <td><%= inventory.item.name %></td>
           <td><%= inventory.item.sku %></td>
           <td><%= inventory.department&.name %></td>
@@ -34,25 +25,27 @@
           <td><%= inventory.original_owner.email %></td>
           <td><%= inventory.current_user&.email || "Available" %></td>
           <td>
-            <%= link_to "View", inventory_path(inventory), class: "btn btn-sm btn-primary" %>
-            <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
-            <%= link_to "Delete", "#", class: "btn btn-sm btn-danger delete-btn", 
-                  data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>
-            <% if inventory.current_user.nil? %>
-              <span class="button-inline">
-                <%= button_to "Check Out", checkout_inventory_path(inventory), method: :post, class: "btn btn-sm btn-success" %>
-              </span>
-            <% elsif inventory.current_user == current_user %>
-              <span class="button-inline">
-                <%= button_to "Return", return_inventory_path(inventory), method: :post, class: "btn btn-sm btn-secondary" %>
-              </span>
-            <% else %>
-              <span class="text-danger">Checked out by another user</span>
-            <% end %>
-        </td>        
+          <%= link_to "View", inventory_path(inventory), class: "btn btn-sm btn-primary" %>
+          <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
+          <%= link_to "Delete", "#", class: "btn btn-sm btn-danger delete-btn", 
+                data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>
+          <% if inventory.current_user.nil? %>
+            <span class="button-inline">
+              <%= button_to "Check Out", checkout_inventory_path(inventory), method: :post, class: "btn btn-sm btn-success" %>
+            </span>
+          <% elsif inventory.current_user == current_user %>
+            <span class="button-inline">
+              <%= button_to "Return", return_inventory_path(inventory), method: :post, class: "btn btn-sm btn-secondary" %>
+            </span>
+          <% else %>
+            <span class="text-danger">Checked out by another user</span>
+          <% end %>
+      </td>        
         </tr>
       <% end %>
-    <% end %>
+      <tr class="no-search no-sort" style="<%= 'display: none;' unless inventories.empty? %>">
+        <td colspan="9" style="text-align: center;">No records found.</td>
+      </tr>
   </tbody>
 </table>
 
@@ -79,27 +72,140 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var deleteModal = document.getElementById('deleteConfirmationModal');
-    var deleteForm = document.getElementById('delete-form');
-    var checkboxes = document.querySelectorAll('.inventory-checkbox');
-    var selectedCount = document.getElementById('selected-count');
+document.addEventListener('DOMContentLoaded', function() {
+  var deleteModal = document.getElementById('deleteConfirmationModal');
+  var deleteForm = document.getElementById('delete-form');
+  var checkboxes = document.querySelectorAll('.inventory-checkbox');
+  var selectedCount = document.getElementById('selected-items-count');
+  var footerDeleteBtn = document.getElementById('footer-delete-btn');
+  var footerCheckoutBtn = document.getElementById('footer-checkout-btn');
+  var footerReturnBtn = document.getElementById('footer-return-btn');
 
-    document.querySelectorAll('.delete-btn').forEach(button => {
-      button.addEventListener('click', function(event) {
-        var inventoryId = button.getAttribute('data-inventory-id');
-        var deleteUrl = '/inventories/' + inventoryId;
-        deleteForm.setAttribute('action', deleteUrl);
-      });
-    });
 
-    function updateSelectedCount() {
-      var count = document.querySelectorAll('.inventory-checkbox:checked').length;
-      selectedCount.textContent = count;
-    }
-
-    checkboxes.forEach(checkbox => {
-      checkbox.addEventListener('change', updateSelectedCount);
+  document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', function(event) {
+      var inventoryId = button.getAttribute('data-inventory-id');
+      var deleteUrl = '/inventories/' + inventoryId;
+      deleteForm.setAttribute('action', deleteUrl);
     });
   });
+
+  function updateSelectedCount() {
+    var count = document.querySelectorAll('.inventory-checkbox:checked').length;
+    selectedCount.textContent = count + " items selected";
+    // Change color
+    footerDeleteBtn.style.backgroundColor = count > 0 ? '' : 'gray';
+    footerDeleteBtn.style.color = count > 0 ? 'white' : '';
+    footerCheckoutBtn.style.backgroundColor = count > 0 ? '' : 'gray';
+    footerCheckoutBtn.style.color = count > 0 ? 'white' : '';
+    footerReturnBtn.style.backgroundColor = count > 0 ? '' : 'gray';
+    footerReturnBtn.style.color = count > 0 ? 'white' : '';
+
+
+    // Enable
+    footerDeleteBtn.disabled = count === 0;
+    footerCheckoutBtn.disabled = count === 0;
+    footerReturnBtn.disabled = count === 0;
+  }
+
+  document.querySelectorAll('.inventory-row').forEach(row => {
+    row.addEventListener('click', function(event) {
+      if (event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON' && event.target.tagName !== 'INPUT') {
+        var checkbox = row.querySelector('.inventory-checkbox');
+        checkbox.checked = !checkbox.checked;
+        updateSelectedCount();
+
+        if (checkbox.checked) {
+          row.classList.add('isselected');
+        } else {
+          row.classList.remove('isselected');
+        }
+      }
+    });
+  });
+
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', updateSelectedCount);
+  });
+
+  footerDeleteBtn.addEventListener('click', function() {
+    var selectedIds = Array.from(document.querySelectorAll('.inventory-checkbox:checked')).map(checkbox => checkbox.value);
+    if (selectedIds.length === 1) {
+      var deleteUrl = '/inventories/' + selectedIds[0];
+      deleteForm.setAttribute('action', deleteUrl);
+      deleteModal.show();
+    } else {
+      var multiDeleteModal = new bootstrap.Modal(document.getElementById('multiDeleteConfirmationModal'));
+      var selectedItemsList = document.getElementById('selected-items-list');
+      selectedItemsList.innerHTML = "";
+      selectedIds.forEach(id => {
+        let li = document.createElement('li');
+        li.textContent = `ID: ${id}`;
+        selectedItemsList.appendChild(li);
+      });
+      multiDeleteModal.show();
+
+      document.getElementById('footer-delete-btn').onclick = function() {
+        fetch('/inventories/multi_delete', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
+          body: JSON.stringify({ inventory_ids: selectedIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            location.reload();
+          }
+        })
+        .catch(error => console.error('Error:', error));
+      };
+    }
+  });
+
+  footerCheckoutBtn.addEventListener('click', function() {
+    var selectedIds = Array.from(document.querySelectorAll('.inventory-checkbox:checked')).map(checkbox => checkbox.value);
+    fetch('/inventories/bulk_checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify({ inventory_ids: selectedIds })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        location.reload();
+        console.log("Number of items checked out: " + data.num_updated);
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  });
+});
 </script>
+
+<style>
+.table-bordered td {
+  border-left: none;
+  border-right: none;
+}
+.table-bordered .isselected {
+  border: 1px solid green !important;
+}
+.table-bordered .isselected td {
+  background-color: #d4edda !important;
+}
+.inventory-checkbox {
+  transform: scale(1.2);
+}
+.inventory-table {
+  width: 98%;
+  margin: auto;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  overflow: hidden;
+}
+</style>
