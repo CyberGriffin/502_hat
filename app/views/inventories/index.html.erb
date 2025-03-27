@@ -1,7 +1,12 @@
 <!-- Flash Messages -->
 <!--div id="flash-messages" class="d-flex"></div-->
 
-<!-- Controls Header -->
+<!-- Inventory Table -->
+<div id="inventory-list">
+    <%= render partial: 'table', locals: { inventories: @inventories } %>
+</div>
+
+Need pagination here , 0 - 10 - ... n
 
 <div class="d-flex justify-content-between align-items-center mb-3" style="padding: 1rem;">
     <div class="d-flex align-items-center gap-2">
@@ -9,14 +14,6 @@
             Add Record (Move Later)
         </button>
     </div>
-</div>
-
-
-
-
-<!-- Inventory Table -->
-<div id="inventory-list">
-    <%= render partial: 'table', locals: { inventories: @inventories } %>
 </div>
 
 <footer class="footer fixed-bottom py-2" style="background-color: #500000;">
@@ -324,9 +321,13 @@ document.addEventListener('DOMContentLoaded', function () {
   returnBtn.addEventListener('click', function () {
     var selectedIds = [];
 
-    document.querySelectorAll('.inventory-checkbox:checked').forEach(function (checkbox) {
-      selectedIds.push(checkbox.value);
+    document.querySelectorAll('.inventory-row.isselected').forEach(function (row) {
+      selectedIds.push(row.getAttribute('data-inventory-id'));
     });
+
+    if (selectedIds.length === 0) {
+      return;
+    }
 
     confirmationReturnModal.show();
 
@@ -356,6 +357,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+  var footerCheckoutBtn = document.getElementById('footer-checkout-btn');
+
+  footerCheckoutBtn.addEventListener('click', function() {
+    var selectedIds = Array.from(document.querySelectorAll('.inventory-row.isselected')).map(function(row) {
+      return row.getAttribute('data-inventory-id');
+    });
+    fetch('/inventories/bulk_checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify({ inventory_ids: selectedIds })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        location.reload();
+        console.log("Number of items checked out: " + data.num_updated);
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
   var multiDeleteBtn = document.getElementById('footer-delete-btn');
   var multiDeleteModal = new bootstrap.Modal(document.getElementById('multiDeleteConfirmationModal'));
   var confirmMultiDeleteBtn = document.getElementById('confirm-multi-delete-btn');
@@ -364,12 +393,11 @@ document.addEventListener('DOMContentLoaded', function () {
   multiDeleteBtn.addEventListener('click', function () {
     var selectedIds = [];
 
-    document.querySelectorAll('.inventory-checkbox:checked').forEach(function (checkbox) {
-      selectedIds.push(checkbox.value);
+    document.querySelectorAll('.inventory-row.isselected').forEach(function (row) {
+      selectedIds.push(row.getAttribute('data-inventory-id'));
     });
 
     if (selectedIds.length === 0) {
-      alert('Please select at least one item to delete.');
       return;
     }
 
