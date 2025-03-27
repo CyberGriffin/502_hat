@@ -3,25 +3,13 @@
 
 <!-- Controls Header -->
 
-<!--div class="d-flex justify-content-between align-items-center mb-3" style="padding: 1rem;">
+<div class="d-flex justify-content-between align-items-center mb-3" style="padding: 1rem;">
     <div class="d-flex align-items-center gap-2">
-        <% whitelist_entry = Whitelist.find_by(email: current_user&.email) %>
-        <% if whitelist_entry&.roles == 'admin' %>
-            <button type="button" class="btn btn-primary" onclick="window.location.href='/whitelists/'">
-                Add Whitelist
-            </button>
-            <button type="button" class="btn btn-primary" onclick="window.location.href='/categories/'">
-                Add Categories
-            </button>
-        <% end %>
-        <button type="button" class="btn btn-primary" onclick="window.location.href='/items/'">
-            New Item
-        </button>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRecordModal">
-            Add Record
+            Add Record (Move Later)
         </button>
     </div>
-</div-->
+</div>
 
 
 
@@ -31,9 +19,9 @@
     <%= render partial: 'table', locals: { inventories: @inventories } %>
 </div>
 
-<footer class="footer fixed-bottom bg-light py-2">
+<footer class="footer fixed-bottom py-2" style="background-color: #500000;">
   <div class="container-fluid d-flex justify-content-between">
-    <span id="selected-items-count" class="text-muted">0 items selected</span>
+    <span id="selected-items-count" style="color:white;">0 items selected</span>
     <div>
       <button type="button" class="btn btn-success" id="footer-checkout-btn" disabled style="background-color: gray; border-color: gray;">
         Check Out Selected
