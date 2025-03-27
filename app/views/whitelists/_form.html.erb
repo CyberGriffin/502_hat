@@ -8,6 +8,9 @@
       <%= f.date_field :expires_at %>
     </p>
     <p>
+      <%= f.label :roles, "Roles" %><br>
+      <%= f.text_field :roles %>
+    <p>
       <%= f.submit @whitelist.new_record? ? "Add to Whitelist" : "Update Whitelist Entry" %>
     </p>
   <% end %>

@@ -5,7 +5,6 @@ User.delete_all
 Department.delete_all
 Category.delete_all
 Whitelist.delete_all
-Admin.delete_all
 
 # Reset primary key auto-increment values
 ActiveRecord::Base.connection.execute("DELETE FROM sqlite_sequence WHERE name='inventories'")
@@ -35,23 +34,16 @@ Department.create!([
 
 # Create Categories
 Category.create!([
-     { cat_id: "TOOL", name: "Tool", icon: "🔧", color_code: "#DAF7A6" },
-     { cat_id: "EQUIP", name: "Equipment", icon: "🚜", color_code: "#900C3F" },
-     { cat_id: "MAT", name: "Material", icon: "🏠", color_code: "#C70039" }
-])
-
-# Create Whitelists
-Whitelist.create!([
-     { email: "kwohjinyuan@tamu.edu", expires_at: Date.today + 1.year },
-     { email: "suresh06192004@tamu.edu", expires_at: Date.today + 1.year },
-     { email: "admin1@example.com", expires_at: nil }
+     { cat_id: "TOOL", name: "Tool" },
+     { cat_id: "EQUIP", name: "Equipment" },
+     { cat_id: "MAT", name: "Material" }
 ])
 
 # Create Users
 User.create!([
-     { email: "alice@example.com", name: "Alice Johnson", role: "Admin", dept_id: "CHEN" },
-     { email: "bob@example.com", name: "Bob Williams", role: "Staff", dept_id: "MEEN" },
-     { email: "charlie@example.com", name: "Charlie Lee", role: "Technician", dept_id: "ECEN" }
+     { email: "alice@example.com", name: "Alice Johnson",  dept_id: "CHEN" },
+     { email: "bob@example.com", name: "Bob Williams", dept_id: "MEEN" },
+     { email: "charlie@example.com", name: "Charlie Lee", dept_id: "ECEN" }
 ])
 
 # Create Items

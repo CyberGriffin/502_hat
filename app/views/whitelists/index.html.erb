@@ -5,6 +5,7 @@
     <tr>
       <th>Email</th>
       <th>Expiration Date</th>
+      <th>Roles</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -13,6 +14,7 @@
       <tr>
         <td><%= whitelist.email %></td>
         <td><%= whitelist.expires_at || "Never" %></td>
+        <td><%= whitelist.roles %></td>
         <td>
           <%= link_to "Show", whitelist_path(whitelist) %> |
           <%= link_to "Edit", edit_whitelist_path(whitelist) %> |

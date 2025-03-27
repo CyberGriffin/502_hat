@@ -9,10 +9,7 @@ class User < ApplicationRecord
 
     validates :email, presence: true, uniqueness: true
     validates :name, presence: true
-    validates :role, presence: true
     validates :dept_id, presence: true
-    validates :is_white_listed, inclusion: { in: [true, false] }
-    validates :white_list_end_date, presence: true, if: :is_white_listed
 
     def profile_picture_url
       self[:profile_picture_url] || "https://via.placeholder.com/40"
@@ -20,14 +17,6 @@ class User < ApplicationRecord
 
     def full_name
       name
-    end
-
-    def role
-      self[:role].to_sym
-    end
-
-    def admin?
-      role.downcase == :admin
     end
 
     def self.from_google(auth)
@@ -45,10 +34,7 @@ class User < ApplicationRecord
         user = create!(
              email: auth[:email],
              name: auth[:full_name],
-             role: "user",
              dept_id: department.dept_id,
-             is_white_listed: false,
-             white_list_end_date: nil,
              profile_picture_url: auth[:avatar_url]
         )
       end
