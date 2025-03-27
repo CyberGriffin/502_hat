@@ -62,7 +62,7 @@ class InventoriesController < ApplicationController
 
      def destroy
           @inventory.destroy
-          redirect_to inventories_path, notice: 'Inventory item was deleted.'
+          redirect_to inventories_path
      end
 
      def multi_delete
@@ -79,9 +79,9 @@ class InventoriesController < ApplicationController
      def checkout
           if @inventory.user_email.nil?
                @inventory.update(user_email: current_user.email)
-               flash[:success] = "You have successfully checked out this item."
+               # flash[:success] = "You have successfully checked out this item."
           else
-               flash[:alert] = "This item is already checked out."
+               # flash[:alert] = "This item is already checked out."
           end
 
           redirect_to inventories_path
@@ -104,9 +104,9 @@ class InventoriesController < ApplicationController
      def return
           if @inventory.current_user == current_user
                @inventory.update(user_email: nil)
-               flash[:success] = "Item returned successfully."
+               # flash[:success] = "Item returned successfully."
           else
-               flash[:alert] = "You cannot return an item you didn't check out."
+               # flash[:alert] = "You cannot return an item you didn't check out."
           end
           redirect_to inventories_path
      end

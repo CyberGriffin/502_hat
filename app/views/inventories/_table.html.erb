@@ -1,7 +1,6 @@
-
 <table class="table table-bordered mt-4 table-striped inventory-table" style="border: none;">
   <thead>
-    <tr id="table-header">
+    <tr id="table-header" style="white-space: nowrap;">
       <th style="background-color: #732F2f; color: white; border: none;"></th>
       <th class="sortable" id="sort-name">Item Name <span class="sort-arrow"></span></th>
       <th class="sortable" id="sort-sku">SKU <span class="sort-arrow"></span></th>
@@ -23,13 +22,13 @@
               <span class="badge bg-danger">Checked Out</span>
             <% end %>
           </td>
-          <td><%= inventory.item.name %></td>
-          <td><%= inventory.item.sku %></td>
-          <td><%= inventory.department&.name %></td>
-          <td><%= inventory.location %></td>
-          <td><%= inventory.condition_of_item %></td>
-          <td><%= inventory.original_owner.email %></td>
-          <td><%= inventory.current_user&.email || "" %></td>
+          <td class="truncate"><%= inventory.item.name %></td>
+          <td class="truncate"><%= inventory.item.sku %></td>
+          <td class="truncate"><%= inventory.department&.name %></td>
+          <td class="truncate"><%= inventory.location %></td>
+          <td class="truncate"><%= inventory.condition_of_item %></td>
+          <td class="truncate"><%= inventory.original_owner.name %></td>
+          <td class="truncate"><%= inventory.current_user&.name || "" %></td>
           <td>
           <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
           <% if inventory.current_user.nil? %>
@@ -165,9 +164,6 @@ document.addEventListener('DOMContentLoaded', function() {
   border-left: none;
   border-right: none;
 }
-.table-bordered .isselected {
-  
-}
 .table-bordered .isselected td {
   background-color: #d4edda !important;
 }
@@ -180,5 +176,21 @@ document.addEventListener('DOMContentLoaded', function() {
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
   overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.truncate {
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 1300px) {
+  .inventory-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
 }
 </style>
