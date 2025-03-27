@@ -10,20 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_03_15_195120) do
-  create_table "admins", force: :cascade do |t|
-    t.string "email", null: false
-    t.string "full_name"
-    t.string "uid"
-    t.string "avatar_url"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_admins_on_email", unique: true
-  end
-
+ActiveRecord::Schema[7.0].define(version: 2025_03_27_000332) do
   create_table "categories", primary_key: "cat_id", id: :string, force: :cascade do |t|
-    t.string "icon"
-    t.string "color_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "name", default: "Unnamed Category", null: false
@@ -58,10 +46,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_15_195120) do
 
   create_table "users", primary_key: "email", id: :string, force: :cascade do |t|
     t.string "name"
-    t.string "role"
     t.string "dept_id", null: false
-    t.boolean "is_white_listed", default: false
-    t.date "white_list_end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "profile_picture_url"
@@ -72,6 +57,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_15_195120) do
     t.date "expires_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "roles"
     t.index ["email"], name: "index_whitelists_on_email", unique: true
   end
 

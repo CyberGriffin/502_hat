@@ -63,6 +63,10 @@ class WhitelistsController < ApplicationController
      end
 
      def authenticate_admin!
-          redirect_to root_path, alert: "Not authorized" unless current_user&.admin?
+          whitelist_entry = Whitelist.find_by(email: current_user&.email)
+          puts "Current user email: #{current_user&.email}"
+          puts "Whitelist entry found: #{whitelist_entry.inspect}"
+          
+          redirect_to root_path, alert: "Not authorized" unless whitelist_entry&.roles == 'admin'
      end
 end

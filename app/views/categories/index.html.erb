@@ -4,8 +4,6 @@
   <thead>
     <tr>
       <th>Name</th>
-      <th>Icon</th>
-      <th>Color Code</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -13,8 +11,6 @@
     <% @categories.each do |category| %>
       <tr>
         <td><%= category.name %></td>
-        <td><%= category.icon %></td>
-        <td><%= category.color_code %></td>
         <td>
           <%= link_to 'Show', category_path(category) %> |
           <%= link_to 'Edit', edit_category_path(category) %> |
