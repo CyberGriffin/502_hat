@@ -27,8 +27,12 @@
           <td class="truncate"><%= inventory.department&.name %></td>
           <td class="truncate"><%= inventory.location %></td>
           <td class="truncate"><%= inventory.condition_of_item %></td>
-          <td class="truncate"><%= inventory.original_owner.name %></td>
-          <td class="truncate"><%= inventory.current_user&.name || "" %></td>
+          <td class="truncate no-wrap" data-short="<%= inventory.original_owner.name %>" data-full="<%= inventory.original_owner.email %>">
+            <%= inventory.original_owner.name %>
+          </td>
+          <td class="truncate no-wrap" data-short="<%= inventory.current_user&.name %>" data-full="<%= inventory.current_user&.email %>">
+            <%= inventory.current_user&.name %>
+          </td>
           <td>
           <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
           <% if inventory.current_user.nil? %>
@@ -184,6 +188,12 @@ document.addEventListener('DOMContentLoaded', function() {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.wrap:not(.no-wrap) {
+  max-width: 150px;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 @media (max-width: 1300px) {

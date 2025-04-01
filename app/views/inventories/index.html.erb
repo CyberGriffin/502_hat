@@ -16,6 +16,11 @@ Need to standardize the condition of an item, currently we have free form entry 
             Add Record (Move Later)
         </button>
     </div>
+
+    <!-- Expand table -->
+    <div class="d-flex align-items-center gap-2">
+      <button type="button" id="toggle-table-view" class="btn btn-secondary">Expand Table</button>
+    </div>
 </div>
 
 <footer class="footer fixed-bottom py-2" style="background-color: #500000;">
@@ -252,6 +257,45 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var expanded = false;
+  var toggleButton = document.getElementById('toggle-table-view');
+  
+  var cells = Array.from(document.querySelectorAll('td.truncate, th.truncate'));
+
+  cells.forEach(function(cell) {
+    if (!cell.dataset.short) {
+      cell.dataset.short = cell.textContent.trim();
+    }
+    if (!cell.dataset.full) {
+      cell.dataset.full = cell.textContent.trim();
+    }
+  });
+
+  toggleButton.addEventListener('click', function() {
+    expanded = !expanded;
+    
+    cells.forEach(function(cell) {
+      if (expanded) {
+        cell.classList.remove('truncate');
+        cell.classList.add('wrap');
+        cell.textContent = cell.dataset.full;
+      } else {
+        cell.classList.remove('wrap');
+        cell.classList.add('truncate');
+        cell.textContent = cell.dataset.short;
+      }
+    });
+    
+    toggleButton.textContent = expanded ? "Collapse Table" : "Expand Table";
+  });
+});
+</script>
+
 
 <!-- Edit Inventory Modal -->
 <!--
