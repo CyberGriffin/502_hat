@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_03_27_000332) do
+ActiveRecord::Schema[7.0].define(version: 2025_04_02_004323) do
   create_table "categories", primary_key: "cat_id", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -44,6 +44,15 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_27_000332) do
     t.string "sku"
   end
 
+  create_table "transaction_histories", force: :cascade do |t|
+    t.string "inv_id", null: false
+    t.string "action", null: false
+    t.string "user_email", null: false
+    t.datetime "transaction_date", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", primary_key: "email", id: :string, force: :cascade do |t|
     t.string "name"
     t.string "dept_id", null: false
@@ -65,5 +74,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_03_27_000332) do
   add_foreign_key "inventories", "users", column: "owner_email", primary_key: "email"
   add_foreign_key "inventories", "users", column: "user_email", primary_key: "email"
   add_foreign_key "items", "categories", primary_key: "cat_id"
+  add_foreign_key "transaction_histories", "inventories", column: "inv_id", primary_key: "inv_id", on_delete: :nullify
+  add_foreign_key "transaction_histories", "users", column: "user_email", primary_key: "email", on_delete: :nullify
   add_foreign_key "users", "departments", column: "dept_id", primary_key: "dept_id"
 end

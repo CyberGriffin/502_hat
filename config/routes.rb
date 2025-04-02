@@ -37,6 +37,12 @@ Rails.application.routes.draw do
           end
      end
 
+     resources :transaction_histories, only: [:index] do
+          collection do
+            get 'for_inventory/:inventory_id', to: 'transaction_histories#index', as: :for_inventory
+          end
+        end
+
      resources :items do
           member do
                get :delete

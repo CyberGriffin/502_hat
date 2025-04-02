@@ -1,0 +1,22 @@
+<h1>Transaction History for <%= @inventory.item.name %></h1>
+
+<table class="table table-bordered mt-4 table-striped">
+  <thead>
+    <tr>
+      <th>Action</th>
+      <th>User</th>
+      <th>Transaction Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @transaction_histories.each do |transaction| %>
+      <tr>
+        <td><%= transaction.action.capitalize %></td>
+        <td><%= transaction.user_email %></td>
+        <td><%= transaction.transaction_date.strftime("%B %d, %Y %H:%M") %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to 'Back to Inventory', inventories_path, class: 'btn btn-primary' %>
