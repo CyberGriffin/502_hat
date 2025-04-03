@@ -1,13 +1,20 @@
+<h1 class = "text-center my-4">
+  Hello, <%= current_user.full_name %>!
+  <% if current_user.profile_picture_url.present? %>
+    <%= image_tag current_user.profile_picture_url, alt: "Avatar", width: 70, height: 70, style: "border-radius: 50%; vertical-align: middle; margin-left: 10px;" %>
+  <% end %>
+</h1>
+<div class= 'text-center'>
 <h2>Select Your Department</h2>
 
-<%= form_for current_user, url: update_department_path, method: :patch do |f| %>
-  <div>
-    <%= f.label :dept_id, "Choose your department:" %>
-    <%= f.select :dept_id, options_from_collection_for_select(@departments, "dept_id", "name", current_user.dept_id) %>
-  </div>
+  <%= form_for current_user, url: update_department_path, method: :patch do |f| %>
+    <div>
+      <%= f.select :dept_id, options_from_collection_for_select(@departments, "dept_id", "name", current_user.dept_id) %>
+    </div>
 
-  <%= f.submit "Save", class: "btn btn-primary" %>
-  <% if current_user.dept_id != '-'%>
-    <%= link_to "Cancel", inventories_path, class: "btn btn-primary" %>
+    <%= f.submit "Save", class: "btn btn-primary my-2" %>
+    <% if current_user.dept_id != '-'%>
+      <%= link_to "Cancel", inventories_path, class: "btn btn-primary my-2" %>
+    <% end %>
   <% end %>
-<% end %>
+</div>

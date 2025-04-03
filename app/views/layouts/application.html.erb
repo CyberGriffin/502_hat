@@ -53,7 +53,7 @@
                 <span style="font-size: 1.20rem; color:white;"><%= current_user.full_name %> (<%= whitelist_entry.roles %>)</span>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li><%= link_to "Profile", edit_user_registration_path, class: "dropdown-item" %></li>
+                <li><%= link_to "Profile", edit_department_path(@department), class: "dropdown-item" %></li>
                 <li><%= link_to "Settings", "#", class: "dropdown-item" %></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><%= link_to "Sign Out", destroy_user_session_path, method: :delete, class: "dropdown-item" %></li>
