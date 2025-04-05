@@ -1,25 +1,30 @@
 <!DOCTYPE html>
-    <head>
+<html>
+  <head>
     <link rel="stylesheet" href="<%= asset_path 'login.css' %>" media="all" />
-    </head>
-    <div class = 'container'>
-        <div class = 'loginBox'>
-            <h1 class = 'loginHeader'>Capstone Inventory</h1>
-            <h3 class = 'loginSubHeader'>One Stop Shop for All Things Inventory</h2>
-            <div class = 'loginButtonsContainer'>
-                <p class = 'buttonHeader'>Have an account?</p>
-                <div class = 'loginButton'>
-                    <%= button_to admin_google_oauth2_omniauth_authorize_path, class: "btn btn-danger loginButton", method: :post, data: {turbo: "false"} do %>
-                        <i class="fab fa-google mobile-text"></i><span class = "mobile-font">&nbsp;Login With Google</span>
-                    <% end %>
-                </div>
-                <p class = 'buttonHeader'>Don't have an account?</p>
-                <div class = 'loginButton'>
-                    <%= button_to admin_google_oauth2_omniauth_authorize_path, class: "btn btn-danger loginButton", method: :post, data: {turbo: "false"} do %>
-                        <i class="fab fa-google mobile-text"></i><span class = "mobile-font">&nbsp;Signup With Google</span>
-                    <% end %>
-                </div>
-            </div>
+  </head>
+  <body>
+    <div class="container">
+      <div class="loginBox">
+        <h1 class="loginHeader">Capstone Inventory</h1>
+        <h3 class="loginSubHeader">One Stop Shop for All Things Inventory</h3>
+
+        <div class="loginButtonsContainer">
+          <p class="buttonHeader">Have an account?</p>
+          <div class="loginButton">
+            <%= button_to admin_google_oauth2_omniauth_authorize_path, class: "btn btn-danger loginButton", method: :post, data: { turbo: "false" } do %>
+              <i class="fab fa-google mobile-text"></i><span class="mobile-font">&nbsp;Login With Google</span>
+            <% end %>
+          </div>
+
+          <p class="buttonHeader">Don't have an account?</p>
+          <div class="loginButton">
+            <%= button_to admin_google_oauth2_omniauth_authorize_path, class: "btn btn-danger loginButton", method: :post, data: { turbo: "false" } do %>
+              <i class="fab fa-google mobile-text"></i><span class="mobile-font">&nbsp;Signup With Google</span>
+            <% end %>
+          </div>
         </div>
+      </div>
     </div>
+  </body>
 </html>
