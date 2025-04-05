@@ -13,8 +13,18 @@
     </tr>
   </thead>
   <tbody>
-      <% inventories.each_with_index do |inventory, index| %>
-        <tr class="inventory-row" data-inventory-id="<%= inventory.inv_id %>">
+    <% inventories.group_by { |inv| inv.item.sku }.each do |sku, group| %>
+      <!-- Parent Row -->
+      <tr class="sku-parent-row" data-sku="<%= sku %>">
+        <td colspan="9" style="cursor: pointer; background-color: #eee; font-weight: bold;">
+          <span class="toggle-icon" style="margin-right: 10px;">&#9654;</span>
+          SKU: <%= sku %> &mdash; <%= group.first.item.name %> (<%= group.size %> item<%= 's' if group.size > 1 %>)
+        </td>
+      </tr>
+    
+      <!-- Child Rows -->
+      <% group.each do |inventory| %>
+        <tr class="inventory-row" data-sku="<%= sku %>" style="display: none;">
           <td style="text-align: center;">
             <% if inventory.current_user.nil? %>
               <span class="badge bg-success">Available</span>
@@ -34,24 +44,23 @@
             <%= inventory.current_user&.name %>
           </td>
           <td>
-          <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
-          <% if inventory.current_user.nil? %>
-            <span class="button-inline">
-              <%= button_to "Check Out", checkout_inventory_path(inventory), method: :post, class: "btn btn-sm btn-success" %>
-            </span>
-          <% elsif inventory.current_user != current_user %>
-            <span class="badge bg-secondary">Item currently borrowed</span>
-          <% else %>
-            <span class="button-inline">
-              <%= button_to "Return", return_inventory_path(inventory), method: :post, class: "btn btn-sm btn-secondary" %>
-            </span>
-          <% end %>
-          <%= link_to "Delete", "#", class: "btn btn-sm btn-danger delete-btn", 
-                data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>
-          <%= link_to "View History", transaction_histories_path(inventory_id: inventory.inv_id), class: "btn btn-sm btn-info" %>
-      </td>        
+            <div class="d-flex gap-1 flex-wrap">
+              <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
+              <% if inventory.current_user.nil? %>
+                <%= button_to "Check Out", checkout_inventory_path(inventory), method: :post, class: "btn btn-sm btn-success" %>
+              <% elsif inventory.current_user != current_user %>
+                <span class="badge bg-secondary">Item currently borrowed</span>
+              <% else %>
+                <%= button_to "Return", return_inventory_path(inventory), method: :post, class: "btn btn-sm btn-secondary" %>
+              <% end %>
+              <%= link_to "Delete", "#", class: "btn btn-sm btn-danger delete-btn", 
+                    data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>
+              <%= link_to "View History", transaction_histories_path(inventory_id: inventory.inv_id), class: "btn btn-sm btn-info" %>
+            </div>
+          </td>
         </tr>
       <% end %>
+    <% end %>
       <tr class="no-search no-sort" style="<%= 'display: none;' unless inventories.empty? %>">
         <td colspan="9" style="text-align: center;">No records found.</td>
       </tr>
@@ -166,7 +175,32 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".sku-parent-row").forEach(parentRow => {
+      parentRow.addEventListener("click", function () {
+        const sku = parentRow.getAttribute("data-sku");
+        const children = document.querySelectorAll(`.inventory-row[data-sku='${sku}']`);
+        const icon = parentRow.querySelector(".toggle-icon");
+
+        children.forEach(child => {
+          child.style.display = (child.style.display === "none") ? "table-row" : "none";
+        });
+
+        // Toggle icon
+        icon.innerHTML = (icon.innerHTML === "▶") ? "▼" : "▶";
+      });
+    });
+  });
+</script>
+
+
 <style>
+.toggle-icon {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
 .table-bordered td {
   border-left: none;
   border-right: none;
