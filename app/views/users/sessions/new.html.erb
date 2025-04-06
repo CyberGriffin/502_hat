@@ -1,25 +1,93 @@
 <!DOCTYPE html>
     <head>
-    <link rel="stylesheet" href="<%= asset_path 'login.css' %>" media="all" />
-    </head>
-    <div class = 'container'>
-        <div class = 'loginBox'>
-            <h1 class = 'loginHeader'>Capstone Inventory</h1>
-            <h3 class = 'loginSubHeader'>One Stop Shop for All Things Inventory</h2>
-            <div class = 'loginButtonsContainer'>
-                <p class = 'buttonHeader'>Have an account?</p>
-                <div class = 'loginButton'>
-                    <%= button_to user_google_oauth2_omniauth_authorize_path, class: "btn btn-danger loginButton", method: :post, data: {turbo: "false"} do %>
-                        <i class="fab fa-google mobile-text"></i><span class = "mobile-font">&nbsp;Login With Google</span>
-                    <% end %>
-                </div>
-                <p class = 'buttonHeader'>Don't have an account?</p>
-                <div class = 'loginButton'>
-                    <%= button_to user_google_oauth2_omniauth_authorize_path, class: "btn btn-danger loginButton", method: :post, data: {turbo: "false"} do %>
-                        <i class="fab fa-google mobile-text"></i><span class = "mobile-font">&nbsp;Signup With Google</span>
-                    <% end %>
-                </div>
-            </div>
-        </div>
+  <link rel="stylesheet" href="<%= asset_path 'login.css' %>" media="all" />
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-image: url('https://cdn.eis.tamu.edu/public/images/newbackground7.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      position: relative;
+      color: white;
+      text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+    }
+
+    body::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 0;
+    }
+
+    .container {
+    height: calc(100vh - 100px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    padding: 0 20px;
+    text-align: center;
+    }
+
+
+    .loginHeader {
+      font-size: 3.5rem;
+      margin-bottom: 10px;
+    }
+
+    .loginSubHeader {
+      font-size: 1.3rem;
+      font-weight: 400;
+      margin-bottom: 30px;
+    }
+
+    .loginButton .btn {
+      background-color:rgb(110, 0, 0);
+      color: white;
+      padding: 12px 25px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .loginButton .btn:hover {
+      background-color: rgb(123, 0, 0);;
+    }
+
+    .mobile-font {
+      font-size: 1rem;
+    }
+
+    .mobile-text {
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+
+    <div class="container">
+  <h1 class="loginHeader">Capstone Inventory</h1>
+  <h3 class="loginSubHeader">One Stop Shop for All Things Inventory</h3>
+  <div class="loginButtonsContainer">
+    <div class="loginButton">
+      <%= button_to user_google_oauth2_omniauth_authorize_path, class: "btn btn-danger loginButton", method: :post, data: {turbo: "false"} do %>
+        <i class="fab fa-google mobile-text"></i><span class="mobile-font">&nbsp;Login With Google</span>
+      <% end %>
     </div>
+  </div>
+</div>
+
 </html>

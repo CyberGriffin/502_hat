@@ -36,11 +36,13 @@
     </div>
 
     <!-- Search (Center) -->
+    <% if user_signed_in? %>
     <div class="flex-grow-1 d-flex justify-content-center">
       <form class="d-flex" style="width: 40rem;">
         <input type="text" id="search-input" placeholder="Search..." class="form-control" value="<%= params[:search] %>">
       </form>
     </div>
+    <% end %>
 
     <!-- User Profile (Right) -->
     <div class="ms-auto">
@@ -67,6 +69,7 @@
 </nav>
 
     <!-- Navbar 2 -->
+    <% if user_signed_in? %>
     <nav class="navbar navbar-expand-lg">
     <ul class="navbar-nav navbar-2">
             <li class="nav-item">
@@ -83,7 +86,9 @@
             </li>
           </ul>
     </nav>
+    <% end %>
   </header>
+  
   <style>
     .header-container {
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
@@ -98,9 +103,18 @@
     .navbar-2 .nav-link {
       color: white !important;
     }
+    <% if user_signed_in? %>
     .navbar-1 {
       border-bottom: 1px solid #707070;
     }
+    <% else %>
+    .navbar-1 {
+      border-bottom: 15px solid #322C2C;
+    }
+    .navbar-1 .navbar-brand {
+      font-size: 1.5rem;
+    }
+    <% end %>
     .navbar-2 .nav-link.active {
       font-weight: bold;
       color: #D6D3C4 !important;

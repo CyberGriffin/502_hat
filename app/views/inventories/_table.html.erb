@@ -101,6 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function updateSelectedCount() {
     var count = document.querySelectorAll('.isselected').length;
     selectedCount.textContent = count + " items selected";
+
     // Change color
     footerDeleteBtn.style.backgroundColor = count > 0 ? '' : 'gray';
     footerDeleteBtn.style.color = count > 0 ? 'white' : '';
