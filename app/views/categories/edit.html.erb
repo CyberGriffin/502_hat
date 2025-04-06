@@ -2,4 +2,11 @@
 
 <%= render 'form', category: @category %>
 
-<%= link_to 'Back to List', categories_path %>
+<footer class="footer fixed-bottom py-2" style="background-color: #500000;">
+  <div class="container-fluid d-flex justify-content-between">
+    <span id="selected-items-count" style="color:white;"></span>
+    <div>
+    <%= link_to "Back to Inventory", inventories_path, class: "btn btn-secondary" %>
+    </div>
+  </div>
+</footer>

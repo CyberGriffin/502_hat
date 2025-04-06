@@ -1,4 +1,4 @@
-<table class="table table-bordered mt-4 table-striped inventory-table" style="border: none;">
+<table class="table table-bordered mt-4 table-striped inventory-table">
   <thead>
     <tr id="table-header" style="white-space: nowrap;">
       <th style="background-color: #732F2f; color: white; border: none;"></th>
@@ -14,23 +14,27 @@
   </thead>
   <tbody>
     <% inventories.group_by { |inv| inv.item.sku }.each do |sku, group| %>
-      <!-- Parent Row -->
-      <tr class="sku-parent-row" data-sku="<%= sku %>">
+      <% first_item = group.first.item %>
+      <tr class="sku-parent-row" 
+          data-sku="<%= sku %>"
+          data-name="<%= first_item.name %>"
+          data-inventory-ids="<%= group.map(&:id).join(',') %>">
         <td colspan="9" style="cursor: pointer; background-color: #eee; font-weight: bold;">
           <span class="toggle-icon" style="margin-right: 10px;">&#9654;</span>
-          SKU: <%= sku %> &mdash; <%= group.first.item.name %> (<%= group.size %> item<%= 's' if group.size > 1 %>)
+          SKU: <%= sku %> &mdash; <%= first_item.name %> (<%= group.size %> item<%= 's' if group.size > 1 %>)
         </td>
       </tr>
-    
-      <!-- Child Rows -->
+
       <% group.each do |inventory| %>
-        <tr class="inventory-row" data-sku="<%= sku %>" style="display: none;">
+        <tr class="inventory-row" 
+            data-sku="<%= sku %>"
+            data-name="<%= inventory.item.name %>"
+            data-inventory-id="<%= inventory.id %>"
+            style="display: none;">
           <td style="text-align: center;">
-            <% if inventory.current_user.nil? %>
-              <span class="badge bg-success">Available</span>
-            <% else %>
-              <span class="badge bg-danger">Checked Out</span>
-            <% end %>
+            <span class="badge <%= inventory.current_user.nil? ? 'bg-success' : 'bg-danger' %>">
+              <%= inventory.current_user.nil? ? 'Available' : 'Checked Out' %>
+            </span>
           </td>
           <td class="truncate"><%= inventory.item.name %></td>
           <td class="truncate"><%= inventory.item.sku %></td>
@@ -61,9 +65,9 @@
         </tr>
       <% end %>
     <% end %>
-      <tr class="no-search no-sort" style="<%= 'display: none;' unless inventories.empty? %>">
-        <td colspan="9" style="text-align: center;">No records found.</td>
-      </tr>
+    <tr class="no-search no-sort" style="<%= 'display: none;' unless inventories.empty? %>">
+      <td colspan="9" style="text-align: center;">No records found.</td>
+    </tr>
   </tbody>
 </table>
 
@@ -72,17 +76,15 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Delete</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title">Confirm Delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">
-        Are you sure you want to delete this item?
-      </div>
+      <div class="modal-body">Are you sure you want to delete this item?</div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         <%= form_with url: "#", method: :delete, local: true, id: "delete-form" do %>
-          <%= hidden_field_tag :authenticity_token, form_authenticity_token %>  
-          <button type="submit" class="btn btn-danger" id="confirm-delete-btn">Delete</button>
+          <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+          <button type="submit" class="btn btn-danger">Delete</button>
         <% end %>
       </div>
     </div>
@@ -90,126 +92,69 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  var deleteModal = document.getElementById('deleteConfirmationModal');
-  var deleteForm = document.getElementById('delete-form');
-  var selectedCount = document.getElementById('selected-items-count');
-  var footerDeleteBtn = document.getElementById('footer-delete-btn');
-  var footerCheckoutBtn = document.getElementById('footer-checkout-btn');
-  var footerReturnBtn = document.getElementById('footer-return-btn');
+  document.addEventListener('DOMContentLoaded', () => {
+    const deleteModal = document.getElementById('deleteConfirmationModal');
+    const deleteForm = document.getElementById('delete-form');
 
-
-  document.querySelectorAll('.delete-btn').forEach(button => {
-    button.addEventListener('click', function(event) {
-      var inventoryId = button.getAttribute('data-inventory-id');
-      var deleteUrl = '/inventories/' + inventoryId;
-      deleteForm.setAttribute('action', deleteUrl);
-    });
-  });
-
-  function updateSelectedCount() {
-    var count = document.querySelectorAll('.isselected').length;
-    selectedCount.textContent = count + " items selected";
-    // Change color
-    footerDeleteBtn.style.backgroundColor = count > 0 ? '' : 'gray';
-    footerDeleteBtn.style.color = count > 0 ? 'white' : '';
-    footerCheckoutBtn.style.backgroundColor = count > 0 ? '' : 'gray';
-    footerCheckoutBtn.style.color = count > 0 ? 'white' : '';
-    footerReturnBtn.style.backgroundColor = count > 0 ? '' : 'gray';
-    footerReturnBtn.style.color = count > 0 ? 'white' : '';
-
-
-    // Enable
-    footerDeleteBtn.disabled = count === 0;
-    footerCheckoutBtn.disabled = count === 0;
-    footerReturnBtn.disabled = count === 0;
-  }
-
-  document.querySelectorAll('.inventory-row').forEach(row => {
-    row.addEventListener('click', function(event) {
-      if (event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON') {
-        row.classList.toggle('isselected');
-        updateSelectedCount();
-      }
-    });
-  });
-
-  footerDeleteBtn.addEventListener('click', function() {
-    var selectedIds = Array.from(document.querySelectorAll('.inventory-checkbox:checked')).map(checkbox => checkbox.value);
-    if (selectedIds.length === 1) {
-      var deleteUrl = '/inventories/' + selectedIds[0];
-      deleteForm.setAttribute('action', deleteUrl);
-      deleteModal.show();
-    } else {
-      var multiDeleteModal = new bootstrap.Modal(document.getElementById('multiDeleteConfirmationModal'));
-      var selectedItemsList = document.getElementById('selected-items-list');
-      selectedItemsList.innerHTML = "";
-      selectedIds.forEach(id => {
-        let li = document.createElement('li');
-        li.textContent = `ID: ${id}`;
-        selectedItemsList.appendChild(li);
+    document.querySelectorAll('.delete-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const inventoryId = button.getAttribute('data-inventory-id');
+        deleteForm.setAttribute('action', `/inventories/${inventoryId}`);
+        new bootstrap.Modal(deleteModal).show();
       });
-      multiDeleteModal.show();
+    });
 
-      document.getElementById('footer-delete-btn').onclick = function() {
-        fetch('/inventories/multi_delete', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-          },
-          body: JSON.stringify({ inventory_ids: selectedIds })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.status === 'success') {
-            location.reload();
-          }
-        })
-        .catch(error => console.error('Error:', error));
-      };
-    }
-  });
+    const selectedCount = document.getElementById('selected-items-count');
+    const updateSelectedCount = () => {
+      const count = document.querySelectorAll('.isselected').length;
+      selectedCount.textContent = `${count} items selected`;
 
-  
-});
-</script>
+      ['footer-delete-btn', 'footer-checkout-btn', 'footer-return-btn'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.disabled = count === 0;
+          btn.style.backgroundColor = count ? '' : 'gray';
+          btn.style.color = count ? 'white' : '';
+        }
+      });
+    };
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".sku-parent-row").forEach(parentRow => {
-      parentRow.addEventListener("click", function () {
-        const sku = parentRow.getAttribute("data-sku");
+    document.querySelectorAll('.inventory-row').forEach(row => {
+      row.addEventListener('click', event => {
+        if (!['A', 'BUTTON'].includes(event.target.tagName)) {
+          row.classList.toggle('isselected');
+          updateSelectedCount();
+        }
+      });
+    });
+
+    document.querySelectorAll('.sku-parent-row').forEach(parentRow => {
+      parentRow.addEventListener('click', () => {
+        const sku = parentRow.dataset.sku;
         const children = document.querySelectorAll(`.inventory-row[data-sku='${sku}']`);
-        const icon = parentRow.querySelector(".toggle-icon");
+        const icon = parentRow.querySelector('.toggle-icon');
 
         children.forEach(child => {
-          child.style.display = (child.style.display === "none") ? "table-row" : "none";
+          child.style.display = (child.style.display === 'none') ? 'table-row' : 'none';
         });
 
-        // Toggle icon
-        icon.innerHTML = (icon.innerHTML === "▶") ? "▼" : "▶";
+        icon.innerHTML = (icon.innerHTML === '▶') ? '▼' : '▶';
       });
     });
   });
 </script>
-
 
 <style>
 .toggle-icon {
   display: inline-block;
   transition: transform 0.2s ease;
 }
-
 .table-bordered td {
   border-left: none;
   border-right: none;
 }
 .table-bordered .isselected td {
   background-color: #d4edda !important;
-}
-.inventory-checkbox {
-  transform: scale(1.2);
 }
 .inventory-table {
   width: 98%;
@@ -219,20 +164,15 @@ document.addEventListener('DOMContentLoaded', function() {
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 .truncate {
   max-width: 150px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-.wrap:not(.no-wrap) {
-  max-width: 150px;
-  white-space: normal;
-  word-wrap: break-word;
+.no-wrap {
+  white-space: nowrap;
 }
-
 @media (max-width: 1300px) {
   .inventory-table {
     display: block;

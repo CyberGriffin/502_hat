@@ -1,24 +1,30 @@
-<h1>Edit Item</h1>
+<div class="container mt-4">
+  <%= form_with model: @item, local: true do |form| %>
+    <div class="mb-3">
+      <%= form.label :name, "Item Name" %>
+      <%= form.text_field :name, class: "form-control", required: true %>
+    </div>
 
-<%= form_with model: @item, local: true do |form| %>
-  <div>
-    <%= form.label :name, "Item Name" %>
-    <%= form.text_field :name, required: true %>
+    <div class="mb-3">
+      <%= form.label :description, "Description" %>
+      <%= form.text_area :description, rows: 3, class: "form-control" %>
+    </div>
+
+    <div class="mb-3">
+      <%= form.label :category_id, "Category" %>
+      <%= form.collection_select :category_id, Category.all, :cat_id, :name, { prompt: "Select a Category" }, class: "form-control" %>
+    </div>
+
+    <%= form.submit "Update Item", class: "btn btn-primary" %>
+    <%= link_to "Back to Items", items_path, class: "btn btn-secondary" %>
+  <% end %>
+</div>
+
+<footer class="footer fixed-bottom py-2" style="background-color: #500000;">
+  <div class="container-fluid d-flex justify-content-between">
+    <span id="selected-items-count" style="color:white;"></span>
+    <div>
+    <%= link_to "Back to Inventory", inventories_path, class: "btn btn-secondary" %>
+    </div>
   </div>
-
-  <div>
-    <%= form.label :description, "Description" %>
-    <%= form.text_area :description, rows: 3 %>
-  </div>
-
-  <div>
-    <%= form.label :category_id, "Category" %>
-    <%= form.collection_select :category_id, Category.all, :cat_id, :name, prompt: "Select a Category" %>
-  </div>
-
-  <div>
-    <%= form.submit "Update Item" %>
-  </div>
-<% end %>
-
-<%= link_to "Back to Items", items_path %>
+</footer>

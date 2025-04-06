@@ -1,8 +1,13 @@
-<div class="d-flex justify-content-between align-items-center mb-3" style="padding-top: 1rem; padding-left: 1rem; padding-right: 1rem;">
-  <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#addItemModal">
-    New Item
-  </button>
-</div>
+<footer class="footer fixed-bottom py-2" style="background-color: #500000;">
+  <div class="container-fluid d-flex justify-content-between">
+    <span id="selected-items-count" style="color:white;"></span>
+    <div>
+    <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#addItemModal">
+      New Item
+    </button>
+    </div>
+  </div>
+</footer>
 
 <!-- Items Table -->
 <div id="items-list">
@@ -24,8 +29,16 @@
           <td><%= item.description %></td>
           <td><%= item.category.name %></td>
           <td>
-            <%= link_to 'Show', item_path(item), class: 'btn btn-primary btn-sm' %>
-            <%= link_to 'Edit', edit_item_path(item), class: 'btn btn-secondary btn-sm' %>
+          <%= link_to '#', class: 'btn btn-primary btn-sm', 
+          data: { bs_toggle: 'modal', bs_target: '#showItemModal', 
+                  name: item.name, 
+                  description: item.description, 
+                  sku: item.sku, 
+                  category: item.category.name }, 
+          onclick: 'fillShowModal(this)' do %>
+Show
+<% end %>
+            <%= link_to 'Edit', edit_item_path(item), class: 'btn btn-warning btn-sm' %>
             <%= link_to 'Delete', delete_item_path(item), class: 'btn btn-danger btn-sm' %>
           </td>
         </tr>
@@ -33,6 +46,37 @@
     </tbody>
   </table>
 </div>
+
+<!-- Show Item Modal -->
+<div class="modal fade" id="showItemModal" tabindex="-1" aria-labelledby="showItemModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="showItemModalLabel">Item Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <dl class="row">
+          <dt class="col-sm-4">Name:</dt>
+          <dd class="col-sm-8" id="item-name"></dd>
+
+          <dt class="col-sm-4">Description:</dt>
+          <dd class="col-sm-8" id="item-description"></dd>
+
+          <dt class="col-sm-4">SKU:</dt>
+          <dd class="col-sm-8" id="item-sku"></dd>
+
+          <dt class="col-sm-4">Category:</dt>
+          <dd class="col-sm-8" id="item-category"></dd>
+        </dl>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- Add Item Modal -->
 <div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
@@ -73,3 +117,13 @@
     </div>
   </div>
 </div>
+
+<script>
+  function fillShowModal(button) {
+  document.getElementById('item-name').textContent = button.dataset.name;
+  document.getElementById('item-description').textContent = button.dataset.description;
+  document.getElementById('item-sku').textContent = button.dataset.sku;
+  document.getElementById('item-category').textContent = button.dataset.category;
+}
+
+</script>

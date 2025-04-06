@@ -1,17 +1,26 @@
-<h1>Delete Category</h1>
-
-<div>
-  <%= form_with model: @category, url: category_path(@category), method: :delete, local: true do |f| %>
-    
-    <p>Are you sure you want to permanently delete this category?</p>
-
-    <p class="reference-name"><%= @category.name %></p>
-
-    <div class="form-buttons">
-      <%= f.submit("Delete Category", class: "btn btn-danger") %>
+<footer class="footer fixed-bottom py-2" style="background-color: #500000;">
+  <div class="container-fluid d-flex justify-content-between">
+    <span id="selected-items-count" style="color:white;"></span>
+    <div>
+    <%= link_to "Back to Inventory", inventories_path, class: "btn btn-secondary" %>
     </div>
+  </div>
+</footer>
 
-  <% end %>
+<div class="container-fluid d-flex justify-content-center align-items-start" style="height: 100vh; padding-top: 100px;">
+  <div class="card p-4 shadow-lg" style="width: 100%; max-width: 500px;">
+    <h1 class="mb-4 text-center">Delete Category</h1>
+      <%= form_with model: @category, url: category_path(@category), method: :delete, local: true do |f| %>
+        
+        <div class="mb-3">
+          <p>Are you sure you want to permanently delete this category?</p>
+          <p class="reference-name"><strong><%= @category.name %></strong<</p>
+        </div>
 
-  <%= link_to "No, Back to List", categories_path, class: "btn btn-secondary" %>
+        <div class="d-flex justify-content-center mb-3">
+          <%= f.submit("Delete Category", class: "btn btn-danger me-2") %>
+          <%= link_to "No, Back to List", categories_path, class: "btn btn-secondary" %>
+        </div>
+      <% end %>
+  </div>
 </div>
