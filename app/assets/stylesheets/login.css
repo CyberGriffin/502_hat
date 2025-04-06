@@ -36,28 +36,33 @@
     margin: 0px;
 }
 
-.loginButtonsContainer{
+.loginButtonsContainer {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: left;
-    width: 250px;
+    align-items: center; 
+    width: 100%; 
     margin-top: 75px;
+    text-align: center; 
 }
 
-.buttonHeader{
+.buttonHeader {
     font-size: 25px;
-    text-align: left;
-    margin: 0px;
+    text-align: center; 
+    margin: 0px 0px 10px 0px;
 }
 
-.loginButton{
+
+.loginButton {
     width: 300px;
     height: 50px;
     padding: 2px;
-    font-size: 25px;
+    font-size: 18px;
     border-radius: 5px;
+    margin-bottom: 20px; 
+    text-align: center;
 }
+
 
 .loginButton:hover{
     cursor: pointer;
