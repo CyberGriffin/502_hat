@@ -1,39 +1,81 @@
+<div class="table-wrapper" style="position: relative;">
 <table class="table table-bordered mt-4 table-striped inventory-table" style="border: none;">
   <thead>
     <tr id="table-header" style="white-space: nowrap;">
       <th style="background-color: #732F2f; color: white; border: none;"></th>
-      <th class="sortable" id="sort-name">Item Name <span class="sort-arrow"></span></th>
-      <th class="sortable" id="sort-sku">SKU <span class="sort-arrow"></span></th>
-      <th class="sortable" id="sort-dept">Department <span class="sort-arrow"></span></th>
-      <th class="sortable" id="sort-location">Location <span class="sort-arrow"></span></th>
-      <th class="sortable" id="sort-condition">Condition <span class="sort-arrow"></span></th>
-      <th class="sortable" id="sort-owner">Owner <span class="sort-arrow"></span></th>
-      <th class="sortable" id="sort-user">Current User <span class="sort-arrow"></span></th>
+      <th class="sortable" id="sort-name">
+        <div class="sort-header">
+          <span>Item Name</span>
+          <span class="sort-arrow">▲</span>
+        </div>
+      </th>
+      <th class="sortable" id="sort-sku">
+        <div class="sort-header">
+          <span>SKU</span>
+          <span class="sort-arrow">▲</span>
+        </div>
+      </th>
+      <th class="sortable" id="sort-dept">
+        <div class="sort-header">
+          <span>Department</span>
+          <span class="sort-arrow">▲</span>
+        </div>
+      </th>
+      <th class="sortable" id="sort-location">
+        <div class="sort-header">
+          <span>Location</span>
+          <span class="sort-arrow">▲</span>
+        </div>
+      </th>
+      <th class="sortable" id="sort-condition">
+        <div class="sort-header">
+          <span>Condition</span>
+          <span class="sort-arrow">▲</span>
+        </div>
+      </th>
+      <th class="sortable" id="sort-owner">
+        <div class="sort-header">
+          <span>Owner</span>
+          <span class="sort-arrow">▲</span>
+        </div>
+      </th>
+      <th class="sortable" id="sort-user">
+        <div class="sort-header">
+          <span>Current User</span>
+          <span class="sort-arrow">▲</span>
+        </div>
+      </th>
       <th style="background-color: #732F2f; color: white; border: none;">Actions</th>
     </tr>
+
+    <tr id="sort-indicator-row">
+    <td colspan="9" style="padding: 0; position: relative;">
+      <div id="sort-indicator"></div>
+    </td>
+  </tr>
   </thead>
   <tbody>
-      <% inventories.each_with_index do |inventory, index| %>
-        <tr class="inventory-row" data-inventory-id="<%= inventory.inv_id %>">
-          <td style="text-align: center;">
-            <% if inventory.current_user.nil? %>
-              <span class="badge bg-success">Available</span>
-            <% else %>
-              <span class="badge bg-danger">Checked Out</span>
-            <% end %>
-          </td>
-          <td class="truncate"><%= inventory.item.name %></td>
-          <td class="truncate"><%= inventory.item.sku %></td>
-          <td class="truncate"><%= inventory.department&.name %></td>
-          <td class="truncate"><%= inventory.location %></td>
-          <td class="truncate"><%= inventory.condition_of_item %></td>
-          <td class="truncate no-wrap" data-short="<%= inventory.original_owner.name %>" data-full="<%= inventory.original_owner.email %>">
-            <%= inventory.original_owner.name %>
-          </td>
-          <td class="truncate no-wrap" data-short="<%= inventory.current_user&.name %>" data-full="<%= inventory.current_user&.email %>">
-            <%= inventory.current_user&.name %>
-          </td>
-          <td>
+    <% inventories.each_with_index do |inventory, index| %>
+      <tr class="inventory-row" data-inventory-id="<%= inventory.inv_id %>">
+        <td style="text-align: center;">
+          <% if inventory.current_user.nil? %>
+            <span class="badge bg-success">Available</span>
+          <% else %>
+            <span class="badge bg-danger">Checked Out</span>
+          <% end %>
+        </td>
+        <td class="truncate"><%= inventory.item.name %></td>
+        <td class="truncate"><%= inventory.item.sku %></td>
+        <td class="truncate"><%= inventory.department&.name %></td>
+        <td class="truncate"><%= inventory.location %></td>
+        <td class="truncate"><%= inventory.condition_of_item %></td>
+        <td class="truncate no-wrap" data-short="<%= inventory.original_owner.name %>" data-full="<%= inventory.original_owner.email %>">
+          <%= inventory.original_owner.name %>
+        </td>
+        <td class="truncate no-wrap" data-short="<%= inventory.current_user&.name %>" data-full="<%= inventory.current_user&.email %>">
+          <%= inventory.current_user&.name %>
+        </td>
+        <td>
           <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
           <% if inventory.current_user.nil? %>
             <span class="button-inline">
@@ -46,17 +88,17 @@
               <%= button_to "Return", return_inventory_path(inventory), method: :post, class: "btn btn-sm btn-secondary" %>
             </span>
           <% end %>
-          <%= link_to "Delete", "#", class: "btn btn-sm btn-danger delete-btn", 
-                data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>
+          <%= link_to "Delete", "#", class: "btn btn-sm btn-danger delete-btn", data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>
           <%= link_to "View History", transaction_histories_path(inventory_id: inventory.inv_id), class: "btn btn-sm btn-info" %>
-      </td>        
-        </tr>
-      <% end %>
-      <tr class="no-search no-sort" style="<%= 'display: none;' unless inventories.empty? %>">
-        <td colspan="9" style="text-align: center;">No records found.</td>
+        </td>
       </tr>
+    <% end %>
+    <tr class="no-search no-sort" style="<%= 'display: none;' unless inventories.empty? %>">
+      <td colspan="9" style="text-align: center;">No records found.</td>
+    </tr>
   </tbody>
 </table>
+</div>
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
@@ -167,17 +209,77 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+
 <style>
+#sort-indicator {
+  position: absolute;
+  height: 4px;
+  background-color: #ffffff;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  transition: left 0.4s ease, width 0.4s ease;
+  z-index: 5;
+}
+
+thead {
+  position: relative;
+}
+
+
+th.sortable {
+  position: relative;
+  cursor: pointer;
+  background-color: #732F2f;
+  color: white;
+  border: none;
+  text-align: left;
+  vertical-align: middle;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.sort-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.sort-header .sort-arrow {
+  display: inline-block;
+  width: 1em;
+  text-align: center;
+  color: transparent;
+  transition: color 0.3s;
+}
+
+
+th.sortable.sorted {
+  background-color: #500000;
+  color: #ffffff;
+}
+
+th.sortable.sorted .sort-arrow {
+  color: #ffffff;
+}
+
+th.sortable:hover {
+  background-color: #611111;
+}
+
 .table-bordered td {
   border-left: none;
   border-right: none;
 }
+
 .table-bordered .isselected td {
   background-color: #d4edda !important;
 }
+
 .inventory-checkbox {
   transform: scale(1.2);
 }
+
 .inventory-table {
   width: 98%;
   margin: auto;

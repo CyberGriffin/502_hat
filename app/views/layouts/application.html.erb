@@ -125,19 +125,17 @@
     }
   </style>
   <script>
-    // Handles active state for the navigation links
     document.addEventListener("DOMContentLoaded", function() {
       const currentPath = window.location.pathname;
       const navLinks = document.querySelectorAll('.navbar-2 .nav-link');
 
       navLinks.forEach(link => {
-        if (link.getAttribute('href') === currentPath) {
+        if (link.getAttribute('href') === currentPath || (currentPath === '/' && link.getAttribute('href') === '/inventories')) {
           link.classList.add('active');
           link.addEventListener('click', (event) => {
             event.preventDefault();
           });
-        }
-        else {
+        } else {
           link.classList.remove('active');
         }
       });
