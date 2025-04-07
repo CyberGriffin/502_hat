@@ -2,16 +2,6 @@
 <%= javascript_include_tag 'sorting', defer: true %>
 <%= javascript_include_tag 'inventories', defer: true %>
 
-<div class="d-flex justify-content-end align-items-center gap-2 mb-3" style="padding: 0 1rem;">
-  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRecordModal">
-    Add Record
-  </button>
-
-  <button type="button" id="toggle-table-view" class="btn btn-secondary">
-    Expand Table
-  </button>
-</div>
-
 
 <!-- Inventory Table -->
 <div id="inventory-list">
@@ -20,16 +10,6 @@
 
 Need pagination here , 0 - 10 - ... n
 Need to standardize the condition of an item, currently we have free form entry and dropdown selection
-
-<div id="save-changes-container" style="display: none; position: fixed; bottom: 80px; right: 30px; z-index: 1000;">
-  <div class="d-flex gap-2">
-    <button id="save-changes-btn" class="btn btn-success" disabled>Save Changes</button>
-    <button id="cancel-changes-btn" class="btn btn-secondary">Cancel Changes</button>
-  </div>
-</div>
-
-
-
 
 
 <footer class="footer fixed-bottom py-2" style="background-color: #500000;">

@@ -9,7 +9,6 @@ let departmentsLoadingPromise = null;
 let selectedInventoryId = null;
 let isEditing = false;
 let editToggle;
-let saveChangesContainer;
 let saveChangesBtn;
 let cancelChangesBtn;
 let transferOwnershipModal;
@@ -17,13 +16,13 @@ let newOwnerSearch;
 let currentOwnerDisplay;
 let confirmTransferBtn;
 let searchResultsTable;
-
+let toggleTableViewBtn;
+let addRecordBtn;
 
 // ==== DOCUMENT READY ====
 document.addEventListener('DOMContentLoaded', () => {
   // ---- MOVE ALL THESE INSIDE ----
   editToggle = document.getElementById('toggle-edit-mode');
-  saveChangesContainer = document.getElementById('save-changes-container');
   saveChangesBtn = document.getElementById('save-changes-btn');
   cancelChangesBtn = document.getElementById('cancel-changes-btn');
   transferOwnershipModal = document.getElementById('transferOwnershipModal');
@@ -31,6 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
   currentOwnerDisplay = document.getElementById('current-owner-display');
   confirmTransferBtn = document.getElementById('confirm-transfer-btn');
   searchResultsTable = document.getElementById('search-results-table');
+  normalButtons = document.getElementById('normal-mode-buttons');
+  editButtons = document.getElementById('edit-mode-buttons');
+  toggleTableViewBtn = document.getElementById('toggle-table-view');
+  addRecordBtn = document.getElementById('add-record-btn');
+
 
   // ==== SETUP EVENT LISTENERS ====
   editToggle.addEventListener('change', () => toggleEditMode(editToggle.checked));
@@ -338,7 +342,20 @@ function toggleEditMode(editMode) {
         editToggle.checked = false;
     }
 
+    if (editMode) {
+        toggleTableViewBtn.style.display = 'none';
+        addRecordBtn.style.display = 'none';
+        cancelChangesBtn.style.display = 'block';
+        saveChangesBtn.style.display = 'block';
+    } else {
+        cancelChangesBtn.style.display = 'none';
+        saveChangesBtn.style.display = 'none';
+        toggleTableViewBtn.style.display = 'block';
+        addRecordBtn.style.display = 'block';
+    }
+
   isEditing = editMode;
+  truncateTable();
   unselectAllRows();
   updateStatusBadges(editMode);
   toggleEditableCells(editMode);
@@ -356,9 +373,6 @@ function toggleEditMode(editMode) {
       if (placeholder) placeholder.style.display = 'none';
     }
   });
-
-  saveChangesContainer.style.display = editMode ? 'block' : 'none';
-  saveChangesBtn.disabled = !editMode;
 
   if (editMode) {
     attachOwnerTransferListeners();

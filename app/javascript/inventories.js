@@ -114,36 +114,49 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   
-    toggleButton.addEventListener('click', function() {
+    function toggleExpanded() {
         expanded = !expanded;
-      
+    
         cells.forEach(function(cell) {
-          if (expanded) {
+            if (expanded) {
             cell.classList.remove('truncate');
             cell.classList.add('wrap');
-      
+    
             const span = cell.querySelector('span');
             if (span) {
-              span.textContent = cell.dataset.full;
+                span.textContent = cell.dataset.full;
             } else {
-              cell.textContent = cell.dataset.full;
+                cell.textContent = cell.dataset.full;
             }
-          } else {
+            } else {
             cell.classList.remove('wrap');
             cell.classList.add('truncate');
-      
+    
             const span = cell.querySelector('span');
             if (span) {
-              span.textContent = cell.dataset.short;
+                span.textContent = cell.dataset.short;
             } else {
-              cell.textContent = cell.dataset.short;
+                cell.textContent = cell.dataset.short;
             }
-          }
+            }
         });
-      
+    
         toggleButton.textContent = expanded ? "Collapse Table" : "Expand Table";
         refreshSortIndicator(true);
-      });
+    }
+
+    function truncateTable() {
+        if (expanded) {
+            toggleExpanded();
+        }
+    }
+
+    toggleButton.addEventListener('click', function() {
+        toggleExpanded();
+    });
+
+    window.truncateTable = truncateTable;
+    
       
   });
 

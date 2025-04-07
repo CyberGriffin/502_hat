@@ -73,7 +73,8 @@
     <!-- Navbar 2 -->
     <% if user_signed_in? %>
     <nav class="navbar navbar-expand-lg">
-    <ul class="navbar-nav navbar-2">
+      <div class="container-fluid d-flex align-items-center">
+        <ul class="navbar-nav navbar-2">
             <li class="nav-item">
               <%= link_to "Inventory", inventories_path, class: "nav-link active" %>
             </li>
@@ -87,6 +88,25 @@
               <%= link_to "Categories", categories_path, class: "nav-link" %>
             </li>
           </ul>
+
+        <!-- Right: Action Buttons -->
+        <div class="nav-actions d-flex gap-2" id="action-buttons">
+          <!-- Normal Mode -->
+          <div id="normal-mode-buttons" class="d-flex gap-2">
+            <button type="button" class="btn btn-primary btn-sm" id="add-record-btn" data-bs-toggle="modal" data-bs-target="#addRecordModal">
+              Add Record
+            </button>
+            <button class="btn btn-secondary btn-sm" id="toggle-table-view">Expand Table</button>
+          </div>
+
+          <!-- Edit Mode -->
+          <div id="edit-mode-buttons" class="d-flex gap-2" style="display: none;">
+            <button class="btn btn-success btn-sm" id="save-changes-btn" style="display: none;">Save Changes</button>
+            <button class="btn btn-danger btn-sm" id="cancel-changes-btn" style="display: none;">Cancel Changes</button>
+          </div>
+        </div>
+
+      </div>
     </nav>
     <% end %>
   </header>
