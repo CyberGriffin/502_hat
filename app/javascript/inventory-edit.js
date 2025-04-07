@@ -331,7 +331,6 @@ function animateSavedRows() {
         row.classList.remove('edited-row');
       });
       document.querySelectorAll('.edited-cell').forEach(cell => cell.classList.remove('edited-cell'));
-      saveChangesBtn.disabled = true;
     }, ANIMATION_DURATION + 600);
   }
   
@@ -501,7 +500,9 @@ function actuallySaveChanges() {
       if (data.status === 'success') {
         animateSavedRows();
         resetEditedStyles();
-        toggleEditMode(false);
+        saveChangesBtn.disabled = true;
+        cancelChangesBtn.disabled = true;
+        // toggleEditMode(false);
       } else {
         alert('Failed to save changes!');
       }
