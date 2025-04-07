@@ -28,8 +28,7 @@ Department.create!([
      { dept_id: "MXET", name: "Multidisciplinary Engineering" },
      { dept_id: "NUEN", name: "Nuclear Engineering" },
      { dept_id: "OCEN", name: "Ocean Engineering" },
-     { dept_id: "PETE", name: "Petroleum Engineering" },
-     { dept_id: "-", name: "Not Selected" }
+     { dept_id: "PETE", name: "Petroleum Engineering" }
 ])
 
 # Create Categories

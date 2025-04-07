@@ -1,129 +1,3 @@
-// document.addEventListener('DOMContentLoaded', function() {
-// var searchInput = document.getElementById('search-input');
-
-// if (!searchInput) {
-//     return;
-// }
-
-// searchInput.addEventListener('input', function(event) {
-//     var query = searchInput.value.toLowerCase();
-//     var rows = document.querySelectorAll('#inventory-list tbody tr:not(.no-search)');
-
-//     rows.forEach(function(row) {
-//     if (row.classList.contains('admin-add-row')) {
-//         return;
-//     }
-
-//     var cells = row.querySelectorAll('td');
-//     var match = false;
-
-//     cells.forEach(function(cell) {
-//         if (cell.textContent.toLowerCase().includes(query)) {
-//         match = true;
-//         }
-//     });
-
-//     if (match) {
-//         row.style.display = '';
-//     } else {
-//         row.style.display = 'none';
-//     }
-
-//     // If none, display default row
-//     var visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
-//     var noSearchRow = document.querySelector('.no-search');
-//     if (visibleRows.length === 0) {
-//         noSearchRow.style.display = '';
-//     } else {
-//         noSearchRow.style.display = 'none';
-//     }
-//     });
-// });
-
-// var headers = document.querySelectorAll('th.sortable');
-// var indicator = document.createElement('div');
-// indicator.style.position = 'absolute';
-// indicator.style.height = '5px';
-// indicator.style.backgroundColor = '#732F2f';
-// indicator.style.transition = 'all 0.3s ease';
-// document.body.appendChild(indicator);
-
-// function positionIndicator(header) {
-//     var rect = header.getBoundingClientRect();
-//     indicator.style.width = rect.width + 'px';
-//     indicator.style.top = (rect.top - 5) + 'px';
-//     indicator.style.left = rect.left + 'px';
-//     indicator.style.border = 'none';
-// }
-
-// function sortTableByHeader(header) {
-//     var table = header.closest('table');
-//     var tbody = table.querySelector('tbody');
-//     var rows = Array.from(tbody.querySelectorAll('tr:not(.no-sort)'));
-//     var index = Array.from(header.parentNode.children).indexOf(header);
-//     var ascending = header.classList.contains('ascending');
-
-//     rows.sort(function(rowA, rowB) {
-//     var cellA = rowA.children[index].textContent.trim();
-//     var cellB = rowB.children[index].textContent.trim();
-
-//     if (!isNaN(cellA) && !isNaN(cellB)) {
-//         cellA = parseFloat(cellA);
-//         cellB = parseFloat(cellB);
-//     }
-
-//     if (cellA < cellB) {
-//         return ascending ? 1 : -1;
-//     }
-//     if (cellA > cellB) {
-//         return ascending ? -1 : 1;
-//     }
-//     return 0;
-//     });
-    
-//     rows.forEach(function(row, rowIndex) {
-//     tbody.appendChild(row);
-//     });
-
-//     headers.forEach(function(h) {
-//     h.classList.remove('ascending', 'descending', 'sorted');
-//     h.style.backgroundColor = '#732F2f';
-//     h.style.color = 'white';
-//     h.style.border = 'none';
-//     h.querySelector('.sort-arrow').textContent = '';
-//     });
-
-//     header.classList.toggle('ascending', !ascending);
-//     header.classList.toggle('descending', ascending);
-//     header.classList.add('sorted');
-//     header.style.backgroundColor = '#732F2f';
-//     header.style.color = 'white';
-//     header.style.border = 'none';
-
-//     var arrow = header.querySelector('.sort-arrow');
-//     arrow.textContent = ascending ? '▼' : '▲';
-//     header.title = ascending ? 'Descending' : 'Ascending';
-//     positionIndicator(header);
-// }
-
-// var defaultHeader = document.getElementById('sort-name');
-// sortTableByHeader(defaultHeader);
-
-// headers.forEach(function(header) {
-//     header.addEventListener('click', function() {
-//     sortTableByHeader(header);
-//     });
-// });
-// });
-
-
-
-///
-
-  
-
-
-
 
 document.addEventListener('DOMContentLoaded', function() {
     var itemField = document.getElementById('item-field');
@@ -240,24 +114,50 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   
-    toggleButton.addEventListener('click', function() {
-      expanded = !expanded;
-      
-      cells.forEach(function(cell) {
+    function toggleExpanded() {
+        expanded = !expanded;
+    
+        cells.forEach(function(cell) {
+            if (expanded) {
+            cell.classList.remove('truncate');
+            cell.classList.add('wrap');
+    
+            const span = cell.querySelector('span');
+            if (span) {
+                span.textContent = cell.dataset.full;
+            } else {
+                cell.textContent = cell.dataset.full;
+            }
+            } else {
+            cell.classList.remove('wrap');
+            cell.classList.add('truncate');
+    
+            const span = cell.querySelector('span');
+            if (span) {
+                span.textContent = cell.dataset.short;
+            } else {
+                cell.textContent = cell.dataset.short;
+            }
+            }
+        });
+    
+        toggleButton.textContent = expanded ? "Collapse Table" : "Expand Table";
+        refreshSortIndicator(true);
+    }
+
+    function truncateTable() {
         if (expanded) {
-          cell.classList.remove('truncate');
-          cell.classList.add('wrap');
-          cell.textContent = cell.dataset.full;
-        } else {
-          cell.classList.remove('wrap');
-          cell.classList.add('truncate');
-          cell.textContent = cell.dataset.short;
+            toggleExpanded();
         }
-      });
-      
-      toggleButton.textContent = expanded ? "Collapse Table" : "Expand Table";
-      refreshSortIndicator(true);
+    }
+
+    toggleButton.addEventListener('click', function() {
+        toggleExpanded();
     });
+
+    window.truncateTable = truncateTable;
+    
+      
   });
 
 

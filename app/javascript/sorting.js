@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     window.refreshSortIndicator = refreshSortIndicator;
   
-    function sortTableByHeader(header) {
+    function sortTableByHeader(header, instant = false) {
       var table = header.closest('table');
       var tbody = table.querySelector('tbody');
       var rows = Array.from(tbody.querySelectorAll('tr:not(.no-sort)'));
@@ -40,8 +40,14 @@ document.addEventListener('DOMContentLoaded', function () {
       var ascending = header.classList.contains('ascending');
   
       rows.sort(function (rowA, rowB) {
-        var cellA = rowA.children[index].textContent.trim();
-        var cellB = rowB.children[index].textContent.trim();
+        function getCellText(cell) {
+            const input = cell.querySelector('input') || cell.querySelector('select');
+            return input ? input.value.trim() : cell.textContent.trim();
+        }
+        
+        var cellA = getCellText(rowA.children[index]);
+        var cellB = getCellText(rowB.children[index]);
+        
   
         if (!isNaN(cellA) && !isNaN(cellB)) {
           cellA = parseFloat(cellA);
@@ -68,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var arrow = header.querySelector('.sort-arrow');
       arrow.textContent = ascending ? '▼' : '▲';
   
-      moveSortIndicator(header);
+      moveSortIndicator(header, instant);
       currentSortedHeader = header;
     }
   
@@ -81,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Default sort
     var defaultHeader = document.getElementById('sort-name');
     if (defaultHeader) {
-      sortTableByHeader(defaultHeader);
+      sortTableByHeader(defaultHeader, true);
     }
   
     // Watch for window resize to refresh the sort indicator

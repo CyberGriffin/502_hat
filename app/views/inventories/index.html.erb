@@ -1,22 +1,6 @@
-<%= javascript_include_tag 'search', defer: true =%>
+<%= javascript_include_tag 'search-filter', defer: true =%>
 <%= javascript_include_tag 'sorting', defer: true %>
 <%= javascript_include_tag 'inventories', defer: true %>
-
-<div class="d-flex justify-content-end align-items-center gap-2 mb-3" style="padding: 0 1rem;">
-  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRecordModal">
-    Add Record
-  </button>
-
-  <button type="button" id="toggle-table-view" class="btn btn-secondary">
-    Expand Table
-  </button>
-
-  <div class="form-check form-switch">
-    <input class="form-check-input" type="checkbox" id="toggle-edit-mode">
-    <label class="form-check-label" for="toggle-edit-mode">Edit Mode</label>
-  </div>
-
-</div>
 
 
 <!-- Inventory Table -->
@@ -25,8 +9,8 @@
 </div>
 
 Need pagination here , 0 - 10 - ... n
-
 Need to standardize the condition of an item, currently we have free form entry and dropdown selection
+
 
 <footer class="footer fixed-bottom py-2" style="background-color: #500000;">
   <div class="container-fluid d-flex justify-content-between">
@@ -165,3 +149,101 @@ Need to standardize the condition of an item, currently we have free form entry 
       </div>
     </div>
   </div>
+</div>
+
+
+<!-- Offcanvas Side Panel -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="filterPanel" aria-labelledby="filterPanelLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="filterPanelLabel">Filters</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column gap-4">
+
+    <!-- Availability -->
+    <div>
+      <label class="form-label">Availability</label>
+      <div class="d-flex flex-wrap gap-2">
+        <button type="button" class="btn btn-outline-secondary filter-bubble" data-filter-group="availability" data-value="available">Available</button>
+        <button type="button" class="btn btn-outline-secondary filter-bubble" data-filter-group="availability" data-value="checked_out">Checked Out</button>
+      </div>
+    </div>
+
+    <!-- Departments -->
+    <% used_departments = Inventory.includes(:department).map { |inv| inv.department&.name }.compact.uniq.sort %>
+
+    <div>
+      <label class="form-label">Departments</label>
+      <div class="d-flex flex-wrap gap-2 overflow-auto" style="max-height: 300px; padding: 0.5rem;">
+        <% Department.where(name: used_departments).order(:name).each do |dept| %>
+          <button type="button" 
+                  class="btn btn-outline-secondary filter-bubble" 
+                  data-filter-group="department" 
+                  data-value="<%= dept.name %>"
+                  title="<%= dept.name %>">
+            <%= dept.dept_id %>
+          </button>
+        <% end %>
+      </div>
+    </div>
+
+
+    <!-- Condition -->
+    <div>
+      <label class="form-label">Condition</label>
+      <div class="d-flex flex-wrap gap-2" style="padding: 0.5rem;">
+        <% Inventory.distinct.pluck(:condition_of_item).compact.each do |condition| %>
+          <button type="button" class="btn btn-outline-dark filter-bubble" data-filter-group="condition" data-value="<%= condition %>"><%= condition %></button>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="mt-auto d-flex justify-content-between" style="padding: 0.5rem;">
+      <button type="button" class="btn btn-secondary" id="clear-filters-btn">Clear All</button>
+      <button type="button" class="btn btn-primary" id="apply-filters-btn" data-bs-dismiss="offcanvas">Done</button>
+    </div>
+
+  </div>
+</div>
+
+
+
+<style>
+.filter-bubble.active {
+  background-color: #500000;
+  color: white;
+  border-color: #500000;
+}
+
+.filter-bubble {
+  border-radius: 2rem;
+}
+.filter-bubble.active {
+  border: none;
+}
+
+#filterPanel .overflow-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+#filterPanel .overflow-auto::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 5px;
+}
+
+#filterPanel .overflow-auto::-webkit-scrollbar-thumb {
+  background: #500000;
+  border-radius: 5px;
+}
+
+.offcanvas-body > div {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.offcanvas-body > div:last-child {
+  border-bottom: none;
+}
+
+</style>
