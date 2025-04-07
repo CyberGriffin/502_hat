@@ -226,30 +226,34 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-    const deleteForm = document.getElementById('delete-form');
-    const warningDiv = document.getElementById('checked-out-warning');
-    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
-    const modalBody = document.getElementById('delete-modal-body');
+  var deleteModal = document.getElementById('deleteConfirmationModal');
+  var deleteForm = document.getElementById('delete-form');
+  var selectedCount = document.getElementById('selected-items-count');
+  var footerDeleteBtn = document.getElementById('footer-delete-btn');
+  var footerCheckoutBtn = document.getElementById('footer-checkout-btn');
+  var footerReturnBtn = document.getElementById('footer-return-btn');
+  const warningDiv = document.getElementById('checked-out-warning');
+  const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+  const modalBody = document.getElementById('delete-modal-body');
 
-    document.querySelectorAll('.delete-btn').forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.preventDefault();
-        const inventoryId = button.getAttribute('data-inventory-id');
-        const inventoryRow = button.closest('.inventory-row');
-        const isCheckedOut = inventoryRow.querySelector('.badge').classList.contains('bg-danger');
-        
-        // Update modal content based on checked-out status
-        warningDiv.classList.toggle('d-none', !isCheckedOut);
-        confirmDeleteBtn.textContent = isCheckedOut ? 'Delete Anyway' : 'Delete';
-        
-        // Set form action
-        deleteForm.setAttribute('action', `/inventories/${inventoryId}`);
-        
-        // Show modal
-        deleteModal.show();
-      });
+  document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      const inventoryId = button.getAttribute('data-inventory-id');
+      const inventoryRow = button.closest('.inventory-row');
+      const isCheckedOut = inventoryRow.querySelector('.badge').classList.contains('bg-danger');
+      
+      // Update modal content based on checked-out status
+      warningDiv.classList.toggle('d-none', !isCheckedOut);
+      confirmDeleteBtn.textContent = isCheckedOut ? 'Delete Anyway' : 'Delete';
+      
+      // Set form action
+      deleteForm.setAttribute('action', `/inventories/${inventoryId}`);
+      
+      // Show modal
+      deleteModal.show();
     });
+  });
 
   function updateSelectedCount() {
     var count = document.querySelectorAll('.isselected').length;
