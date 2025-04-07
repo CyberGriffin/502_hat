@@ -31,9 +31,11 @@
     <nav class="navbar navbar-expand-lg navbar-1">
   <div class="container-fluid d-flex align-items-center">
     <!-- Brand (Left) -->
+    <% if user_signed_in? %>
     <div>
       <a class="navbar-brand" href="/" style="color:white">InventoryManagement</a>
     </div>
+    <% end %>
 
     <!-- Search (Center) -->
     <% if user_signed_in? %>
@@ -109,10 +111,8 @@
     }
     <% else %>
     .navbar-1 {
+      padding: 20px;
       border-bottom: 15px solid #322C2C;
-    }
-    .navbar-1 .navbar-brand {
-      font-size: 1.5rem;
     }
     <% end %>
     .navbar-2 .nav-link.active {
@@ -143,18 +143,6 @@
       });
     });
   </script>
-
-  <!-- Flash Messages (Styled with Bootstrap) -->
-  <% if flash.any? %>
-    <div class="container mt-3" visible="false">
-      <% flash.each do |key, value| %>
-        <div class="alert alert-<%= bootstrap_flash_class(key) %> alert-dismissible fade show" role="alert">
-          <%= value.html_safe %>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      <% end %>
-    </div>
-  <% end %>
 
   <%= yield %>
 
