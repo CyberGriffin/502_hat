@@ -12,6 +12,8 @@ Rails.application.routes.draw do
      get 'department/edit', to: 'users#edit_department', as: :edit_department
      patch 'department/update', to: 'users#update_department', as: :update_department
 
+     get '/settings/accessibility', to: 'settings#accessibility', as: 'accessibility_settings'
+
      resources :whitelists do
           member do
                get :delete
