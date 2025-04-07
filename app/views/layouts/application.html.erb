@@ -40,9 +40,12 @@
     <!-- Search (Center) -->
     <% if user_signed_in? && current_user.dept_id.present? && current_user.dept_id != '-' %>
     <div class="flex-grow-1 d-flex justify-content-center">
-      <form class="d-flex" style="width: 40rem;">
+      <div class="input-group" style="width: 40rem;">
         <input type="text" id="search-input" placeholder="Search..." class="form-control" value="<%= params[:search] %>">
-      </form>
+        <button class="btn btn-outline-light" type="button" id="filter-button" data-bs-toggle="offcanvas" data-bs-target="#filterPanel" aria-controls="filterPanel">
+          <i class="fas fa-filter"></i>
+        </button>
+      </div>
     </div>
     <% end %>
 
