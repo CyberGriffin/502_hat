@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_02_004323) do
+ActiveRecord::Schema[7.0].define(version: 2025_04_07_005347) do
   create_table "categories", primary_key: "cat_id", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -74,7 +74,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_02_004323) do
   add_foreign_key "inventories", "users", column: "owner_email", primary_key: "email"
   add_foreign_key "inventories", "users", column: "user_email", primary_key: "email"
   add_foreign_key "items", "categories", primary_key: "cat_id"
-  add_foreign_key "transaction_histories", "inventories", column: "inv_id", primary_key: "inv_id", on_delete: :nullify
-  add_foreign_key "transaction_histories", "users", column: "user_email", primary_key: "email", on_delete: :nullify
+  add_foreign_key "transaction_histories", "inventories", column: "inv_id", primary_key: "inv_id", on_delete: :cascade
+  add_foreign_key "transaction_histories", "users", column: "user_email", primary_key: "email"
   add_foreign_key "users", "departments", column: "dept_id", primary_key: "dept_id"
 end
