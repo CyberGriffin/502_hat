@@ -56,7 +56,9 @@ class CategoriesController < ApplicationController
 
      def authenticate_admin!
           whitelist_entry = Whitelist.find_by(email: current_user&.email)
-  
-          redirect_to root_path, alert: "Not authorized" unless whitelist_entry&.roles == 'admin'
-     end
+          unless whitelist_entry&.roles == 'admin'
+            sign_out current_user
+            redirect_to new_user_session_path, alert: "You are no longer authorized to access this application."
+          end
+        end
 end

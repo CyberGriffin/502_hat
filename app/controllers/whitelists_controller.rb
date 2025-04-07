@@ -28,29 +28,65 @@ class WhitelistsController < ApplicationController
 
      def edit; end
 
-     def update
-          respond_to do |format|
-               if @whitelist.update(whitelist_params)
-                    format.html { redirect_to whitelists_path, notice: "Whitelist entry updated." }
-                    format.json { render :show, status: :ok, location: @whitelist }
-               else
-                    format.html { render :edit, status: :unprocessable_entity }
-                    format.json { render json: @whitelist.errors, status: :unprocessable_entity }
-               end
-          end
-     end
+     # def update
+     #      respond_to do |format|
+     #           if @whitelist.update(whitelist_params)
+     #                format.html { redirect_to whitelists_path, notice: "Whitelist entry updated." }
+     #                format.json { render :show, status: :ok, location: @whitelist }
+     #           else
+     #                format.html { render :edit, status: :unprocessable_entity }
+     #                format.json { render json: @whitelist.errors, status: :unprocessable_entity }
+     #           end
+     #      end
+     # end
 
      def delete
           @whitelist = Whitelist.find(params[:id])
      end
 
+     # def destroy
+     #      @whitelist.destroy
+     #      respond_to do |format|
+     #           format.html { redirect_to whitelists_path, notice: "Email removed from whitelist." }
+     #           format.json { head :no_content }
+     #      end
+     # end
+
      def destroy
+          email_to_remove = @whitelist.email
           @whitelist.destroy
-          respond_to do |format|
-               format.html { redirect_to whitelists_path, notice: "Email removed from whitelist." }
-               format.json { head :no_content }
+        
+          # Log out the user if they are the one being removed
+          if current_user&.email == email_to_remove
+            sign_out current_user
+            redirect_to new_user_session_path, alert: "You have been removed from the whitelist and logged out."
+          else
+            respond_to do |format|
+              format.html { redirect_to whitelists_path, notice: "Email removed from whitelist." }
+              format.json { head :no_content }
+            end
           end
-     end
+        end
+        
+        def update
+          previous_email = @whitelist.email
+          respond_to do |format|
+            if @whitelist.update(whitelist_params)
+              # Log out the user if their email was changed and they are no longer whitelisted
+              if current_user&.email == previous_email && Whitelist.find_by(email: current_user.email).nil?
+                sign_out current_user
+                redirect_to new_user_session_path, alert: "You have been removed from the whitelist and logged out."
+                return
+              end
+        
+              format.html { redirect_to whitelists_path, notice: "Whitelist entry updated." }
+              format.json { render :show, status: :ok, location: @whitelist }
+            else
+              format.html { render :edit, status: :unprocessable_entity }
+              format.json { render json: @whitelist.errors, status: :unprocessable_entity }
+            end
+          end
+        end
 
      private
 
