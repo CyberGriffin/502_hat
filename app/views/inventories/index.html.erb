@@ -10,12 +10,6 @@
   <button type="button" id="toggle-table-view" class="btn btn-secondary">
     Expand Table
   </button>
-
-  <div class="form-check form-switch">
-    <input class="form-check-input" type="checkbox" id="toggle-edit-mode">
-    <label class="form-check-label" for="toggle-edit-mode">Edit Mode</label>
-  </div>
-
 </div>
 
 
@@ -25,8 +19,18 @@
 </div>
 
 Need pagination here , 0 - 10 - ... n
-
 Need to standardize the condition of an item, currently we have free form entry and dropdown selection
+
+<div id="save-changes-container" style="display: none; position: fixed; bottom: 80px; right: 30px; z-index: 1000;">
+  <div class="d-flex gap-2">
+    <button id="save-changes-btn" class="btn btn-success" disabled>Save Changes</button>
+    <button id="cancel-changes-btn" class="btn btn-secondary">Cancel Changes</button>
+  </div>
+</div>
+
+
+
+
 
 <footer class="footer fixed-bottom py-2" style="background-color: #500000;">
   <div class="container-fluid d-flex justify-content-between">

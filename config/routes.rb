@@ -12,7 +12,17 @@ Rails.application.routes.draw do
      get 'department/edit', to: 'users#edit_department', as: :edit_department
      patch 'department/update', to: 'users#update_department', as: :update_department
 
+     resources :users do
+          collection do
+            get :search
+          end
+        end
+        
+
      get '/settings/accessibility', to: 'settings#accessibility', as: 'accessibility_settings'
+
+     get 'users/search', to: 'users#search'
+
 
      resources :whitelists do
           member do
@@ -31,6 +41,7 @@ Rails.application.routes.draw do
                delete :multi_delete
                post :bulk_checkout
                post :bulk_return
+               post :bulk_update
           end
 
           member do

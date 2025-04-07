@@ -76,6 +76,40 @@ class InventoriesController < ApplicationController
           end
      end
 
+     def bulk_update
+          updates = params[:updates]
+        
+          if updates.blank?
+            render json: { status: 'error', message: 'No updates provided' }, status: :unprocessable_entity
+            return
+          end
+        
+          # Preload departments by name
+          departments = Department.all.index_by(&:name)
+        
+          updates.each do |update|
+            inventory = Inventory.find_by(inv_id: update[:inv_id])
+            next unless inventory
+        
+            dept = departments[update[:dept_name]]
+            dept_id = dept&.dept_id
+        
+            inventory.update(
+              location: update[:location],
+              condition_of_item: update[:condition_of_item],
+              owner_email: update[:owner_email],
+              dept_id: dept_id
+            )
+          end
+        
+          render json: { status: 'success' }
+        end
+        
+        
+        
+        
+        
+
      def checkout
           @inventory = Inventory.find(params[:id])
           if @inventory.user_email.nil?

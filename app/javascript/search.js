@@ -18,9 +18,13 @@ document.addEventListener('DOMContentLoaded', function () {
     
             cells.forEach(function (cell) {
                 if (!cell.classList.contains('no-search')) {
-                    if (cell.textContent.toLowerCase().includes(query)) {
+                    const input = cell.querySelector('input') || cell.querySelector('select');
+                    const cellText = input ? input.value.toLowerCase() : cell.textContent.toLowerCase();
+
+                    if (cellText.includes(query)) {
                         match = true;
                     }
+
                 }
             });
     

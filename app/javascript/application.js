@@ -5,3 +5,4 @@ import "jquery"
 import './inventories';
 import './search';
 import './sorting';
+import './inventory-edit';
