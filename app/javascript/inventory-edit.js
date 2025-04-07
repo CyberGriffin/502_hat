@@ -213,8 +213,10 @@ function attachEditListeners(cell) {
  * @param {HTMLElement} cell - The cell to mark.
  */
 function markCellEdited(cell) {
-  cell.classList.add('edited-cell');
-  cell.closest('tr').classList.add('edited-row');
+    cell.classList.add('edited-cell');
+    cell.closest('tr').classList.add('edited-row');
+    saveChangesBtn.disabled = false;
+    cancelChangesBtn.disabled = false;
 }
 
 /**
@@ -329,11 +331,11 @@ function animateSavedRows() {
  * Toggles between view and edit modes for the inventory table.
  * @param {boolean} editMode - Whether to enable edit mode.
  */
-function toggleEditMode(editMode) {
+function toggleEditMode(editMode, canceledChanges = false) {
     if (!editMode) {
         if (document.querySelector('.edited-cell')) {
-            if (!confirm('You have unsaved changes. Are you sure you want to cancel?')) {
-                editToggle.checked = true;
+            if (!canceledChanges) {
+                handleCancelChanges();
                 return;
             }
             location.reload();
@@ -350,6 +352,8 @@ function toggleEditMode(editMode) {
     } else {
         cancelChangesBtn.style.display = 'none';
         saveChangesBtn.style.display = 'none';
+        cancelChangesBtn.disabled = true;
+        saveChangesBtn.disabled = true;
         toggleTableViewBtn.style.display = 'block';
         addRecordBtn.style.display = 'block';
     }
@@ -393,8 +397,19 @@ function handleSaveChanges() {
  * Handles the cancel changes button click, resetting edited styles and toggling edit mode off.
  */
 function handleCancelChanges() {
-    toggleEditMode(false);
-}
+    if (document.querySelector('.edited-cell')) {
+      const cancelModal = new bootstrap.Modal(document.getElementById('cancelEditModal'));
+      cancelModal.show();
+  
+      document.getElementById('confirm-cancel-edit').onclick = function () {
+        cancelModal.hide();
+        toggleEditMode(false, true);
+      };
+    } else {
+      toggleEditMode(false, true);
+    }
+  }
+  
 
 /**
  * Resets edited styles after canceling changes.
@@ -457,7 +472,6 @@ function actuallySaveChanges() {
     });
   
     if (updates.length === 0) {
-      alert("No changes to save.");
       return;
     }
   
