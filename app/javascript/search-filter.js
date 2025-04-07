@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const rows = document.querySelectorAll('.inventory-row:not([style*="display: none"])');
     const noSearchRow = document.querySelector('.no-search');
-    if (noSearchRow) noSearchRow.style.display = rows.length === 0 ? '' : 'none';
+    // if (noSearchRow) noSearchRow.style.display = rows.length === 0 ? '' : 'none';
 
     refreshSortIndicator(true);
   }
