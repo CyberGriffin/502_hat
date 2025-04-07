@@ -6,43 +6,43 @@
   <thead>
     <tr id="table-header" style="white-space: nowrap;">
       <th style="background-color: #732F2f; color: white; border: none;"></th>
-      <th class="sortable" id="sort-name">
+      <th class="sortable" data-sort="item_name">
         <div class="sort-header">
           <span>Item Name</span>
           <span class="sort-arrow">▲</span>
         </div>
       </th>
-      <th class="sortable" id="sort-sku">
+      <th class="sortable" data-sort="sku">
         <div class="sort-header">
           <span>SKU</span>
           <span class="sort-arrow">▲</span>
         </div>
       </th>
-      <th class="sortable" id="sort-dept">
+      <th class="sortable" data-sort="dept_name">
         <div class="sort-header">
           <span>Department</span>
           <span class="sort-arrow">▲</span>
         </div>
       </th>
-      <th class="sortable" id="sort-condition">
+      <th class="sortable" data-sort="condition_of_item">
         <div class="sort-header">
           <span>Condition</span>
           <span class="sort-arrow">▲</span>
         </div>
       </th>
-      <th class="sortable" id="sort-location">
+      <th class="sortable" data-sort="location">
         <div class="sort-header">
           <span>Location</span>
           <span class="sort-arrow">▲</span>
         </div>
       </th>
-      <th class="sortable" id="sort-owner">
+      <th class="sortable" data-sort="owner">
         <div class="sort-header">
           <span>Owner</span>
           <span class="sort-arrow">▲</span>
         </div>
       </th>
-      <th class="sortable" id="sort-user">
+      <th class="sortable" data-sort="current_user">
         <div class="sort-header">
           <span>Current User</span>
           <span class="sort-arrow">▲</span>
@@ -58,70 +58,63 @@
         </div>
       </th>
     </tr>
-
-    <tr id="sort-indicator-row">
-    <td colspan="9" style="padding: 0; position: relative;">
-      <div id="sort-indicator"></div>
-    </td>
-  </tr>
   </thead>
-  <tbody>
-    <% inventories.each_with_index do |inventory, index| %>
-      <tr class="inventory-row" data-inventory-id="<%= inventory.inv_id %>">
-        <td style="text-align: center;" class="no-search status-cell">
-          <% if inventory.current_user.nil? %>
-            <span class="badge bg-success">Available</span>
-          <% else %>
-            <span class="badge bg-danger">Checked Out</span>
-          <% end %>
+  <tbody id="inventory-body">
+    <% inventories.group_by { |inv| inv.item.sku }.each do |sku, items| %>
+      <% parent = items.first %>
+      <tr class="inventory-group-header" data-sku="<%= sku %>">
+        <td colspan="9" style="background-color: #f0f0f0; font-weight: bold; cursor: pointer;">
+          ▶ <%= parent.item.name %> (SKU: <%= sku %>) — <%= items.size %> items
         </td>
-        <td class="truncate" data-field="item_name" data-value="<%= inventory.item.name %>">
-          <span><%= inventory.item.name %></span>
-        </td>
-        <td class="truncate" data-field="sku" data-value="<%= inventory.item.sku %>">
-          <span><%= inventory.item.sku %></span>
-        </td>
-        <td class="truncate editable-cell" data-field="dept_name" data-value="<%= inventory.department&.name %>">
-          <span><%= inventory.department&.name.presence || '—' %></span>
-        </td>
-        <td class="truncate editable-cell" data-field="condition_of_item" data-value="<%= inventory.condition_of_item %>">
-          <span><%= inventory.condition_of_item.presence || '—' %></span>
-        </td>
-        <td class="truncate editable-cell" data-field="location" data-value="<%= inventory.location %>">
-          <span><%= inventory.location.presence || '—' %></span>
-        </td>
-        <td class="truncate editable-owner-cell" data-field="Owner" data-inventory-id="<%= inventory.inv_id %>" data-owner-name="<%= inventory.original_owner&.name %>" data-owner-email="<%= inventory.original_owner&.email %>" data-short="<%= inventory.original_owner&.name %>" data-full="<%= inventory.original_owner&.email %>">
-          <span class="owner-name"><%= inventory.original_owner&.name.presence || '—' %></span>
-        </td>
-        <td class="truncate no-wrap current-user-cell" data-short="<%= inventory.current_user&.name %>" data-full="<%= inventory.current_user&.email %>">
-          <%= inventory.current_user&.name.presence || '—' %>
-        </td>
-        <td class="no-search action-cell">
-  <div class="action-buttons">
-    <% if inventory.current_user.nil? %>
-      <span class="button-inline">
-        <%= button_to "Check Out", checkout_inventory_path(inventory), method: :post, class: "btn btn-sm btn-success" %>
-      </span>
-    <% elsif inventory.current_user != current_user %>
-      <span></span>
-    <% else %>
-      <span class="button-inline">
-        <%= button_to "Return", return_inventory_path(inventory), method: :post, class: "btn btn-sm btn-secondary" %>
-      </span>
-    <% end %>
-
-    <%= link_to "Delete", "#", class: "btn btn-sm btn-danger delete-btn", data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>
-    <%= link_to "View History", transaction_histories_path(inventory_id: inventory.inv_id), class: "btn btn-sm btn-info" %>
-  </div>
-
-  <div class="action-placeholder" style="display: none; color: #888;">—</div>
-</td>
-
       </tr>
+      <% items.each do |inventory| %>
+        <tr class="inventory-row grouped-child" data-sku="<%= sku %>" data-inventory-id="<%= inventory.inv_id %>">
+          <td style="text-align: center;" class="no-search status-cell">
+            <% if inventory.current_user.nil? %>
+              <span class="badge bg-success">Available</span>
+            <% else %>
+              <span class="badge bg-danger">Checked Out</span>
+            <% end %>
+          </td>
+          <td class="truncate" data-field="item_name" data-value="<%= inventory.item.name %>">
+            <span><%= inventory.item.name %></span>
+          </td>
+          <td class="truncate" data-field="sku" data-value="<%= inventory.item.sku %>">
+            <span><%= inventory.item.sku %></span>
+          </td>
+          <td class="truncate editable-cell" data-field="dept_name" data-value="<%= inventory.department&.name %>">
+            <span><%= inventory.department&.name.presence || '—' %></span>
+          </td>
+          <td class="truncate editable-cell" data-field="condition_of_item" data-value="<%= inventory.condition_of_item %>">
+            <span><%= inventory.condition_of_item.presence || '—' %></span>
+          </td>
+          <td class="truncate editable-cell" data-field="location" data-value="<%= inventory.location %>">
+            <span><%= inventory.location.presence || '—' %></span>
+          </td>
+          <td class="truncate editable-owner-cell" data-field="Owner" data-inventory-id="<%= inventory.inv_id %>" data-owner-name="<%= inventory.original_owner&.name %>" data-owner-email="<%= inventory.original_owner&.email %>" data-short="<%= inventory.original_owner&.name %>" data-full="<%= inventory.original_owner&.email %>">
+            <span class="owner-name"><%= inventory.original_owner&.name.presence || '—' %></span>
+          </td>
+          <td class="truncate no-wrap current-user-cell" data-short="<%= inventory.current_user&.name %>" data-full="<%= inventory.current_user&.email %>">
+            <%= inventory.current_user&.name.presence || '—' %>
+          </td>
+          <td class="no-search action-cell">
+            <div class="action-buttons">
+              <% if inventory.current_user.nil? %>
+                <span class="button-inline">
+                  <%= button_to "Check Out", checkout_inventory_path(inventory), method: :post, class: "btn btn-sm btn-success" %>
+                </span>
+              <% elsif inventory.current_user == current_user %>
+                <span class="button-inline">
+                  <%= button_to "Return", return_inventory_path(inventory), method: :post, class: "btn btn-sm btn-secondary" %>
+                </span>
+              <% end %>
+              <%= link_to "Delete", "#", class: "btn btn-sm btn-danger delete-btn", data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>
+              <%= link_to "View History", transaction_histories_path(inventory_id: inventory.inv_id), class: "btn btn-sm btn-info" %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
     <% end %>
-    <tr class="no-search no-sort no-filter" style="<%= 'display: none;' unless inventories.empty? %>">
-      <td colspan="9" style="text-align: center;">No records found.</td>
-    </tr>
   </tbody>
 </table>
 </div>
@@ -151,22 +144,26 @@
 
 
 <!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Delete</h5>
+        <h5 class="modal-title">Confirm Delete</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        Are you sure you want to delete this item?
+      <div class="modal-body" id="delete-modal-body">
+        <div id="checked-out-warning" class="alert alert-warning d-none mb-3">
+          <strong>Warning!</strong> This item is currently checked out.
+        </div>
+        <p>Are you sure you want to delete this item?</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <%= form_with url: "#", method: :delete, local: true, id: "delete-form" do %>
-          <%= hidden_field_tag :authenticity_token, form_authenticity_token %>  
-          <button type="submit" class="btn btn-danger" id="confirm-delete-btn">Delete</button>
-        <% end %>
+        <form id="delete-form" method="post">
+          <input type="hidden" name="_method" value="delete">
+          <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+          <button type="submit" id="confirm-delete-btn" class="btn btn-danger">Delete</button>
+        </form>
       </div>
     </div>
   </div>
@@ -227,7 +224,6 @@
   </div>
 </div>
 
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var deleteModal = document.getElementById('deleteConfirmationModal');
@@ -236,13 +232,26 @@ document.addEventListener('DOMContentLoaded', function() {
   var footerDeleteBtn = document.getElementById('footer-delete-btn');
   var footerCheckoutBtn = document.getElementById('footer-checkout-btn');
   var footerReturnBtn = document.getElementById('footer-return-btn');
-
+  const warningDiv = document.getElementById('checked-out-warning');
+  const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+  const modalBody = document.getElementById('delete-modal-body');
 
   document.querySelectorAll('.delete-btn').forEach(button => {
-    button.addEventListener('click', function(event) {
-      var inventoryId = button.getAttribute('data-inventory-id');
-      var deleteUrl = '/inventories/' + inventoryId;
-      deleteForm.setAttribute('action', deleteUrl);
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      const inventoryId = button.getAttribute('data-inventory-id');
+      const inventoryRow = button.closest('.inventory-row');
+      const isCheckedOut = inventoryRow.querySelector('.badge').classList.contains('bg-danger');
+      
+      // Update modal content based on checked-out status
+      warningDiv.classList.toggle('d-none', !isCheckedOut);
+      confirmDeleteBtn.textContent = isCheckedOut ? 'Delete Anyway' : 'Delete';
+      
+      // Set form action
+      deleteForm.setAttribute('action', `/inventories/${inventoryId}`);
+      
+      // Show modal
+      deleteModal.show();
     });
   });
 
@@ -323,7 +332,115 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const groupHeaders = document.querySelectorAll('.inventory-group-header');
+  const sortableHeaders = document.querySelectorAll('.sortable');
+  const tbody = document.getElementById('inventory-body');
+
+  const sortState = {
+    column: null,
+    direction: 'asc'
+  };
+
+  // Toggle child rows visibility
+  groupHeaders.forEach(header => {
+    header.addEventListener('click', () => {
+      const sku = header.dataset.sku;
+      document.querySelectorAll(`.grouped-child[data-sku="${sku}"]`).forEach(row => {
+        row.style.display = row.style.display === 'none' ? '' : 'none';
+      });
+    });
+  });
+
+  // Sorting logic
+  sortableHeaders.forEach(header => {
+    header.addEventListener('click', () => {
+      const key = header.dataset.sort;
+
+      if (sortState.column === key) {
+        sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortState.column = key;
+        sortState.direction = 'asc';
+      }
+
+      // Clear previous sort indicators
+      sortableHeaders.forEach(h => {
+        h.classList.remove('sorted');
+        h.querySelector('.sort-arrow').textContent = '▲';
+      });
+
+      header.classList.add('sorted');
+      header.querySelector('.sort-arrow').textContent = sortState.direction === 'asc' ? '▲' : '▼';
+
+      const grouped = {};
+
+      // Build grouped data
+      document.querySelectorAll('.grouped-child').forEach(row => {
+        const sku = row.dataset.sku;
+        grouped[sku] = grouped[sku] || { header: null, children: [] };
+        grouped[sku].children.push(row);
+      });
+
+      document.querySelectorAll('.inventory-group-header').forEach(row => {
+        grouped[row.dataset.sku].header = row;
+      });
+
+      const sortedGroups = Object.values(grouped).sort((a, b) => {
+        const aCell = a.children[0].querySelector(`[data-field="${key}"]`);
+        const bCell = b.children[0].querySelector(`[data-field="${key}"]`);
+        const valA = aCell?.dataset.value?.toLowerCase() || '';
+        const valB = bCell?.dataset.value?.toLowerCase() || '';
+
+        if (valA < valB) return sortState.direction === 'asc' ? -1 : 1;
+        if (valA > valB) return sortState.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+
+      // Rebuild table body
+      tbody.innerHTML = '';
+      sortedGroups.forEach(group => {
+        tbody.appendChild(group.header);
+        group.children.forEach(child => tbody.appendChild(child));
+      });
+    });
+  });
+});
+</script>
+
+
+
 <style>
+.inventory-group-header {
+  background-color: #f0f0f0 !important;
+  cursor: pointer;
+  user-select: none;
+}
+.inventory-group-header:hover {
+  background-color: #e0e0e0 !important;
+}
+.grouped-child {
+  background-color: white;
+}
+
+.parent-row {
+  background-color: #f1f1f1 !important;
+  font-weight: bold;
+  user-select: none;
+}
+
+.parent-row .toggle-icon {
+  margin-right: 8px;
+}
+
+.child-row {
+  background-color: #fff;
+}
+
+.child-row:hover {
+  background-color: #f9f9f9;
+}
 
 .form-check-label {
   opacity: 0.6;
