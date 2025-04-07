@@ -220,7 +220,6 @@
   </div>
 </div>
 
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var deleteModal = document.getElementById('deleteConfirmationModal');
@@ -318,7 +317,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  document.querySelectorAll('.inventory-group-header').forEach(header => {
+  const groupHeaders = document.querySelectorAll('.inventory-group-header');
+  const sortableHeaders = document.querySelectorAll('.sortable');
+  const tbody = document.getElementById('inventory-body');
+
+  const sortState = {
+    column: null,
+    direction: 'asc'
+  };
+
+  // Toggle child rows visibility
+  groupHeaders.forEach(header => {
     header.addEventListener('click', () => {
       const sku = header.dataset.sku;
       document.querySelectorAll(`.grouped-child[data-sku="${sku}"]`).forEach(row => {
@@ -327,12 +336,30 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  document.querySelectorAll('.sortable').forEach(header => {
+  // Sorting logic
+  sortableHeaders.forEach(header => {
     header.addEventListener('click', () => {
       const key = header.dataset.sort;
-      const tbody = document.getElementById('inventory-body');
+
+      if (sortState.column === key) {
+        sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortState.column = key;
+        sortState.direction = 'asc';
+      }
+
+      // Clear previous sort indicators
+      sortableHeaders.forEach(h => {
+        h.classList.remove('sorted');
+        h.querySelector('.sort-arrow').textContent = '▲';
+      });
+
+      header.classList.add('sorted');
+      header.querySelector('.sort-arrow').textContent = sortState.direction === 'asc' ? '▲' : '▼';
+
       const grouped = {};
 
+      // Build grouped data
       document.querySelectorAll('.grouped-child').forEach(row => {
         const sku = row.dataset.sku;
         grouped[sku] = grouped[sku] || { header: null, children: [] };
@@ -344,20 +371,27 @@ document.addEventListener('DOMContentLoaded', function () {
       });
 
       const sortedGroups = Object.values(grouped).sort((a, b) => {
-        const valA = a.children[0].querySelector(`[data-field="${key}"]`)?.dataset.value || '';
-        const valB = b.children[0].querySelector(`[data-field="${key}"]`)?.dataset.value || '';
-        return valA.localeCompare(valB);
+        const aCell = a.children[0].querySelector(`[data-field="${key}"]`);
+        const bCell = b.children[0].querySelector(`[data-field="${key}"]`);
+        const valA = aCell?.dataset.value?.toLowerCase() || '';
+        const valB = bCell?.dataset.value?.toLowerCase() || '';
+
+        if (valA < valB) return sortState.direction === 'asc' ? -1 : 1;
+        if (valA > valB) return sortState.direction === 'asc' ? 1 : -1;
+        return 0;
       });
 
+      // Rebuild table body
       tbody.innerHTML = '';
       sortedGroups.forEach(group => {
         tbody.appendChild(group.header);
-        group.children.forEach(row => tbody.appendChild(row));
+        group.children.forEach(child => tbody.appendChild(child));
       });
     });
   });
 });
 </script>
+
 
 
 <style>
