@@ -10,16 +10,18 @@ document.addEventListener('DOMContentLoaded', function () {
     
         rows.forEach(function (row) {
             if (row.classList.contains('admin-add-row')) {
-            return;
+                return;
             }
     
             var cells = row.querySelectorAll('td');
             var match = false;
     
             cells.forEach(function (cell) {
-            if (cell.textContent.toLowerCase().includes(query)) {
-                match = true;
-            }
+                if (!cell.classList.contains('no-search')) {
+                    if (cell.textContent.toLowerCase().includes(query)) {
+                        match = true;
+                    }
+                }
             });
     
             row.style.display = match ? '' : 'none';

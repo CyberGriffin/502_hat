@@ -57,7 +57,7 @@
   <tbody>
     <% inventories.each_with_index do |inventory, index| %>
       <tr class="inventory-row" data-inventory-id="<%= inventory.inv_id %>">
-        <td style="text-align: center;">
+        <td style="text-align: center;" class="no-search">
           <% if inventory.current_user.nil? %>
             <span class="badge bg-success">Available</span>
           <% else %>
@@ -75,7 +75,7 @@
         <td class="truncate no-wrap" data-short="<%= inventory.current_user&.name %>" data-full="<%= inventory.current_user&.email %>">
           <%= inventory.current_user&.name %>
         </td>
-        <td>
+        <td class="no-search">
           <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
           <% if inventory.current_user.nil? %>
             <span class="button-inline">
