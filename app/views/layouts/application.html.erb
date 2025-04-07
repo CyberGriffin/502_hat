@@ -151,14 +151,12 @@
   document.addEventListener("DOMContentLoaded", function () {
     const zoomSetting = localStorage.getItem("fontZoom");
 
-    // Always apply zoom on page load
     if (zoomSetting === "large") {
       document.body.style.zoom = "125%";
     } else {
       document.body.style.zoom = "100%";
     }
 
-    // Only add toggle listener if toggle exists
     const fontSizeToggle = document.getElementById("fontSizeToggle");
     if (fontSizeToggle) {
       fontSizeToggle.checked = (zoomSetting === "large");
