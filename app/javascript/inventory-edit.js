@@ -305,26 +305,36 @@ function renderUserSearchResults(users, tbody, inputElement) {
  * Animates rows after saving changes.
  */
 function animateSavedRows() {
-  const editedRows = document.querySelectorAll('.edited-row');
-  editedRows.forEach(row => {
-    row.querySelectorAll('td').forEach(td => {
-      td.style.transition = 'background-color 0.4s ease';
-      td.style.backgroundColor = '#a5d6a7';
-    });
-  });
-
-  setTimeout(() => {
+    const editedRows = document.querySelectorAll('.edited-row');
+  
     editedRows.forEach(row => {
       row.querySelectorAll('td').forEach(td => {
-        td.style.transition = 'background-color 0.6s ease';
-        td.style.backgroundColor = '';
+        td.style.transition = 'background-color 0.4s ease';
+        td.style.backgroundColor = '#a5d6a7';
       });
-      row.classList.remove('edited-row');
     });
-    document.querySelectorAll('.edited-cell').forEach(cell => cell.classList.remove('edited-cell'));
-    saveChangesBtn.disabled = true;
-  }, ANIMATION_DURATION);
-}
+  
+    setTimeout(() => {
+      editedRows.forEach(row => {
+        row.querySelectorAll('td').forEach(td => {
+          td.style.transition = 'background-color 0.6s ease';
+          td.style.backgroundColor = '';
+        });
+      });
+    }, ANIMATION_DURATION);
+  
+    setTimeout(() => {
+      editedRows.forEach(row => {
+        row.querySelectorAll('td').forEach(td => {
+          td.style.transition = '';
+        });
+        row.classList.remove('edited-row');
+      });
+      document.querySelectorAll('.edited-cell').forEach(cell => cell.classList.remove('edited-cell'));
+      saveChangesBtn.disabled = true;
+    }, ANIMATION_DURATION + 600);
+  }
+  
 
 // ==== CORE FUNCTIONS ====
 /**
