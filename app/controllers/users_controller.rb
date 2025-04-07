@@ -9,6 +9,7 @@ class UsersController < ApplicationController
           end
           redirect_back(fallback_location: root_path)
      end
+     
 
      def edit_department
           @departments = Department.where.not(dept_id: "-").order(:name)

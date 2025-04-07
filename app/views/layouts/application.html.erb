@@ -31,14 +31,14 @@
     <nav class="navbar navbar-expand-lg navbar-1">
   <div class="container-fluid d-flex align-items-center">
     <!-- Brand (Left) -->
-    <% if user_signed_in? %>
+    <% if user_signed_in? && current_user.dept_id.present? && current_user.dept_id != '-' %>
     <div>
       <a class="navbar-brand" href="/" style="color:white">InventoryManagement</a>
     </div>
     <% end %>
 
     <!-- Search (Center) -->
-    <% if user_signed_in? %>
+    <% if user_signed_in? && current_user.dept_id.present? && current_user.dept_id != '-' %>
     <div class="flex-grow-1 d-flex justify-content-center">
       <form class="d-flex" style="width: 40rem;">
         <input type="text" id="search-input" placeholder="Search..." class="form-control" value="<%= params[:search] %>">
@@ -50,7 +50,7 @@
     <div class="ms-auto">
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
-          <% if user_signed_in? %>
+          <% if user_signed_in? && current_user.dept_id.present? && current_user.dept_id != '-' %>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <% whitelist_entry = Whitelist.find_by(email: current_user&.email) %>
@@ -71,11 +71,11 @@
 </nav>
 
     <!-- Navbar 2 -->
-    <% if user_signed_in? %>
+    <% if user_signed_in? && current_user.dept_id.present? && current_user.dept_id != '-' %>
     <nav class="navbar navbar-expand-lg">
       <div class="container-fluid d-flex align-items-center">
         <ul class="navbar-nav navbar-2">
-            <li class="nav-item">
+            <li class="nav-item inventory-nav">
               <%= link_to "Inventory", inventories_path, class: "nav-link active" %>
             </li>
             <li class="nav-item">
@@ -93,10 +93,10 @@
         <div class="nav-actions d-flex gap-2" id="action-buttons">
           <!-- Normal Mode -->
           <div id="normal-mode-buttons" class="d-flex gap-2">
-            <button type="button" class="btn btn-primary btn-sm" id="add-record-btn" data-bs-toggle="modal" data-bs-target="#addRecordModal">
+            <button type="button" style="display: none;" class="btn btn-primary btn-sm" id="add-record-btn" data-bs-toggle="modal" data-bs-target="#addRecordModal">
               Add Record
             </button>
-            <button class="btn btn-secondary btn-sm" id="toggle-table-view">Expand Table</button>
+            <button style="display: none;" class="btn btn-secondary btn-sm" id="toggle-table-view">Expand Table</button>
           </div>
 
           <!-- Edit Mode -->
@@ -125,7 +125,7 @@
     .navbar-2 .nav-link {
       color: white !important;
     }
-    <% if user_signed_in? %>
+    <% if user_signed_in? && current_user.dept_id.present? && current_user.dept_id != '-' %>
     .navbar-1 {
       border-bottom: 1px solid #707070;
     }
@@ -143,24 +143,43 @@
       text-decoration-color: #D6D3C4;
       text-underline-offset: 0.1em;
     }
+    
   </style>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const currentPath = window.location.pathname;
-      const navLinks = document.querySelectorAll('.navbar-2 .nav-link');
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.navbar-2 .nav-link');
+    const addRecordBtn = document.getElementById('add-record-btn');
+    const toggleTableViewBtn = document.getElementById('toggle-table-view');
+    const inventoryNavLink = document.querySelector('.inventory-nav .nav-link');
+    const searchInput = document.getElementById('search-input');
 
-      navLinks.forEach(link => {
-        if (link.getAttribute('href') === currentPath || (currentPath === '/' && link.getAttribute('href') === '/inventories')) {
-          link.classList.add('active');
-          link.addEventListener('click', (event) => {
-            event.preventDefault();
-          });
-        } else {
-          link.classList.remove('active');
+    let inventoryIsActive = false;
+
+    navLinks.forEach(link => {
+      if (link.getAttribute('href') === currentPath || (currentPath === '/' && link.getAttribute('href') === '/inventories')) {
+        link.classList.add('active');
+        link.addEventListener('click', (event) => event.preventDefault());
+        
+        if (link === inventoryNavLink) {
+          inventoryIsActive = true;
         }
-      });
+      } else {
+        link.classList.remove('active');
+      }
     });
-  </script>
+
+    if (inventoryIsActive) {
+      addRecordBtn.style.display = 'block';
+      toggleTableViewBtn.style.display = 'block';
+      searchInput.style.visibility = 'visible';
+    } else {
+      addRecordBtn.style.display = 'none';
+      toggleTableViewBtn.style.display = 'none';
+      searchInput.style.visibility = 'hidden';
+    }
+  });
+</script>
 
   <%= yield %>
 
