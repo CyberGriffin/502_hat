@@ -103,7 +103,7 @@
         <%= button_to "Check Out", checkout_inventory_path(inventory), method: :post, class: "btn btn-sm btn-success" %>
       </span>
     <% elsif inventory.current_user != current_user %>
-      <span class="badge bg-secondary">Item currently borrowed</span>
+      <span></span>
     <% else %>
       <span class="button-inline">
         <%= button_to "Return", return_inventory_path(inventory), method: :post, class: "btn btn-sm btn-secondary" %>
