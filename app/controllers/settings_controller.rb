@@ -1,4 +1,3 @@
 class SettingsController < ApplicationController
-  def accessibility
-  end
+     def accessibility; end
 end

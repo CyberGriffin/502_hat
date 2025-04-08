@@ -78,122 +78,115 @@ class InventoriesController < ApplicationController
 
      def bulk_update
           updates = params[:updates]
-        
+
           if updates.blank?
-            render json: { status: 'error', message: 'No updates provided' }, status: :unprocessable_entity
-            return
+               render json: { status: 'error', message: 'No updates provided' }, status: :unprocessable_entity
+               return
           end
-        
+
           # Preload departments by name
           departments = Department.all.index_by(&:name)
-        
+
           updates.each do |update|
-            inventory = Inventory.find_by(inv_id: update[:inv_id])
-            next unless inventory
-        
-            dept = departments[update[:dept_name]]
-            dept_id = dept&.dept_id
-        
-            inventory.update(
-              location: update[:location],
-              condition_of_item: update[:condition_of_item],
-              owner_email: update[:owner_email],
-              dept_id: dept_id
-            )
+               inventory = Inventory.find_by(inv_id: update[:inv_id])
+               next unless inventory
+
+               dept = departments[update[:dept_name]]
+               dept_id = dept&.dept_id
+
+               inventory.update(
+                    location: update[:location],
+                    condition_of_item: update[:condition_of_item],
+                    owner_email: update[:owner_email],
+                    dept_id:
+               )
           end
-        
+
           render json: { status: 'success' }
-        end
-        
-        
-        
-        
-        
+     end
 
      def checkout
           @inventory = Inventory.find(params[:id])
           if @inventory.user_email.nil?
-            @inventory.update(user_email: current_user.email)
-        
-            TransactionHistory.create!(
-              inv_id: @inventory.inv_id,
-              action: 'checkout',
-              user_email: current_user.email,
-              transaction_date: Time.current
-            )
-        
-            flash[:success] = "You have successfully checked out this item."
+               @inventory.update(user_email: current_user.email)
+
+               TransactionHistory.create!(
+                    inv_id: @inventory.inv_id,
+                    action: 'checkout',
+                    user_email: current_user.email,
+                    transaction_date: Time.current
+               )
+
+               flash[:success] = "You have successfully checked out this item."
           else
-            flash[:alert] = "This item is already checked out."
+               flash[:alert] = "This item is already checked out."
           end
-        
+
           redirect_to inventories_path
      end
 
      def bulk_checkout
           inventory_ids = params[:inventory_ids]
           inventories = Inventory.where(inv_id: inventory_ids)
-          
+
           num_updated = 0
           inventories.each do |inventory|
-            if inventory.current_user.nil?
-              inventory.update(current_user: current_user)
-              
-              TransactionHistory.create!(
-                inv_id: inventory.inv_id,
-                action: 'checkout',
-                user_email: current_user.email,
-                transaction_date: Time.current
-              )
-        
-              num_updated += 1
-            end
+               next unless inventory.current_user.nil?
+
+               inventory.update(current_user:)
+
+               TransactionHistory.create!(
+                    inv_id: inventory.inv_id,
+                    action: 'checkout',
+                    user_email: current_user.email,
+                    transaction_date: Time.current
+               )
+
+               num_updated += 1
           end
-          render json: { status: 'success', num_updated: num_updated }
-        end
-        
+          render json: { status: 'success', num_updated: }
+     end
+
      def return
           @inventory = Inventory.find(params[:id])
           if @inventory.user_email == current_user.email
-            @inventory.update(user_email: nil)
-        
-            TransactionHistory.create!(
-              inv_id: @inventory.inv_id,
-              action: 'return',
-              user_email: current_user.email,
-              transaction_date: Time.current
-            )
-        
-            flash[:success] = "Item returned successfully."
+               @inventory.update(user_email: nil)
+
+               TransactionHistory.create!(
+                    inv_id: @inventory.inv_id,
+                    action: 'return',
+                    user_email: current_user.email,
+                    transaction_date: Time.current
+               )
+
+               flash[:success] = "Item returned successfully."
           else
-            flash[:alert] = "You cannot return an item you didn't check out."
+               flash[:alert] = "You cannot return an item you didn't check out."
           end
           redirect_to inventories_path
-        end
-        
+     end
 
      def bulk_return
           inventory_ids = params[:inventory_ids]
           inventories = Inventory.where(inv_id: inventory_ids)
-          
+
           num_updated = 0
           inventories.each do |inventory|
-            if inventory.current_user == current_user
-              inventory.update(current_user: nil)
-              
-              TransactionHistory.create!(
-                inv_id: inventory.inv_id,
-                action: 'return',
-                user_email: current_user.email,
-                transaction_date: Time.current
-              )
-        
-              num_updated += 1
-            end
+               next unless inventory.current_user == current_user
+
+               inventory.update(current_user: nil)
+
+               TransactionHistory.create!(
+                    inv_id: inventory.inv_id,
+                    action: 'return',
+                    user_email: current_user.email,
+                    transaction_date: Time.current
+               )
+
+               num_updated += 1
           end
-          render json: { status: 'success', num_updated: num_updated }
-        end
-        
+          render json: { status: 'success', num_updated: }
+     end
 
      private
 

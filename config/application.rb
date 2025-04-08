@@ -23,5 +23,3 @@ module InventoryManagement
           config.active_record.default_timezone = :utc
      end
 end
-
-

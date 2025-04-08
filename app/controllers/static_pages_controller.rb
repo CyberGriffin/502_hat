@@ -1,4 +1,3 @@
 class StaticPagesController < ApplicationController
-  def documentation
-  end
+     def documentation; end
 end

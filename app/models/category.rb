@@ -7,7 +7,7 @@ class Category < ApplicationRecord
 
     before_validation :set_default_cat_id, on: :create
 
-    private
+     private
 
     def set_default_cat_id
         self.cat_id ||= SecureRandom.uuid

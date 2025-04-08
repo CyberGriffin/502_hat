@@ -4,7 +4,7 @@ class Inventory < ApplicationRecord
     belongs_to :original_owner, class_name: "User", foreign_key: "owner_email"
     belongs_to :current_user, class_name: "User", foreign_key: "user_email", optional: true
     belongs_to :department, foreign_key: "dept_id"
-    
+
     has_many :transaction_histories, foreign_key: 'inv_id', primary_key: 'inv_id'
 
     validates :item_id, :year_of_purchase, :location, :condition_of_item, :owner_email, :dept_id, presence: true
