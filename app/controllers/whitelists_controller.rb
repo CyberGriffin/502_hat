@@ -1,5 +1,4 @@
 class WhitelistsController < ApplicationController
-     before_action :authenticate_admin!
      before_action :set_whitelist, only: [:show, :edit, :update, :destroy]
 
      def index
