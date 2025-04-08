@@ -1,5 +1,6 @@
 class WhitelistsController < ApplicationController
      before_action :set_whitelist, only: [:show, :edit, :update, :destroy]
+     before_action :authenticate_admin!
 
      def index
           @whitelists = Whitelist.all.order(:email)
@@ -34,37 +35,37 @@ class WhitelistsController < ApplicationController
      def destroy
           email_to_remove = @whitelist.email
           @whitelist.destroy
-        
+
           # Log out the user if they are the one being removed
           if current_user&.email == email_to_remove
-            sign_out current_user
-            redirect_to new_user_session_path, alert: "You have been removed from the whitelist and logged out."
-          else
-            respond_to do |format|
-              format.html { redirect_to whitelists_path, notice: "Email removed from whitelist." }
-              format.json { head :no_content }
-            end
-          end
-        end
-        
-     def update
-     previous_email = @whitelist.email
-     respond_to do |format|
-          if @whitelist.update(whitelist_params)
-          # Log out the user if their email was changed and they are no longer whitelisted
-          if current_user&.email == previous_email && Whitelist.find_by(email: current_user.email).nil?
                sign_out current_user
                redirect_to new_user_session_path, alert: "You have been removed from the whitelist and logged out."
-               return
-          end
-     
-          format.html { redirect_to whitelists_path, notice: "Whitelist entry updated." }
-          format.json { render :show, status: :ok, location: @whitelist }
           else
-          format.html { render :edit, status: :unprocessable_entity }
-          format.json { render json: @whitelist.errors, status: :unprocessable_entity }
+               respond_to do |format|
+                    format.html { redirect_to whitelists_path, notice: "Email removed from whitelist." }
+                    format.json { head :no_content }
+               end
           end
      end
+
+     def update
+          previous_email = @whitelist.email
+          respond_to do |format|
+               if @whitelist.update(whitelist_params)
+                    # Log out the user if their email was changed and they are no longer whitelisted
+                    if current_user&.email == previous_email && Whitelist.find_by(email: current_user.email).nil?
+                         sign_out current_user
+                         redirect_to new_user_session_path, alert: "You have been removed from the whitelist and logged out."
+                         return
+                    end
+
+                    format.html { redirect_to whitelists_path, notice: "Whitelist entry updated." }
+                    format.json { render :show, status: :ok, location: @whitelist }
+               else
+                    format.html { render :edit, status: :unprocessable_entity }
+                    format.json { render json: @whitelist.errors, status: :unprocessable_entity }
+               end
+          end
      end
 
      private
@@ -81,7 +82,7 @@ class WhitelistsController < ApplicationController
           whitelist_entry = Whitelist.find_by(email: current_user&.email)
           puts "Current user email: #{current_user&.email}"
           puts "Whitelist entry found: #{whitelist_entry.inspect}"
-          
+
           redirect_to root_path, alert: "Not authorized" unless whitelist_entry&.roles == 'admin'
      end
 end

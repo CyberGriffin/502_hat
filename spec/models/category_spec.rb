@@ -6,7 +6,7 @@ RSpec.describe Category, type: :model do
                it 'is valid with valid attributes' do
                     category = Category.new(
                          cat_id: 'fast_food',
-                         name: 'Fast Food',
+                         name: 'Fast Food'
                     )
                     expect(category).to be_valid
                end
@@ -26,7 +26,7 @@ RSpec.describe Category, type: :model do
 
                     duplicate_category = Category.new(
                          cat_id: 'fast_food',
-                         name: 'Burgers',
+                         name: 'Burgers'
                     )
 
                     expect(duplicate_category).not_to be_valid

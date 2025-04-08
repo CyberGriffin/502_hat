@@ -2,26 +2,26 @@ module Users
      class OmniauthCallbacksController < Devise::OmniauthCallbacksController
           def google_oauth2
                user = User.from_google(**from_google_params)
-             
+
                if user&.persisted?
-                 whitelist_entry = Whitelist.find_by(email: user.email)
-             
-                 if whitelist_entry.nil?
-                   flash[:alert] = "#{user.email} is not authorized. You are not whitelisted."
-                   redirect_to new_user_session_path
-                 else
-                   sign_out_all_scopes
-                   sign_in_and_redirect user, event: :authentication
-                 end
+                    whitelist_entry = Whitelist.find_by(email: user.email)
+
+                    if whitelist_entry.nil?
+                         flash[:alert] = "#{user.email} is not authorized. You are not whitelisted."
+                         redirect_to new_user_session_path
+                    else
+                         sign_out_all_scopes
+                         sign_in_and_redirect user, event: :authentication
+                    end
                else
-                 if auth.info.email !~ /@tamu\.edu\z/
-                   flash[:alert] = "#{auth.info.email} is not authorized. Please use your TAMU issued email."
-                 else
-                   flash[:alert] = "#{auth.info.email} is not authorized. You are not whitelisted."
-                 end
-                 redirect_to new_user_session_path
+                    flash[:alert] = if auth.info.email !~ /@tamu\.edu\z/
+                                         "#{auth.info.email} is not authorized. Please use your TAMU issued email."
+                                    else
+                                         "#{auth.info.email} is not authorized. You are not whitelisted."
+                                    end
+                    redirect_to new_user_session_path
                end
-             end
+          end
 
           protected
 
