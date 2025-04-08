@@ -3,7 +3,7 @@ class Whitelist < ApplicationRecord
    
      validates :roles, inclusion: { in: ['user', 'admin'], message: "%{value} is not a valid role" }
    
-     after_initialize :set_default_role, if: :new_record?
+     validate :validate_role
    
      def expired?
        expires_at.present? && expires_at < Date.today
@@ -13,6 +13,13 @@ class Whitelist < ApplicationRecord
    
      def set_default_role
        self.roles ||= 'user'
+     end
+
+     def validate_role
+      valid_roles = ['user', 'admin']
+      unless valid_roles.include?(roles)
+        errors.add(:roles, "#{roles} is not a valid role")
+      end
      end
    end
    
