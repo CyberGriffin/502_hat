@@ -12,7 +12,7 @@
 
     <div class="mb-3">
       <%= f.label :roles, "Roles" %>
-      <%= f.text_field :roles, class: "form-control" %>
+      <%= f.select :roles, options_for_select(['user', 'admin'], @whitelist.roles), { class: 'form-control' } %>
     </div>
 
     <%= f.submit @whitelist.new_record? ? "Add to Whitelist" : "Update Whitelist Entry", class: "btn btn-primary" %>
