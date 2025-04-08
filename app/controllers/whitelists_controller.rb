@@ -28,29 +28,9 @@ class WhitelistsController < ApplicationController
 
      def edit; end
 
-     # def update
-     #      respond_to do |format|
-     #           if @whitelist.update(whitelist_params)
-     #                format.html { redirect_to whitelists_path, notice: "Whitelist entry updated." }
-     #                format.json { render :show, status: :ok, location: @whitelist }
-     #           else
-     #                format.html { render :edit, status: :unprocessable_entity }
-     #                format.json { render json: @whitelist.errors, status: :unprocessable_entity }
-     #           end
-     #      end
-     # end
-
      def delete
           @whitelist = Whitelist.find(params[:id])
      end
-
-     # def destroy
-     #      @whitelist.destroy
-     #      respond_to do |format|
-     #           format.html { redirect_to whitelists_path, notice: "Email removed from whitelist." }
-     #           format.json { head :no_content }
-     #      end
-     # end
 
      def destroy
           email_to_remove = @whitelist.email

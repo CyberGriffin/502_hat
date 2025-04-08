@@ -7,8 +7,6 @@ RSpec.describe Category, type: :model do
                     category = Category.new(
                          cat_id: 'fast_food',
                          name: 'Fast Food',
-                         icon: '🍕',
-                         color_code: '#FFC300'
                     )
                     expect(category).to be_valid
                end
@@ -26,21 +24,17 @@ RSpec.describe Category, type: :model do
                it 'is invalid without a cat_id' do
                     category = Category.new(
                          name: 'Fast Food',
-                         icon: '🍕',
-                         color_code: '#FFC300'
                     )
                     expect(category).not_to be_valid
                     expect(category.errors[:cat_id]).to include("can't be blank")
                end
 
                it 'is invalid if cat_id is not unique' do
-                    Category.create!(cat_id: 'fast_food', name: 'Fast Food', icon: '🍕', color_code: '#FFC300')
+                    Category.create!(cat_id: 'fast_food', name: 'Fast Food')
 
                     duplicate_category = Category.new(
                          cat_id: 'fast_food',
                          name: 'Burgers',
-                         icon: '🍔',
-                         color_code: '#FF5733'
                     )
 
                     expect(duplicate_category).not_to be_valid
