@@ -1,45 +1,34 @@
-<!-- Flash Messages -->
-<div id="flash-messages" class="d-flex"></div>
-
-<!-- Controls Header -->
-<div class="d-flex justify-content-between align-items-center mb-3" style="padding: 1rem;">
-    <!-- Search and Filter -->
-    <div class="d-flex align-items-center">
-        <input style="width: 20rem;" type="text" id="search-input" placeholder="Search..." class="form-control d-inline-block" value="<%= params[:search] %>">
-        <button type="button" class="btn btn-secondary ms-2" data-bs-toggle="modal" data-bs-target="#filterModal">
-            Filters
-        </button>
-        <button type="button" class="btn btn-secondary ms-2" onclick="document.getElementById('search-input').value = ''; document.getElementById('search-input').dispatchEvent(new Event('input'));">Clear</button>
-    </div>
-
-    <div class="d-flex align-items-center gap-2">
-        <% if current_user.admin? %>
-            <button type="button" class="btn btn-primary" onclick="window.location.href='/whitelists/'">
-                Add Whitelist
-            </button>
-            <button type="button" class="btn btn-primary" onclick="window.location.href='/categories/'">
-                Add Categories
-            </button>
-        <% end %>
-        <button type="button" class="btn btn-primary" onclick="window.location.href='/items/'">
-            New Item
-        </button>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRecordModal">
-            Add Record
-        </button>
-
-        <button type="button" class="btn btn-danger" id="multi-delete-btn">
-            Delete Selected Items
-        </button>
-    </div>
-</div>
-
+<%= javascript_include_tag 'search-filter', defer: true =%>
+<%= javascript_include_tag 'sorting', defer: true %>
+<%= javascript_include_tag 'inventories', defer: true %>
 
 
 <!-- Inventory Table -->
 <div id="inventory-list">
     <%= render partial: 'table', locals: { inventories: @inventories } %>
 </div>
+
+<!--
+Need pagination here , 0 - 10 - ... n
+Need to standardize the condition of an item, currently we have free form entry and dropdown selection
+-->
+
+<footer class="footer fixed-bottom py-2" style="background-color: #500000;">
+  <div class="container-fluid d-flex justify-content-between">
+    <span id="selected-items-count" style="color:white;">0 items selected</span>
+    <div>
+      <button type="button" class="btn btn-success" id="footer-checkout-btn" disabled style="background-color: gray; border-color: gray;">
+        Check Out Selected
+      </button>
+      <button type="button" class="btn btn-primary" id="footer-return-btn" disabled style="background-color: gray; border-color: gray;">
+        Return Selected
+      </button>
+      <button type="button" class="btn btn-danger" id="footer-delete-btn" disabled style="background-color: gray; border-color: gray;">
+        Delete Selected
+      </button>
+    </div>
+  </div>
+</footer>
 
 <!-- Add Record Modal -->
 <div class="modal fade" id="addRecordModal" tabindex="-1" aria-labelledby="addRecordModalLabel" aria-hidden="true">
@@ -124,17 +113,20 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
+<!-- Multi Delete Confirmation Modal -->
 <div class="modal fade" id="multiDeleteConfirmationModal" tabindex="-1" aria-labelledby="multiDeleteConfirmationModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="multiDeleteConfirmationModalLabel">Confirm Bulk Delete</h5>
+        <h5 class="modal-title" id="multiDeleteConfirmationModalLabel">Confirm Delete</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div id="multi-checked-out-warning" class="alert alert-warning d-none mb-3">
+          <strong>Warning!</strong> Some selected items are currently checked out.
+        </div>
         <p>Are you sure you want to delete the selected items?</p>
-        <ul id="selected-items-list"></ul>
+        <ul id="selected-items-list" class="mb-3"></ul>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -144,188 +136,130 @@
   </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var itemField = document.getElementById('item-field');
-  var deptField = document.getElementById('dept-field');
-  var tableContainer = document.getElementById('items-table-container');
-  var addRecordButton = document.getElementById('add-record-button');
-  var form = document.getElementById('inventory-form');
-
-  itemField.addEventListener('focus', function() {
-    fetch('/items.json?page=$(page)')
-      .then(response => response.json())
-      .then(items => {
-        var tableHTML = '<table class="table table-striped">';
-        tableHTML += '<thead><tr><th>SKU</th><th>Name</th><th>Category</th></tr></thead>';
-        tableHTML += '<tbody>';
-        items.forEach(function(item) {
-          tableHTML += '<tr data-item-id="' + item.item_id + '" data-item-name="' + item.name + '">';
-          tableHTML += '<td>' + item.sku + '</td>';
-          tableHTML += '<td>' + item.name + '</td>';
-          tableHTML += '<td>' + item.category.name + '</td>';
-          tableHTML += '</tr>';
-        });
-        tableHTML += '</tbody></table>';
-        
-        tableContainer.innerHTML = tableHTML;
-        tableContainer.style.display = 'block';
-        var rows = tableContainer.querySelectorAll('tr[data-item-id]');
-        rows.forEach(function(row) {
-          row.addEventListener('click', function() {
-            var itemId = row.getAttribute('data-item-id');
-            var itemName = row.getAttribute('data-item-name');
-            itemField.value = itemName;
-            document.getElementById('item-id-field').value = itemId;
-            tableContainer.style.display = 'none';
-          });
-        });
-      })
-      .catch(error => console.error('Error fetching items:', error));
-  });
-
-  deptField.addEventListener('focus', function() {
-    fetch('/departments.json')
-      .then(response => response.json())
-      .then(departments => {
-        var tableHTML = '<table class="table table-striped">';
-        tableHTML += '<thead><tr><th>ID</th><th>Name</th></tr></thead>';
-        tableHTML += '<tbody>';
-        departments.forEach(function(department) {
-          tableHTML += '<tr data-dept-id="' + department.id + '" data-dept-name="' + department.name + '">';
-          tableHTML += '<td>' + department.id + '</td>';
-          tableHTML += '<td>' + department.name + '</td>';
-          tableHTML += '</tr>';
-        });
-        tableHTML += '</tbody></table>';
-        
-        tableContainer.innerHTML = tableHTML;
-        tableContainer.style.display = 'block';
-        var rows = tableContainer.querySelectorAll('tr[data-dept-id]');
-        rows.forEach(function(row) {
-          row.addEventListener('click', function() {
-            var deptId = row.getAttribute('data-dept-id');
-            var deptName = row.getAttribute('data-dept-name');
-            deptField.value = deptName;
-            document.getElementById('dept-id-field').value = deptId;
-            tableContainer.style.display = 'none';
-          });
-        });
-      })
-      .catch(error => console.error('Error fetching departments:', error));
-  });
-
-  addRecordButton.addEventListener('click', function(event) {
-    event.preventDefault();
-    var formData = new FormData(form);
-    fetch(form.action, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-        'Accept': 'application/json'
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === 'success') {
-        console.log('Record added successfully');
-        location.reload();
-
-      } else {
-        alert('Failed to add record: ' + data.errors.join(', '));
-      }
-    })
-    .catch(error => console.error('Error adding record:', error));
-  });
-});
-</script>
-
-<!-- Edit Inventory Modal -->
-<!--
-<div class="modal fade" id="editInventoryModal" tabindex="-1" aria-labelledby="editInventoryModalLabel" aria-hidden="true">
+<!-- Return Confirmation Modal -->
+<div class="modal fade" id="returnConfirmationModal" tabindex="-1" aria-labelledby="returnConfirmationModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editInventoryModalLabel">Edit Inventory</h5>
+        <h5 class="modal-title" id="returnConfirmationModalLabel">Confirm Return</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <%= form_with model: @inventory, url: "#", method: :patch, local: true, id: "edit-inventory-form" do |form| %>
-          <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-          <div class="mb-3">
-            Editing Item: <strong id="edit-item-name"></strong>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :item_id, "Select Item", class: "form-label" %>
-            <%= form.collection_select :item_id, Item.all, :id, :name, prompt: "Choose an item", class: "form-control" %>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :year_of_purchase, "Year of Purchase", class: "form-label" %>
-            <%= form.date_select :year_of_purchase, class: "form-control" %>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :location, "Location", class: "form-label" %>
-            <%= form.text_field :location, class: "form-control" %>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :condition_of_item, "Condition", class: "form-label" %>
-            <%= form.text_field :condition_of_item, class: "form-control" %>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :owner_email, "Owner Email", class: "form-label" %>
-            <%= form.collection_select :owner_email, User.all, :email, :name, prompt: "Select Owner", class: "form-control" %>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :user_email, "Current User Email", class: "form-label" %>
-            <%= form.collection_select :user_email, User.all, :email, :name, prompt: "Select Current User", class: "form-control" %>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :sku, "SKU", class: "form-label" %>
-            <%= form.text_field :sku, class: "form-control" %>
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <%= form.submit "Update Inventory", class: "btn btn-primary" %>
-          </div>
-        <% end %>
+        Are you sure you want to return the selected items?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirm-return-btn">Return</button>
       </div>
     </div>
   </div>
 </div>
--->
 
+
+<!-- Offcanvas Side Panel -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="filterPanel" aria-labelledby="filterPanelLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="filterPanelLabel">Filters</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column gap-4">
+
+    <!-- Availability -->
+    <div>
+      <label class="form-label">Availability</label>
+      <div class="d-flex flex-wrap gap-2">
+        <button type="button" class="btn btn-outline-secondary filter-bubble" data-filter-group="availability" data-value="available">Available</button>
+        <button type="button" class="btn btn-outline-secondary filter-bubble" data-filter-group="availability" data-value="checked_out">Checked Out</button>
+      </div>
+    </div>
+
+    <!-- Departments -->
+    <% used_departments = Inventory.includes(:department).map { |inv| inv.department&.name }.compact.uniq.sort %>
+
+    <div>
+      <label class="form-label">Departments</label>
+      <div class="d-flex flex-wrap gap-2 overflow-auto" style="max-height: 300px; padding: 0.5rem;">
+        <% Department.where(name: used_departments).order(:name).each do |dept| %>
+          <button type="button" 
+                  class="btn btn-outline-secondary filter-bubble" 
+                  data-filter-group="department" 
+                  data-value="<%= dept.name %>"
+                  title="<%= dept.name %>">
+            <%= dept.dept_id %>
+          </button>
+        <% end %>
+      </div>
+    </div>
+
+
+    <!-- Condition -->
+    <div>
+      <label class="form-label">Condition</label>
+      <div class="d-flex flex-wrap gap-2" style="padding: 0.5rem;">
+        <% Inventory.distinct.pluck(:condition_of_item).compact.each do |condition| %>
+          <button type="button" class="btn btn-outline-dark filter-bubble" data-filter-group="condition" data-value="<%= condition %>"><%= condition %></button>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="mt-auto d-flex justify-content-between" style="padding: 0.5rem;">
+      <button type="button" class="btn btn-secondary" id="clear-filters-btn">Clear All</button>
+      <button type="button" class="btn btn-primary" id="apply-filters-btn" data-bs-dismiss="offcanvas">Done</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Bulk Delete JavaScript -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  var multiDeleteBtn = document.getElementById('multi-delete-btn');
-  var multiDeleteModal = new bootstrap.Modal(document.getElementById('multiDeleteConfirmationModal'));
-  var confirmMultiDeleteBtn = document.getElementById('confirm-multi-delete-btn');
-  var selectedItemsList = document.getElementById('selected-items-list');
+  const multiDeleteBtn = document.getElementById('footer-delete-btn');
+  const multiDeleteModalEl = document.getElementById('multiDeleteConfirmationModal');
+  const multiDeleteModal = new bootstrap.Modal(multiDeleteModalEl);
+  const confirmMultiDeleteBtn = document.getElementById('confirm-multi-delete-btn');
+  const selectedItemsList = document.getElementById('selected-items-list');
+  const warningDiv = document.getElementById('multi-checked-out-warning');
+
+  // Proper modal dismissal handlers
+  function hideModal() {
+    multiDeleteModal.hide();
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(backdrop => backdrop.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = 'visible';
+  }
+
+  document.querySelector('#multiDeleteConfirmationModal .btn-secondary').addEventListener('click', hideModal);
+  document.querySelector('#multiDeleteConfirmationModal .btn-close').addEventListener('click', hideModal);
 
   multiDeleteBtn.addEventListener('click', function () {
-    var selectedIds = [];
+    const selectedRows = document.querySelectorAll('.inventory-row.isselected');
+    const selectedIds = [];
+    let hasCheckedOutItems = false;
 
-    document.querySelectorAll('.inventory-checkbox:checked').forEach(function (checkbox) {
-      selectedIds.push(checkbox.value);
+    selectedRows.forEach(function (row) {
+      const id = row.getAttribute('data-inventory-id');
+      selectedIds.push(id);
+      
+      if (row.querySelector('.badge').classList.contains('bg-danger')) {
+        hasCheckedOutItems = true;
+      }
     });
 
     if (selectedIds.length === 0) {
-      alert('Please select at least one item to delete.');
       return;
     }
 
+    warningDiv.classList.toggle('d-none', !hasCheckedOutItems);
+    confirmMultiDeleteBtn.textContent = hasCheckedOutItems ? 'Delete Anyway' : 'Delete';
+    
     selectedItemsList.innerHTML = "";
-    selectedIds.forEach(id => {
-      let li = document.createElement('li');
-      li.textContent = `ID: ${id}`;
+    selectedRows.forEach(row => {
+      const li = document.createElement('li');
+      const name = row.querySelector('td:nth-child(2)').textContent.trim();
+      const status = row.querySelector('.badge').textContent.trim();
+      li.textContent = `${name} (${status})`;
       selectedItemsList.appendChild(li);
     });
 
@@ -344,205 +278,57 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(data => {
         if (data.status === 'success') {
           location.reload();
+        } else {
+          alert('Error deleting items: ' + (data.message || 'Unknown error'));
         }
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while deleting items');
+      })
+      .finally(() => {
+        hideModal();
+      });
     };
   });
 });
 </script>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var searchInput = document.getElementById('search-input');
-
-    if (!searchInput) {
-      return;
-    }
-
-    searchInput.addEventListener('input', function(event) {
-      var query = searchInput.value.toLowerCase();
-      var rows = document.querySelectorAll('#inventory-list tbody tr:not(.no-search)');
-
-      rows.forEach(function(row) {
-        if (row.classList.contains('admin-add-row')) {
-          return;
-        }
-
-        var cells = row.querySelectorAll('td');
-        var match = false;
-
-        cells.forEach(function(cell) {
-          if (cell.textContent.toLowerCase().includes(query)) {
-            match = true;
-          }
-        });
-
-        if (match) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
-      });
-    });
-
-    var headers = document.querySelectorAll('th.sortable');
-    var indicator = document.createElement('div');
-    indicator.style.position = 'absolute';
-    indicator.style.height = '5px';
-    indicator.style.backgroundColor = 'darkred';
-    indicator.style.transition = 'all 0.3s ease';
-    document.body.appendChild(indicator);
-
-    function positionIndicator(header) {
-      var rect = header.getBoundingClientRect();
-      indicator.style.width = rect.width + 'px';
-      indicator.style.top = (rect.top - 5) + 'px';
-      indicator.style.left = rect.left + 'px';
-      indicator.style.border = 'none';
-    }
-
-    function sortTableByHeader(header) {
-      var table = header.closest('table');
-      var tbody = table.querySelector('tbody');
-      var rows = Array.from(tbody.querySelectorAll('tr:not(.no-sort)'));
-      var index = Array.from(header.parentNode.children).indexOf(header);
-      var ascending = header.classList.contains('ascending');
-
-      rows.sort(function(rowA, rowB) {
-        var cellA = rowA.children[index].textContent.trim();
-        var cellB = rowB.children[index].textContent.trim();
-
-        if (!isNaN(cellA) && !isNaN(cellB)) {
-          cellA = parseFloat(cellA);
-          cellB = parseFloat(cellB);
-        }
-
-        if (cellA < cellB) {
-          return ascending ? 1 : -1;
-        }
-        if (cellA > cellB) {
-          return ascending ? -1 : 1;
-        }
-        return 0;
-      });
-      
-      rows.forEach(function(row, rowIndex) {
-        tbody.appendChild(row);
-      });
-
-      headers.forEach(function(h) {
-        h.classList.remove('ascending', 'descending', 'sorted');
-        h.style.backgroundColor = 'maroon';
-        h.style.color = 'white';
-        h.style.border = 'none';
-        h.querySelector('.sort-arrow').textContent = '';
-      });
-
-      header.classList.toggle('ascending', !ascending);
-      header.classList.toggle('descending', ascending);
-      header.classList.add('sorted');
-      header.style.backgroundColor = 'darkred';
-      header.style.color = 'white';
-      header.style.border = 'none';
-
-      var arrow = header.querySelector('.sort-arrow');
-      arrow.textContent = ascending ? '▼' : '▲';
-      header.title = ascending ? 'Descending' : 'Ascending';
-      positionIndicator(header);
-    }
-
-    var defaultHeader = document.getElementById('sort-id');
-    sortTableByHeader(defaultHeader);
-
-    headers.forEach(function(header) {
-      header.addEventListener('click', function() {
-        sortTableByHeader(header);
-      });
-    });
-  });
-</script>
-
-
-
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var editModal = document.getElementById('editInventoryModal');
-  var editForm = document.getElementById('edit-inventory-form');
-
-  if (!editModal || !editForm) {
-    return;
-  }
-
-  editModal.addEventListener('show.bs.modal', function(event) {
-    var button = event.relatedTarget;
-    var inventoryId = button.getAttribute('data-inventory-id');
-    var editUrl = '/inventories/' + inventoryId;
-    console.log("editUrl: " + editUrl);
-
-    fetch(editUrl + '/edit')
-      .then(response => response.json())
-      .then(data => {
-        editForm.action = editUrl;
-        
-        document.getElementById('edit-item-name').textContent = data.item_name;
-
-        if(editForm.querySelector('[name="inventory[item_id]"]')) {
-          editForm.querySelector('[name="inventory[item_id]"]').value = data.item_id;
-        }
-        if(editForm.querySelector('[name="inventory[year_of_purchase]"]')) {
-          editForm.querySelector('[name="inventory[year_of_purchase]"]').value = data.year_of_purchase;
-        }
-        if(editForm.querySelector('[name="inventory[location]"]')) {
-          editForm.querySelector('[name="inventory[location]"]').value = data.location;
-        }
-        if(editForm.querySelector('[name="inventory[condition_of_item]"]')) {
-          editForm.querySelector('[name="inventory[condition_of_item]"]').value = data.condition_of_item;
-        }
-        if(editForm.querySelector('[name="inventory[owner_email]"]')) {
-          editForm.querySelector('[name="inventory[owner_email]"]').value = data.owner_email;
-        }
-        if(editForm.querySelector('[name="inventory[user_email]"]')) {
-          editForm.querySelector('[name="inventory[user_email]"]').value = data.user_email;
-        }
-        if(editForm.querySelector('[name="inventory[sku]"]')) {
-          editForm.querySelector('[name="inventory[sku]"]').value = data.sku;
-        }
-      });
-  });
-
-  editForm.addEventListener('submit', function(event) {
-    event.preventDefault();
-    var formData = new FormData(editForm);
-    var editUrl = editForm.action;
-
-    fetch(editUrl, {
-      method: 'PATCH',
-      body: formData,
-      headers: {
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === 'success') {
-        $('#editInventoryModal').modal('hide');
-        $.ajax({
-          url: "/inventories",
-          type: "GET",
-          dataType: "script"
-        });
-      } else {
-        alert('Failed to update inventory item: ' + data.errors.join(', '));
-      }
-    });
-  });
-});
-</script>
-
 <style>
-  body {
-    background-color:rgb(151, 151, 151);
-  }
+.filter-bubble.active {
+  background-color: #500000;
+  color: white;
+  border-color: #500000;
+}
+
+.filter-bubble {
+  border-radius: 2rem;
+}
+.filter-bubble.active {
+  border: none;
+}
+
+#filterPanel .overflow-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+#filterPanel .overflow-auto::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 5px;
+}
+
+#filterPanel .overflow-auto::-webkit-scrollbar-thumb {
+  background: #500000;
+  border-radius: 5px;
+}
+
+.offcanvas-body > div {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.offcanvas-body > div:last-child {
+  border-bottom: none;
+}
+
 </style>

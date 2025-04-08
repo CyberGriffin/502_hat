@@ -12,6 +12,13 @@ Rails.application.routes.draw do
      get 'department/edit', to: 'users#edit_department', as: :edit_department
      patch 'department/update', to: 'users#update_department', as: :update_department
 
+     get '/settings/accessibility', to: 'settings#accessibility', as: 'accessibility_settings'
+
+     get 'users/search', to: 'users#search'
+
+     get 'documentation', to: 'static_pages#documentation'
+
+
      resources :whitelists do
           member do
                get :delete
@@ -27,6 +34,9 @@ Rails.application.routes.draw do
      resources :inventories do
           collection do
                delete :multi_delete
+               post :bulk_checkout
+               post :bulk_return
+               post :bulk_update
           end
 
           member do
@@ -34,6 +44,12 @@ Rails.application.routes.draw do
                post :return
           end
      end
+
+     resources :transaction_histories, only: [:index] do
+          collection do
+            get 'for_inventory/:inventory_id', to: 'transaction_histories#index', as: :for_inventory
+          end
+        end
 
      resources :items do
           member do

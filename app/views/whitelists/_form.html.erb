@@ -1,16 +1,21 @@
-<%= form_with model: @whitelist, local: true do |f| %>
-    <p>
-      <%= f.label :email, "Email Address" %><br>
-      <%= f.email_field :email, required: true, readonly: !@whitelist.new_record? %>
-    </p>
-    <p>
-      <%= f.label :expires_at, "Expiration Date (Optional)" %><br>
-      <%= f.date_field :expires_at %>
-    </p>
-    <p>
-      <%= f.submit @whitelist.new_record? ? "Add to Whitelist" : "Update Whitelist Entry" %>
-    </p>
+<div class="container mt-4">
+  <%= form_with model: @whitelist, local: true do |f| %>
+    <div class="mb-3">
+      <%= f.label :email, "Email Address" %>
+      <%= f.email_field :email, class: "form-control", required: true, readonly: !@whitelist.new_record? %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :expires_at, "Expiration Date (Optional)" %>
+      <%= f.date_field :expires_at, class: "form-control" %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :roles, "Roles" %>
+      <%= f.text_field :roles, class: "form-control" %>
+    </div>
+
+    <%= f.submit @whitelist.new_record? ? "Add to Whitelist" : "Update Whitelist Entry", class: "btn btn-primary" %>
+    <%= link_to "Back to Whitelist", whitelists_path, class: "btn btn-secondary" %>
   <% end %>
-  
-  <%= link_to "Back to Whitelist", whitelists_path %>
-  
+</div>

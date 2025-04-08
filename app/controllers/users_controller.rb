@@ -9,6 +9,7 @@ class UsersController < ApplicationController
           end
           redirect_back(fallback_location: root_path)
      end
+     
 
      def edit_department
           @departments = Department.where.not(dept_id: "-").order(:name)
@@ -64,12 +65,28 @@ class UsersController < ApplicationController
           redirect_to app_users_path, notice: "User was successfully destroyed."
      end
 
+     def search
+          if params[:q].present?
+            users = User.where("name LIKE ? OR email LIKE ?", "%#{params[:q]}%", "%#{params[:q]}%")
+                        .limit(10)
+                        .select(:id, :name, :email)
+            render json: users
+          else
+            render json: []
+          end
+        end
+        
+   
+
      private
 
      # NOTE: Use params[:email] because of the route configuration.
      def set_user
-          @user = User.find_by!(email: params[:email])
+          if params[:email].present?
+               @user = User.find_by!(email: params[:email])
+          end
      end
+
 
      def user_params
           # Permit these fields for both create and update.

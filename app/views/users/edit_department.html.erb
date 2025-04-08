@@ -1,13 +1,51 @@
-<h2>Select Your Department</h2>
+<div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 75vh;">
+  <h1 class="text-center mb-3">
+    Hello, <%= current_user.full_name %>!
+  </h1>
 
-<%= form_for current_user, url: update_department_path, method: :patch do |f| %>
-  <div>
-    <%= f.label :dept_id, "Choose your department:" %>
-    <%= f.select :dept_id, options_from_collection_for_select(@departments, "dept_id", "name", current_user.dept_id) %>
-  </div>
-
-  <%= f.submit "Save", class: "btn btn-primary" %>
-  <% if current_user.dept_id != '-'%>
-    <%= link_to "Cancel", inventories_path, class: "btn btn-primary" %>
+  <% if current_user.profile_picture_url.present? %>
+    <div class="position-relative" style="margin-bottom: -40px; z-index: 1;">
+      <%= image_tag current_user.profile_picture_url, alt: "Avatar", class: "rounded-circle shadow", width: 90, height: 90, style: "object-fit: cover; border: 4px solid white;" %>
+    </div>
   <% end %>
-<% end %>
+
+  <div class="card p-5 pt-5 text-center" style="max-width: 400px; width: 100%; border-radius: 20px;">
+    <h2 class="mb-4" style="font-weight: 600;">Select Your Department</h2>
+
+    <%= form_for current_user, url: update_department_path, method: :patch do |f| %>
+      <div class="mb-3">
+        <%= f.select :dept_id, options_from_collection_for_select(@departments, "dept_id", "name", current_user.dept_id), {}, class: "form-select" %>
+      </div>
+
+      <%= f.submit "Save", class: "btn btn-primary w-100 mb-2" %>
+
+      <% if current_user.dept_id != '-' %>
+        <%= link_to "Cancel", inventories_path, class: "btn btn-outline-secondary w-100" %>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+
+<style>
+  .card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .btn-primary {
+    background-color: #003366;
+    border-color: #003366;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    background-color: #002244;
+    border-color: #002244;
+  }
+
+  .btn-outline-secondary:hover {
+    background-color: #eaeaea;
+  }
+</style>

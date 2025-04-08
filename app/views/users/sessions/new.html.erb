@@ -1,25 +1,168 @@
 <!DOCTYPE html>
-    <head>
-    <link rel="stylesheet" href="<%= asset_path 'login.css' %>" media="all" />
-    </head>
-    <div class = 'container'>
-        <div class = 'loginBox'>
-            <h1 class = 'loginHeader'>Capstone Inventory</h1>
-            <h3 class = 'loginSubHeader'>One Stop Shop for All Things Inventory</h2>
-            <div class = 'loginButtonsContainer'>
-                <p class = 'buttonHeader'>Have an account?</p>
-                <div class = 'loginButton'>
-                    <%= button_to user_google_oauth2_omniauth_authorize_path, class: "btn btn-danger loginButton", method: :post, data: {turbo: "false"} do %>
-                        <i class="fab fa-google mobile-text"></i><span class = "mobile-font">&nbsp;Login With Google</span>
-                    <% end %>
-                </div>
-                <p class = 'buttonHeader'>Don't have an account?</p>
-                <div class = 'loginButton'>
-                    <%= button_to user_google_oauth2_omniauth_authorize_path, class: "btn btn-danger loginButton", method: :post, data: {turbo: "false"} do %>
-                        <i class="fab fa-google mobile-text"></i><span class = "mobile-font">&nbsp;Signup With Google</span>
-                    <% end %>
-                </div>
-            </div>
+<html>
+<head>
+  <title>Capstone Inventory - Login</title>
+  <link rel="stylesheet" href="<%= asset_path 'login.css' %>" media="all" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-image: url('https://cdn.eis.tamu.edu/public/images/newbackground7.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+      text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+      position: relative;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 0;
+    }
+
+    .flash-container {
+      position: fixed;
+      top: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      z-index: 1000;
+      animation: slideDown 0.5s ease-out;
+    }
+
+    .flash-alert {
+      background: rgba(255, 77, 77, 0.95);
+      padding: 15px 30px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
+      font-size: 1rem;
+      font-weight: 500;
+      max-width: 600px;
+      text-align: center;
+      backdrop-filter: blur(5px);
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .container {
+      height: calc(100vh - 100px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    .loginHeader {
+      font-size: 3.5rem;
+      margin-bottom: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .loginSubHeader {
+      font-size: 1.4rem;
+      font-weight: 300;
+      margin-bottom: 40px;
+    }
+
+    .loginButtonsContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .loginButton .btn {
+      background-color: rgb(219, 68, 55);
+      color: white;
+      padding: 14px 28px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      width: 100%;
+      max-width: 320px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loginButton .btn:hover {
+      background-color: rgb(200, 50, 40);
+      transform: translateY(-2px);
+    }
+
+    .mobile-font {
+      font-size: 1rem;
+    }
+
+    .mobile-text {
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <% if flash[:alert] %>
+      <div class="flash-container">
+        <div class="flash-alert">
+          <%= flash[:alert] %>
         </div>
+      </div>
+    <% end %>
+
+    <h1 class="loginHeader">Capstone Inventory</h1>
+    <h3 class="loginSubHeader">One Stop Shop for All Things Inventory</h3>
+
+    <div class="loginButtonsContainer">
+      <div class="loginButton">
+        <%= button_to user_google_oauth2_omniauth_authorize_path, class: "btn btn-danger loginButton", method: :post, data: {turbo: "false"} do %>
+          <i class="fab fa-google mobile-text"></i><span class="mobile-font">&nbsp;Login With Google</span>
+        <% end %>
+      </div>
     </div>
+
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const flash = document.querySelector('.flash-container');
+      if (flash) {
+        setTimeout(() => {
+          flash.style.opacity = '0';
+          flash.style.transition = 'opacity 1s ease';
+          setTimeout(() => { flash.remove(); }, 1000);
+        }, 3000);
+      }
+    });
+  </script>
+</body>
 </html>

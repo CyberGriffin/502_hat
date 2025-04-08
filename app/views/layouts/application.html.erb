@@ -10,6 +10,9 @@
   <%= javascript_importmap_tags %>
   <%= stylesheet_link_tag "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" %>
 
+  <!-- Imports -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
   <style>
     .flash__alert { color: red; }
     .flash__notice { color: blue; }
@@ -23,57 +26,374 @@
 </head>
 
 <body>
-  <header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">InventoryManagement</a>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <%= link_to "Inventory", inventories_path, class: "nav-link" %>
+  <header class="header-container">
+    <!-- Navbar 1 -->
+    <nav class="navbar navbar-expand-lg navbar-1">
+  <div class="container-fluid d-flex align-items-center">
+    <!-- Brand (Left) -->
+    <% if user_signed_in? && current_user.dept_id.present? && current_user.dept_id != '-' %>
+    <div>
+      <a class="navbar-brand" href="/" style="color:white">InventoryManagement</a>
+    </div>
+    <% end %>
+
+    <!-- Search (Center) -->
+    <% if user_signed_in? && current_user.dept_id.present? && current_user.dept_id != '-' %>
+    <div class="flex-grow-1 d-flex justify-content-center">
+      <div class="input-group" style="width: 40rem;">
+        <input type="text" id="search-input" placeholder="Search..." class="form-control" value="<%= params[:search] %>">
+        <button class="btn btn-outline-light" type="button" id="filter-button" data-bs-toggle="offcanvas" data-bs-target="#filterPanel" aria-controls="filterPanel">
+          <i class="fas fa-filter"></i>
+        </button>
+      </div>
+    </div>
+    <% end %>
+
+    <!-- User Profile (Right) -->
+    <div class="ms-auto">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <% if user_signed_in? && current_user.dept_id.present? && current_user.dept_id != '-' %>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <% whitelist_entry = Whitelist.find_by(email: current_user&.email) %>
+                <span style="font-size: 1.20rem; color:white;"><%= current_user.full_name %> (<%= whitelist_entry.roles %>)</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><%= link_to "Profile", edit_department_path(@department), class: "dropdown-item" %></li>
+                <li><%= link_to "Settings", accessibility_settings_path, class: "dropdown-item" %></li>
+                <li><%= link_to "User Guide", documentation_path, class: "dropdown-item" %></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><%= link_to "Sign Out", destroy_user_session_path, method: :delete, class: "dropdown-item" %></li>
+              </ul>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+    <!-- Navbar 2 -->
+    <% if user_signed_in? && current_user.dept_id.present? && current_user.dept_id != '-' %>
+    <nav class="navbar navbar-expand-lg">
+      <div class="container-fluid d-flex align-items-center">
+        <ul class="navbar-nav navbar-2">
+            <li class="nav-item inventory-nav">
+              <%= link_to "Inventory", inventories_path, class: "nav-link active" %>
             </li>
             <li class="nav-item">
               <%= link_to "Items", items_path, class: "nav-link" %>
             </li>
+            <li class="nav-item">
+              <%= link_to "Whitelists", whitelists_path, class: "nav-link" %>
+            </li>
+            <li class="nav-item">
+              <%= link_to "Categories", categories_path, class: "nav-link" %>
+            </li>
+            
+
           </ul>
-          <ul class="navbar-nav ms-auto">
-            <% if user_signed_in? %>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <span style="font-size: 1.20rem;"><%= current_user.full_name %> (<%= current_user.role %> view)</span>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                  <li><%= link_to "Profile", edit_user_registration_path, class: "dropdown-item" %></li>
-                  <li><%= link_to "Settings", "#", class: "dropdown-item" %></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li>
-                    <%= button_to "Toggle Role", toggle_role_path, method: :patch, class: "dropdown-item", form: { data: { turbo: false } } %>
-                  </li>
-                  <li><%= link_to "Sign Out", destroy_user_session_path, method: :delete, class: "dropdown-item" %></li>
-                </ul>
-              </li>
-            <% end %>
-          </ul>
+
+        <!-- Right: Action Buttons -->
+        <div class="nav-actions d-flex gap-2" id="action-buttons">
+          <!-- Normal Mode -->
+          <div id="normal-mode-buttons" class="d-flex gap-2">
+            <button type="button" style="display: none;" class="btn btn-primary btn-sm" id="add-record-btn" data-bs-toggle="modal" data-bs-target="#addRecordModal">
+              Add Record
+            </button>
+            <button style="display: none;" class="btn btn-secondary btn-sm" id="toggle-table-view">Expand Table</button>
+          </div>
+
+          <!-- Edit Mode -->
+          <div id="edit-mode-buttons" class="d-flex gap-2" style="display: none;">
+            <button class="btn btn-success btn-sm" id="save-changes-btn" style="display: none;" disabled>Save Changes</button>
+            <button class="btn btn-danger btn-sm" id="cancel-changes-btn" style="display: none;" disabled>Cancel Changes</button>
+          </div>
         </div>
+
       </div>
     </nav>
+    <% end %>
   </header>
+  
+  <style>
+    .header-container {
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+      background-color: #500000 !important;
+    }
+    .navbar .dropdown-toggle::after {
+      color: white;
+    }
+    body {
+      background-color: #EAE8DF;
+    }
+    .navbar-2 .nav-link {
+      color: white !important;
+    }
+    <% if user_signed_in? && current_user.dept_id.present? && current_user.dept_id != '-' %>
+    .navbar-1 {
+      border-bottom: 1px solid #707070;
+    }
+    <% else %>
+    .navbar-1 {
+      padding: 20px;
+      border-bottom: 15px solid #322C2C;
+    }
+    <% end %>
+    .navbar-2 .nav-link.active {
+      font-weight: bold;
+      color: #D6D3C4 !important;
+      cursor: default;
+      text-decoration: underline;
+      text-decoration-color: #D6D3C4;
+      text-underline-offset: 0.1em;
+    }
+    
+  </style>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.navbar-2 .nav-link');
+    const addRecordBtn = document.getElementById('add-record-btn');
+    const toggleTableViewBtn = document.getElementById('toggle-table-view');
+    const inventoryNavLink = document.querySelector('.inventory-nav .nav-link');
+    const searchInput = document.getElementById('search-input');
+    const filterButton = document.getElementById('filter-button');
 
-  <!-- Flash Messages (Styled with Bootstrap) -->
-  <% if flash.any? %>
-    <div class="container mt-3">
-      <% flash.each do |key, value| %>
-        <div class="alert alert-<%= bootstrap_flash_class(key) %> alert-dismissible fade show" role="alert">
-          <%= value.html_safe %>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      <% end %>
-    </div>
-  <% end %>
+    let inventoryIsActive = false;
+
+    navLinks.forEach(link => {
+      if (link.getAttribute('href') === currentPath || (currentPath === '/' && link.getAttribute('href') === '/inventories')) {
+        link.classList.add('active');
+        link.addEventListener('click', (event) => event.preventDefault());
+        
+        if (link === inventoryNavLink) {
+          inventoryIsActive = true;
+        }
+      } else {
+        link.classList.remove('active');
+      }
+    });
+
+    if (inventoryIsActive) {
+      addRecordBtn.style.display = 'block';
+      toggleTableViewBtn.style.display = 'block';
+      searchInput.style.visibility = 'visible';
+      filterButton.style.visibility = 'visible';
+    } else {
+      addRecordBtn.style.display = 'none';
+      toggleTableViewBtn.style.display = 'none';
+      searchInput.style.visibility = 'hidden';
+      filterButton.style.visibility = 'hidden';
+    }
+  });
+</script>
 
   <%= yield %>
 
   <!-- Bootstrap JavaScript -->
   <%= javascript_include_tag "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js", defer: true %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const zoomSetting = localStorage.getItem("fontZoom");
+
+    if (zoomSetting === "large") {
+      document.body.style.zoom = "125%";
+    } else {
+      document.body.style.zoom = "100%";
+    }
+
+    const fontSizeToggle = document.getElementById("fontSizeToggle");
+    if (fontSizeToggle) {
+      fontSizeToggle.checked = (zoomSetting === "large");
+
+      fontSizeToggle.addEventListener("change", function () {
+        if (fontSizeToggle.checked) {
+          document.body.style.zoom = "125%";
+          localStorage.setItem("fontZoom", "large");
+        } else {
+          document.body.style.zoom = "100%";
+          localStorage.setItem("fontZoom", "normal");
+        }
+      });
+    }
+  });
+</script>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  const fontSizeToggle = document.getElementById('fontSizeToggle');
+  const contrastToggle = document.getElementById('contrastToggle');
+
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+    darkModeToggle.checked = true;
+  }
+  if (localStorage.getItem('highContrast') === 'true') {
+    document.body.classList.add('high-contrast');
+    contrastToggle.checked = true;
+  }
+
+  darkModeToggle.addEventListener('change', function () {
+    document.body.classList.toggle('dark-mode', this.checked);
+    localStorage.setItem('darkMode', this.checked);
+
+    if (this.checked) {
+      contrastToggle.checked = false;
+      document.body.classList.remove('high-contrast');
+      localStorage.setItem('highContrast', false);
+    }
+  });
+
+  contrastToggle.addEventListener('change', function () {
+    document.body.classList.toggle('high-contrast', this.checked);
+    localStorage.setItem('highContrast', this.checked);
+
+    if (this.checked) {
+      darkModeToggle.checked = false;
+      document.body.classList.remove('dark-mode');
+      localStorage.setItem('darkMode', false);
+    }
+  });
+});
+</script>
+
+
+<style>
+/* Dark Mode */
+body.dark-mode {
+  background-color: #1d1b1b;
+  color: #cccccc;
+}
+
+body.dark-mode .navbar,
+body.dark-mode .header-container,
+body.dark-mode .footer,
+body.dark-mode .offcanvas,
+body.dark-mode .modal-content,
+body.dark-mode .table,
+body.dark-mode .table-bordered,
+body.dark-mode .table-striped {
+  background-color: #292727 !important;
+  color: #cccccc !important;
+  border-color: #444444 !important;
+}
+
+body.dark-mode .table-bordered .inventory-group-header td {
+  background-color:rgb(25, 25, 25) !important;
+}
+body.dark-mode .table-bordered th {
+  background-color:rgb(25, 25, 25) !important;
+}
+
+body.dark-mode .table th,
+body.dark-mode .table td {
+  background-color: #292727;
+  color: #cccccc;
+}
+
+body.dark-mode .btn {
+  border-color: #555;
+}
+
+body.dark-mode .btn-primary {
+  background-color: #375a7f;
+  border-color: #375a7f;
+}
+
+body.dark-mode .btn-success {
+  background-color: #00bc8c;
+  border-color: #00bc8c;
+}
+
+body.dark-mode .btn-danger {
+  background-color: #e74c3c;
+  border-color: #e74c3c;
+}
+
+body.dark-mode .btn-secondary {
+  background-color: #7f8c8d;
+  border-color: #7f8c8d;
+}
+
+body.dark-mode .filter-bubble {
+  border-color: #888;
+  color: #ccc;
+}
+
+body.dark-mode .filter-bubble.active {
+  background-color: #500000;
+  color: #ffffff;
+}
+
+/* High Contrast Mode */
+body.high-contrast {
+  background-color: black;
+  color: yellow;
+}
+
+body.high-contrast .navbar,
+body.high-contrast .header-container,
+body.high-contrast .footer,
+body.high-contrast .offcanvas,
+body.high-contrast .modal-content,
+body.high-contrast .table,
+body.high-contrast .table-bordered,
+body.high-contrast .table-striped {
+  background-color: black !important;
+  color: yellow !important;
+  border-color: yellow !important;
+}
+
+body.high-contrast .table-bordered .inventory-group-header td {
+  background-color:cyan !important;
+  color: black !important;
+}
+body.high-contrast .table-bordered th {
+  background-color:rgb(0, 0, 0) !important;
+}
+
+body.high-contrast .table th,
+body.high-contrast .table td {
+  background-color: black;
+  color: yellow;
+}
+
+body.high-contrast .btn {
+  border: 2px solid yellow;
+  color: yellow;
+  background-color: transparent;
+}
+
+body.high-contrast .filter-bubble {
+  border-color: yellow;
+  color: yellow;
+}
+
+body.high-contrast .filter-bubble.active {
+  background-color: yellow;
+  color: black;
+}
+
+body.dark-mode .inventory-group-header {
+  background-color: #333 !important;
+}
+
+body.high-contrast .inventory-group-header {
+  background-color: black !important;
+  color: yellow;
+}
+
+</style>
+
+
+
+
+
 </body>
 </html>

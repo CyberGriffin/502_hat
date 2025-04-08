@@ -1,21 +1,11 @@
-<%= form_with(model: @category, local: true) do |form| %>
-    <div>
-      <%= form.label :name %>
-      <%= form.text_field :name %>
+<div class="container mt-4">
+  <%= form_with(model: @category, local: true) do |form| %>
+    <div class="mb-3">
+      <%= form.label :name, "Category Name" %>
+      <%= form.text_field :name, class: "form-control", required: true %>
     </div>
-  
-    <div>
-      <%= form.label :icon %>
-      <%= form.text_field :icon %>
-    </div>
-  
-    <div>
-      <%= form.label :color_code %>
-      <%= form.text_field :color_code %>
-    </div>
-  
-    <div>
-      <%= form.submit %>
-    </div>
+
+    <%= form.submit "Save Category", class: "btn btn-primary" %>
+    <%= link_to "Back to Categories", categories_path, class: "btn btn-secondary" %>
   <% end %>
-  
+</div>

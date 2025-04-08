@@ -31,7 +31,7 @@ class CategoriesController < ApplicationController
      def update
           @category = Category.find(params[:cat_id])
           if @category.update(category_params)
-               redirect_to(category_path(@category), notice: 'Category was successfully updated.')
+               redirect_to(categories_path, notice: 'Category was successfully updated.')
           else
                flash[:alert] = 'There was an error updating the category.'
                render('edit')
@@ -55,6 +55,10 @@ class CategoriesController < ApplicationController
      end
 
      def authenticate_admin!
-          redirect_to root_path, alert: "Not authorized" unless current_user&.admin?
-     end
+          whitelist_entry = Whitelist.find_by(email: current_user&.email)
+          unless whitelist_entry&.roles == 'admin'
+            sign_out current_user
+            redirect_to new_user_session_path, alert: "You are no longer authorized to access this application."
+          end
+        end
 end
