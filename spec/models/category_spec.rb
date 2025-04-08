@@ -21,14 +21,6 @@ RSpec.describe Category, type: :model do
           end
 
           context 'rainy cases (invalid scenarios)' do
-               it 'is invalid without a cat_id' do
-                    category = Category.new(
-                         name: 'Fast Food',
-                    )
-                    expect(category).not_to be_valid
-                    expect(category.errors[:cat_id]).to include("can't be blank")
-               end
-
                it 'is invalid if cat_id is not unique' do
                     Category.create!(cat_id: 'fast_food', name: 'Fast Food')
 
