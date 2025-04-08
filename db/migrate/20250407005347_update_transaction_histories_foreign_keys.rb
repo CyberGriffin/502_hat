@@ -3,7 +3,7 @@ class UpdateTransactionHistoriesForeignKeys < ActiveRecord::Migration[7.0]
     drop_table :transaction_histories
 
     create_table :transaction_histories do |t|
-      t.string :inv_id, null: false
+      t.bigint :inv_id, null: false
       t.string :action, null: false
       t.string :user_email, null: false
       t.datetime :transaction_date, null: false, default: -> { 'CURRENT_TIMESTAMP' }

@@ -1,7 +1,7 @@
 class CreateTransactionHistories < ActiveRecord::Migration[7.0]
   def change
     create_table :transaction_histories do |t|
-      t.string :inv_id, null: false
+      t.bigint :inv_id, null: false
       t.string :action, null: false
       t.string :user_email, null: false
       t.datetime :transaction_date, null: false, default: -> { 'CURRENT_TIMESTAMP' }
