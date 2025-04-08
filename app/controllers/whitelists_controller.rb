@@ -47,25 +47,25 @@ class WhitelistsController < ApplicationController
           end
         end
         
-        def update
-          previous_email = @whitelist.email
-          respond_to do |format|
-            if @whitelist.update(whitelist_params)
-              # Log out the user if their email was changed and they are no longer whitelisted
-              if current_user&.email == previous_email && Whitelist.find_by(email: current_user.email).nil?
-                sign_out current_user
-                redirect_to new_user_session_path, alert: "You have been removed from the whitelist and logged out."
-                return
-              end
-        
-              format.html { redirect_to whitelists_path, notice: "Whitelist entry updated." }
-              format.json { render :show, status: :ok, location: @whitelist }
-            else
-              format.html { render :edit, status: :unprocessable_entity }
-              format.json { render json: @whitelist.errors, status: :unprocessable_entity }
-            end
+     def update
+     previous_email = @whitelist.email
+     respond_to do |format|
+          if @whitelist.update(whitelist_params)
+          # Log out the user if their email was changed and they are no longer whitelisted
+          if current_user&.email == previous_email && Whitelist.find_by(email: current_user.email).nil?
+               sign_out current_user
+               redirect_to new_user_session_path, alert: "You have been removed from the whitelist and logged out."
+               return
           end
-        end
+     
+          format.html { redirect_to whitelists_path, notice: "Whitelist entry updated." }
+          format.json { render :show, status: :ok, location: @whitelist }
+          else
+          format.html { render :edit, status: :unprocessable_entity }
+          format.json { render json: @whitelist.errors, status: :unprocessable_entity }
+          end
+     end
+     end
 
      private
 
@@ -74,7 +74,7 @@ class WhitelistsController < ApplicationController
      end
 
      def whitelist_params
-          params.require(:whitelist).permit(:email, :expires_at)
+          params.require(:whitelist).permit(:email, :expires_at, :roles)
      end
 
      def authenticate_admin!
