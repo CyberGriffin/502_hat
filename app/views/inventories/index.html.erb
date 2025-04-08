@@ -113,17 +113,20 @@ Need to standardize the condition of an item, currently we have free form entry 
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
+<!-- Multi Delete Confirmation Modal -->
 <div class="modal fade" id="multiDeleteConfirmationModal" tabindex="-1" aria-labelledby="multiDeleteConfirmationModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="multiDeleteConfirmationModalLabel">Confirm Bulk Delete</h5>
+        <h5 class="modal-title" id="multiDeleteConfirmationModalLabel">Confirm Delete</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div id="multi-checked-out-warning" class="alert alert-warning d-none mb-3">
+          <strong>Warning!</strong> Some selected items are currently checked out.
+        </div>
         <p>Are you sure you want to delete the selected items?</p>
-        <ul id="selected-items-list" style="display:none;"></ul>
+        <ul id="selected-items-list" class="mb-3"></ul>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -208,7 +211,88 @@ Need to standardize the condition of an item, currently we have free form entry 
   </div>
 </div>
 
+<!-- Bulk Delete JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const multiDeleteBtn = document.getElementById('footer-delete-btn');
+  const multiDeleteModalEl = document.getElementById('multiDeleteConfirmationModal');
+  const multiDeleteModal = new bootstrap.Modal(multiDeleteModalEl);
+  const confirmMultiDeleteBtn = document.getElementById('confirm-multi-delete-btn');
+  const selectedItemsList = document.getElementById('selected-items-list');
+  const warningDiv = document.getElementById('multi-checked-out-warning');
 
+  // Proper modal dismissal handlers
+  function hideModal() {
+    multiDeleteModal.hide();
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(backdrop => backdrop.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = 'visible';
+  }
+
+  document.querySelector('#multiDeleteConfirmationModal .btn-secondary').addEventListener('click', hideModal);
+  document.querySelector('#multiDeleteConfirmationModal .btn-close').addEventListener('click', hideModal);
+
+  multiDeleteBtn.addEventListener('click', function () {
+    const selectedRows = document.querySelectorAll('.inventory-row.isselected');
+    const selectedIds = [];
+    let hasCheckedOutItems = false;
+
+    selectedRows.forEach(function (row) {
+      const id = row.getAttribute('data-inventory-id');
+      selectedIds.push(id);
+      
+      if (row.querySelector('.badge').classList.contains('bg-danger')) {
+        hasCheckedOutItems = true;
+      }
+    });
+
+    if (selectedIds.length === 0) {
+      return;
+    }
+
+    warningDiv.classList.toggle('d-none', !hasCheckedOutItems);
+    confirmMultiDeleteBtn.textContent = hasCheckedOutItems ? 'Delete Anyway' : 'Delete';
+    
+    selectedItemsList.innerHTML = "";
+    selectedRows.forEach(row => {
+      const li = document.createElement('li');
+      const name = row.querySelector('td:nth-child(2)').textContent.trim();
+      const status = row.querySelector('.badge').textContent.trim();
+      li.textContent = `${name} (${status})`;
+      selectedItemsList.appendChild(li);
+    });
+
+    multiDeleteModal.show();
+
+    confirmMultiDeleteBtn.onclick = function () {
+      fetch('/inventories/multi_delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ inventory_ids: selectedIds })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          location.reload();
+        } else {
+          alert('Error deleting items: ' + (data.message || 'Unknown error'));
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while deleting items');
+      })
+      .finally(() => {
+        hideModal();
+      });
+    };
+  });
+});
+</script>
 
 <style>
 .filter-bubble.active {

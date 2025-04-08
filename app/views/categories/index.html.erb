@@ -1,26 +1,95 @@
-<h1>Categories</h1>
-
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @categories.each do |category| %>
+<!-- Categories Table -->
+<div id="categories-list">
+  <table class="table table-striped">
+    <thead>
       <tr>
-        <td><%= category.name %></td>
-        <td>
-          <%= link_to 'Show', category_path(category) %> |
-          <%= link_to 'Edit', edit_category_path(category) %> |
-          <%= link_to 'Delete', delete_category_path(category) %>
-        </td>
+        <th>Name</th>
+        <th class="text-end">Actions</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @categories.each do |category| %>
+        <tr>
+          <td><%= category.name %></td>
+          <td class="text-end">
+          <%= link_to '#', class: 'btn btn-primary btn-sm me-1', 
+          data: { bs_toggle: "modal", bs_target: "#showCategoryModal", category_name: category.name } do %>
+          Show
+          <% end %>
+            <%= link_to 'Edit', edit_category_path(category), class: 'btn btn-warning btn-sm me-1' %>
+            <%= link_to 'Delete', delete_category_path(category), class: 'btn btn-danger btn-sm' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
 
-<%= link_to 'New Category', new_category_path %>
-<%= link_to 'Back to Inventory', inventories_path %>
+<!-- Show Category Modal -->
+<div class="modal fade" id="showCategoryModal" tabindex="-1" aria-labelledby="showCategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="showCategoryModalLabel">Category Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Name:</strong> <span id="modal-category-name"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- Footer with Modal Trigger -->
+<footer class="footer fixed-bottom py-2" style="background-color: #500000;">
+  <div class="container-fluid d-flex justify-content-between">
+    <span></span>
+    <div>
+      <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+        New Category
+      </button>
+    </div>
+  </div>
+</footer>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addCategoryModalLabel">Create New Category</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_with model: @category, url: categories_path, remote: true, id: "category-form", scope: :category do |form| %>
+          <div class="mb-3">
+            <%= form.label :name, "Category Name", class: "form-label" %>
+            <%= form.text_field :name, class: "form-control" %>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <%= form.submit "Create Category", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const showModal = document.getElementById("showCategoryModal");
+
+  showModal.addEventListener("show.bs.modal", function (event) {
+    const button = event.relatedTarget;
+    const categoryName = button.getAttribute("data-category-name");
+
+    const nameSpan = showModal.querySelector("#modal-category-name");
+    nameSpan.textContent = categoryName;
+  });
+});
+</script>

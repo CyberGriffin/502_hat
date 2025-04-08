@@ -191,5 +191,206 @@
 
   <!-- Bootstrap JavaScript -->
   <%= javascript_include_tag "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js", defer: true %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const zoomSetting = localStorage.getItem("fontZoom");
+
+    if (zoomSetting === "large") {
+      document.body.style.zoom = "125%";
+    } else {
+      document.body.style.zoom = "100%";
+    }
+
+    const fontSizeToggle = document.getElementById("fontSizeToggle");
+    if (fontSizeToggle) {
+      fontSizeToggle.checked = (zoomSetting === "large");
+
+      fontSizeToggle.addEventListener("change", function () {
+        if (fontSizeToggle.checked) {
+          document.body.style.zoom = "125%";
+          localStorage.setItem("fontZoom", "large");
+        } else {
+          document.body.style.zoom = "100%";
+          localStorage.setItem("fontZoom", "normal");
+        }
+      });
+    }
+  });
+</script>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  const fontSizeToggle = document.getElementById('fontSizeToggle');
+  const contrastToggle = document.getElementById('contrastToggle');
+
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+    darkModeToggle.checked = true;
+  }
+  if (localStorage.getItem('highContrast') === 'true') {
+    document.body.classList.add('high-contrast');
+    contrastToggle.checked = true;
+  }
+
+  darkModeToggle.addEventListener('change', function () {
+    document.body.classList.toggle('dark-mode', this.checked);
+    localStorage.setItem('darkMode', this.checked);
+
+    if (this.checked) {
+      contrastToggle.checked = false;
+      document.body.classList.remove('high-contrast');
+      localStorage.setItem('highContrast', false);
+    }
+  });
+
+  contrastToggle.addEventListener('change', function () {
+    document.body.classList.toggle('high-contrast', this.checked);
+    localStorage.setItem('highContrast', this.checked);
+
+    if (this.checked) {
+      darkModeToggle.checked = false;
+      document.body.classList.remove('dark-mode');
+      localStorage.setItem('darkMode', false);
+    }
+  });
+});
+</script>
+
+
+<style>
+/* Dark Mode */
+body.dark-mode {
+  background-color: #1d1b1b;
+  color: #cccccc;
+}
+
+body.dark-mode .navbar,
+body.dark-mode .header-container,
+body.dark-mode .footer,
+body.dark-mode .offcanvas,
+body.dark-mode .modal-content,
+body.dark-mode .table,
+body.dark-mode .table-bordered,
+body.dark-mode .table-striped {
+  background-color: #292727 !important;
+  color: #cccccc !important;
+  border-color: #444444 !important;
+}
+
+body.dark-mode .table-bordered .inventory-group-header td {
+  background-color:rgb(25, 25, 25) !important;
+}
+body.dark-mode .table-bordered th {
+  background-color:rgb(25, 25, 25) !important;
+}
+
+body.dark-mode .table th,
+body.dark-mode .table td {
+  background-color: #292727;
+  color: #cccccc;
+}
+
+body.dark-mode .btn {
+  border-color: #555;
+}
+
+body.dark-mode .btn-primary {
+  background-color: #375a7f;
+  border-color: #375a7f;
+}
+
+body.dark-mode .btn-success {
+  background-color: #00bc8c;
+  border-color: #00bc8c;
+}
+
+body.dark-mode .btn-danger {
+  background-color: #e74c3c;
+  border-color: #e74c3c;
+}
+
+body.dark-mode .btn-secondary {
+  background-color: #7f8c8d;
+  border-color: #7f8c8d;
+}
+
+body.dark-mode .filter-bubble {
+  border-color: #888;
+  color: #ccc;
+}
+
+body.dark-mode .filter-bubble.active {
+  background-color: #500000;
+  color: #ffffff;
+}
+
+/* High Contrast Mode */
+body.high-contrast {
+  background-color: black;
+  color: yellow;
+}
+
+body.high-contrast .navbar,
+body.high-contrast .header-container,
+body.high-contrast .footer,
+body.high-contrast .offcanvas,
+body.high-contrast .modal-content,
+body.high-contrast .table,
+body.high-contrast .table-bordered,
+body.high-contrast .table-striped {
+  background-color: black !important;
+  color: yellow !important;
+  border-color: yellow !important;
+}
+
+body.high-contrast .table-bordered .inventory-group-header td {
+  background-color:cyan !important;
+  color: black !important;
+}
+body.high-contrast .table-bordered th {
+  background-color:rgb(0, 0, 0) !important;
+}
+
+body.high-contrast .table th,
+body.high-contrast .table td {
+  background-color: black;
+  color: yellow;
+}
+
+body.high-contrast .btn {
+  border: 2px solid yellow;
+  color: yellow;
+  background-color: transparent;
+}
+
+body.high-contrast .filter-bubble {
+  border-color: yellow;
+  color: yellow;
+}
+
+body.high-contrast .filter-bubble.active {
+  background-color: yellow;
+  color: black;
+}
+
+body.dark-mode .inventory-group-header {
+  background-color: #333 !important;
+}
+
+body.high-contrast .inventory-group-header {
+  background-color: black !important;
+  color: yellow;
+}
+
+</style>
+
+
+
+
+
 </body>
 </html>
