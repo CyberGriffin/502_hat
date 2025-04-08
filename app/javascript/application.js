@@ -3,6 +3,6 @@ import "bootstrap"
 import "../stylesheets/application"
 import "jquery"
 import './inventories';
-import './search';
+import './search-filter';
 import './sorting';
 import './inventory-edit';

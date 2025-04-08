@@ -98,7 +98,10 @@
         </td>
         <td class="no-search action-cell">
   <div class="action-buttons">
-    <% if inventory.current_user.nil? %>
+    <%= link_to "Delete", "#", class: "btn btn-sm btn-danger delete-btn", data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>
+    <%= link_to "View History", transaction_histories_path(inventory_id: inventory.inv_id), class: "btn btn-sm btn-info" %>
+
+        <% if inventory.current_user.nil? %>
       <span class="button-inline">
         <%= button_to "Check Out", checkout_inventory_path(inventory), method: :post, class: "btn btn-sm btn-success" %>
       </span>
@@ -109,9 +112,6 @@
         <%= button_to "Return", return_inventory_path(inventory), method: :post, class: "btn btn-sm btn-secondary" %>
       </span>
     <% end %>
-
-    <%= link_to "Delete", "#", class: "btn btn-sm btn-danger delete-btn", data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>
-    <%= link_to "View History", transaction_histories_path(inventory_id: inventory.inv_id), class: "btn btn-sm btn-info" %>
   </div>
 
   <div class="action-placeholder" style="display: none; color: #888;">—</div>

@@ -156,6 +156,7 @@
     const toggleTableViewBtn = document.getElementById('toggle-table-view');
     const inventoryNavLink = document.querySelector('.inventory-nav .nav-link');
     const searchInput = document.getElementById('search-input');
+    const filterButton = document.getElementById('filter-button');
 
     let inventoryIsActive = false;
 
@@ -176,10 +177,12 @@
       addRecordBtn.style.display = 'block';
       toggleTableViewBtn.style.display = 'block';
       searchInput.style.visibility = 'visible';
+      filterButton.style.visibility = 'visible';
     } else {
       addRecordBtn.style.display = 'none';
       toggleTableViewBtn.style.display = 'none';
       searchInput.style.visibility = 'hidden';
+      filterButton.style.visibility = 'hidden';
     }
   });
 </script>
