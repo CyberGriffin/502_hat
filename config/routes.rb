@@ -16,6 +16,8 @@ Rails.application.routes.draw do
 
      get 'users/search', to: 'users#search'
 
+     get 'documentation', to: 'static_pages#documentation'
+
 
      resources :whitelists do
           member do
