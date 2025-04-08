@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CategoriesController < ApplicationController
-     before_action :authenticate_admin!
+     # before_action :authenticate_admin!
      def index
           @categories = Category.order(:cat_id)
      end
