@@ -14,9 +14,10 @@ Rails.application.routes.draw do
 
      get '/settings/accessibility', to: 'settings#accessibility', as: 'accessibility_settings'
 
-     get 'users/search', to: 'users#search'
+     get 'users/search', to: 'users#search', defaults: { format: :json }
 
      get 'documentation', to: 'static_pages#documentation'
+
 
      resources :whitelists do
           member do
@@ -46,9 +47,9 @@ Rails.application.routes.draw do
 
      resources :transaction_histories, only: [:index] do
           collection do
-               get 'for_inventory/:inventory_id', to: 'transaction_histories#index', as: :for_inventory
+            get 'for_inventory/:inventory_id', to: 'transaction_histories#index', as: :for_inventory
           end
-     end
+        end
 
      resources :items do
           member do

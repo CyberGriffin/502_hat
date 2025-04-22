@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_08_034123) do
-     create_table "categories", primary_key: "cat_id", id: :string, force: :cascade do |t|
-          t.datetime "created_at", null: false
-          t.datetime "updated_at", null: false
-          t.string "name", default: "Unnamed Category", null: false
-     end
+ActiveRecord::Schema[7.0].define(version: 2025_04_08_021027) do
+  create_table "categories", primary_key: "cat_id", id: :string, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "name", default: "Unnamed Category", null: false
+  end
 
      create_table "departments", primary_key: "dept_id", id: :string, force: :cascade do |t|
           t.string "name"
@@ -44,14 +44,14 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_08_034123) do
           t.string "sku"
      end
 
-     create_table "transaction_histories", force: :cascade do |t|
-          t.integer "inv_id", null: false
-          t.string "action", null: false
-          t.string "user_email", null: false
-          t.datetime "transaction_date", default: -> { "CURRENT_TIMESTAMP" }, null: false
-          t.datetime "created_at", null: false
-          t.datetime "updated_at", null: false
-     end
+  create_table "transaction_histories", force: :cascade do |t|
+    t.integer "inv_id", null: false
+    t.string "action", null: false
+    t.string "user_email", null: false
+    t.datetime "transaction_date", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
      create_table "users", primary_key: "email", id: :string, force: :cascade do |t|
           t.string "name"
