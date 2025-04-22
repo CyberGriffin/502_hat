@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CategoriesController < ApplicationController
-     # before_action :authenticate_admin!
+     before_action :authenticate_admin!
      def index
           @categories = Category.order(:cat_id)
      end
@@ -57,8 +57,8 @@ class CategoriesController < ApplicationController
      def authenticate_admin!
           whitelist_entry = Whitelist.find_by(email: current_user&.email)
           unless whitelist_entry&.roles == 'admin'
-            sign_out current_user
-            redirect_to new_user_session_path, alert: "You are no longer authorized to access this application."
+               sign_out current_user
+               redirect_to new_user_session_path, alert: "You are no longer authorized to access this application."
           end
-        end
+     end
 end

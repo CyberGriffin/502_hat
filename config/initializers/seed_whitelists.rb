@@ -10,10 +10,10 @@ Rails.application.config.after_initialize do
                { email: "samraatg@tamu.edu", expires_at: nil, roles: "admin" }
           ]
 
-          whitelists.each do |email|
-               Whitelist.find_or_create_by!(email: email[:email]) do |w|
-                    w.expires_at = email[:expires_at]
-                    w.roles = email[:roles]
+          whitelists.each do |whitelist_data|
+               Whitelist.find_or_create_by!(email: whitelist_data[:email]) do |w|
+                    w.expires_at = whitelist_data[:expires_at]
+                    w.roles = whitelist_data[:roles]
                end
           end
 

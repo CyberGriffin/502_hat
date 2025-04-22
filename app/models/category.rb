@@ -5,5 +5,11 @@ class Category < ApplicationRecord
     validates :cat_id, presence: true, uniqueness: true
     validates :name, presence: true
 
-    private
+    before_validation :set_default_cat_id, on: :create
+
+     private
+
+    def set_default_cat_id
+        self.cat_id ||= SecureRandom.uuid
+    end
 end

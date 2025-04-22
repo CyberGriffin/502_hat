@@ -40,7 +40,7 @@ Category.create!([
 
 # Create Users
 User.create!([
-     { email: "alice@example.com", name: "Alice Johnson",  dept_id: "CHEN" },
+     { email: "alice@example.com", name: "Alice Johnson", dept_id: "CHEN" },
      { email: "bob@example.com", name: "Bob Williams", dept_id: "MEEN" },
      { email: "charlie@example.com", name: "Charlie Lee", dept_id: "ECEN" }
 ])
@@ -61,14 +61,15 @@ Item.create!([
      { item_id: "IT012", name: "Generator", description: "Portable generator", category_id: "EQUIP", sku: "GENERATOR-PORT" },
      { item_id: "IT013", name: "Sand", description: "50 kg bag of sand", category_id: "MAT", sku: "SAND-50" },
      { item_id: "IT014", name: "Pliers", description: "Set of pliers", category_id: "TOOL", sku: "PLIERS-SET" },
-     { item_id: "IT015", name: "Forklift", description: "Electric forklift", category_id: "EQUIP", sku: "FORKLIFT-123" },
+     { item_id: "IT015", name: "Forklift", description: "Electric forklift", category_id: "EQUIP", sku: "FORKLIFT-123" }
 ])
 
 # Create Inventories
 Inventory.create!([
      { item_id: "IT001", year_of_purchase: Date.new(2023, 5, 10), location: "Tool Shed", condition_of_item: "New", owner_email: "alice@example.com", dept_id: "CHEN" },
      { item_id: "IT002", year_of_purchase: Date.new(2023, 6, 15), location: "Equipment Yard", condition_of_item: "Used", owner_email: "bob@example.com", dept_id: "MEEN" },
-     { item_id: "IT003", year_of_purchase: Date.new(2022, 11, 1), location: "Warehouse A", condition_of_item: "New", owner_email: "alice@example.com", user_email: "charlie@example.com", dept_id: "ECEN" },
+     { item_id: "IT003", year_of_purchase: Date.new(2022, 11, 1), location: "Warehouse A", condition_of_item: "New", owner_email: "alice@example.com", user_email: "charlie@example.com",
+       dept_id: "ECEN" },
      { item_id: "IT004", year_of_purchase: Date.new(2021, 3, 20), location: "Storage Room", condition_of_item: "Good", owner_email: "bob@example.com", dept_id: "MEEN" },
      { item_id: "IT005", year_of_purchase: Date.new(2020, 8, 5), location: "Lab 101", condition_of_item: "Fair", owner_email: "charlie@example.com", dept_id: "ECEN" },
      { item_id: "IT006", year_of_purchase: Date.new(2023, 1, 12), location: "Workshop", condition_of_item: "New", owner_email: "alice@example.com", dept_id: "CHEN" },

@@ -101,11 +101,11 @@
             <div class="action-buttons">
               <% if inventory.current_user.nil? %>
                 <span class="button-inline">
-                  <%= button_to "Check Out", checkout_inventory_path(inventory), method: :post, class: "btn btn-sm btn-success" %>
+                  <%= button_to "Check Out", checkout_inventory_path(inventory), method: :post, class: "btn btn-sm btn-success checkout-btn", data: { inventory_id: inventory.inv_id } %>
                 </span>
               <% elsif inventory.current_user == current_user %>
                 <span class="button-inline">
-                  <%= button_to "Return", return_inventory_path(inventory), method: :post, class: "btn btn-sm btn-secondary" %>
+                  <%= button_to "Return", return_inventory_path(inventory), method: :post, class: "btn btn-sm btn-secondary return-btn", data: { inventory_id: inventory.inv_id } %>
                 </span>
               <% end %>
               <%= link_to "Delete", "#", class: "btn btn-sm btn-danger delete-btn", data: { bs_toggle: "modal", bs_target: "#deleteConfirmationModal", inventory_id: inventory.id } %>

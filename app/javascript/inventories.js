@@ -290,7 +290,48 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('inventory-body').addEventListener('click', function(event) {
+      if (event.target && event.target.classList.contains('checkout-btn')) {
+        var inventoryId = event.target.getAttribute('data-inventory-id');
+        fetch(`/inventories/${inventoryId}/checkout`, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            location.reload();
+          } else {
+            alert('Failed to checkout item');
+          }
+        })
+        .catch(error => console.error('Error during checkout:', error));
+      }
+  
+      if (event.target && event.target.classList.contains('return-btn')) {
+        var inventoryId = event.target.getAttribute('data-inventory-id');
+        fetch(`/inventories/${inventoryId}/return`, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            location.reload();
+          } else {
+            alert('Failed to return item');
+          }
+        })
+        .catch(error => console.error('Error during return:', error));
+      }
+    });
+  });
+  
 
 
 
