@@ -14,7 +14,7 @@ Rails.application.routes.draw do
 
      get '/settings/accessibility', to: 'settings#accessibility', as: 'accessibility_settings'
 
-     get 'users/search', to: 'users#search'
+     get 'users/search', to: 'users#search', defaults: { format: :json }
 
      get 'documentation', to: 'static_pages#documentation'
 
